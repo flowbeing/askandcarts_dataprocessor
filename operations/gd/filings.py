@@ -16,6 +16,8 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 from google.auth.transport.requests import Request
 
+from process_scraped import *
+
 import settings.default_folder_and_filename_settings as dffns
 import settings.other_settings as othersettings
 
@@ -253,9 +255,17 @@ def detect_files_within_returned_folders(
 
                             # data = fp.read().decode("utf-8-sig").encode("utf-8")
 
-                           # with open(csv_file_write_path, 'r') as infile:
-                           #     reader = csv.reader(codecs.EncodedFile(infile, 'utf-8', 'utf-8-sig'), delimiter=";")
-                           #     print(reader)
+                            # with open(csv_file_write_path, 'r') as infile:
+                            #     reader = csv.reader(codecs.EncodedFile(infile, 'utf-8', 'utf-8-sig'), delimiter=";")
+                            #     print(reader)
+
+                            # perform filter operation on current sitemap's (scraped site's) csv file
+                            process_scraped_site(
+                                scraped_sitemap_csv_file_name=csv_filename,
+                                scraped_sitemap_csv_file_address=csv_file_write_path
+                            )
+
+
 
 
             except HttpError as error:
