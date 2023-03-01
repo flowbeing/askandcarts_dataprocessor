@@ -219,13 +219,13 @@ def filter_rimowa_scraped_data(
     print(f"num of item before clean up : {len_before_filtering}")
     print(f"num of items removed from rimowa's scrapped data: {num_items_removed_from_list}")
 
-try:
-    filter_rimowa_scraped_data(
-        file_address='/Users/admin/Downloads/rimowa_product.xlsx',
-        minimum_profit_target=100,
-        commission_per_sale=.05,
-        list_of_brandNames_or_categories_to_exclude = ['LIMITED', 'RIMOWA X'],
-        ref_link='?refs'
-    )
-except:
-    raise Exception('There was an error while trying to filters rimowa scrapped data')
+# try:
+#     filter_rimowa_scraped_data(
+#         file_address='/Users/admin/Downloads/rimowa_product.xlsx',
+#         minimum_profit_target=100,
+#         commission_per_sale=.05,
+#         list_of_brandNames_or_categories_to_exclude = ['LIMITED', 'RIMOWA X'],
+#         ref_link='?refs'
+#     )
+# except:
+#     raise Exception('There was an error while trying to filters rimowa scrapped data')

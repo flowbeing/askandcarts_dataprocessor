@@ -171,12 +171,12 @@ def filter_fnp_ae_scraped_data(
     print(f"num of item before clean up : {len_before_filtering}")
     print(f"num of items removed from fnp_ae's scrapped data: {num_items_removed_from_list}")
 
-try:
-    filter_fnp_ae_scraped_data(
-        file_address='/Users/admin/Downloads/fnp_ae_product_minimized.xlsx',
-        minimum_profit_target=150,
-        commission_per_sale=.0615,
-        ref_link='?refs'
-    )
-except:
-    raise Exception('There was an error while trying to filters fnp_ae scrapped data')
+# try:
+#     filter_fnp_ae_scraped_data(
+#         file_address='/Users/admin/Downloads/fnp_ae_product_minimized.xlsx',
+#         minimum_profit_target=150,
+#         commission_per_sale=.0615,
+#         ref_link='?refs'
+#     )
+# except:
+#     raise Exception('There was an error while trying to filters fnp_ae scrapped data')

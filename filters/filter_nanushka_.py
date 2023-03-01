@@ -211,12 +211,12 @@ def filter_nanushka_scraped_data(
     print(f"num of item before clean up : {len_before_filtering}")
     print(f"num of items removed from nanushka's scrapped data: {num_items_removed_from_list}")
 
-try:
-    filter_nanushka_scraped_data(
-        file_address='/Users/admin/Downloads/nanushka_product.xlsx',
-        minimum_profit_target=100,
-        commission_per_sale=.08,
-        ref_link=''
-    )
-except:
-    raise Exception('There was an error while trying to filters nanushka scrapped data')
+# try:
+#     filter_nanushka_scraped_data(
+#         file_address='/Users/admin/Downloads/nanushka_product.xlsx',
+#         minimum_profit_target=100,
+#         commission_per_sale=.08,
+#         ref_link=''
+#     )
+# except:
+#     raise Exception('There was an error while trying to filters nanushka scrapped data')

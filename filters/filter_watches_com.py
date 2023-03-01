@@ -193,12 +193,12 @@ def filter_watches_com_scraped_data(
     print(f"num of item before clean up : {len_before_filtering}")
     print(f"num of items removed from watches_com's scrapped data: {num_items_removed_from_list}")
 
-try:
-    filter_watches_com_scraped_data(
-        file_address='/Users/admin/Downloads/watches_com_product_minimized.xlsx',
-        minimum_profit_target=150,
-        commission_per_sale=.05,
-        ref_link='?refs'
-    )
-except:
-    raise Exception('There was an error while trying to filters watches_com scrapped data')
+# try:
+#     filter_watches_com_scraped_data(
+#         file_address='/Users/admin/Downloads/watches_com_product_minimized.xlsx',
+#         minimum_profit_target=150,
+#         commission_per_sale=.05,
+#         ref_link='?refs'
+#     )
+# except:
+#     raise Exception('There was an error while trying to filters watches_com scrapped data')

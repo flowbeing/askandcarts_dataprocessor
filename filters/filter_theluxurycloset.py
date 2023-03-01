@@ -277,12 +277,12 @@ def filter_theluxurycloset_scraped_data(
     print(f"num of item before clean up : {len_before_filtering}")
     print(f"num of items removed from theluxurycloset's scrapped data: {num_items_removed_from_list}")
 
-try:
-    filter_theluxurycloset_scraped_data(
-        file_address='/Users/admin/Downloads/theluxurycloset.xlsx',
-        minimum_profit_target=100,
-        commission_per_sale=.0767,
-        ref_link='?refs'
-    )
-except:
-    raise Exception('There was an error while trying to filters theluxurycloset scrapped data')
+# try:
+#     filter_theluxurycloset_scraped_data(
+#         file_address='/Users/admin/Downloads/theluxurycloset.xlsx',
+#         minimum_profit_target=100,
+#         commission_per_sale=.0767,
+#         ref_link='?refs'
+#     )
+# except:
+#     raise Exception('There was an error while trying to filters theluxurycloset scrapped data')

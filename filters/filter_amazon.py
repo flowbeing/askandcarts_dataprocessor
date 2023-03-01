@@ -177,13 +177,13 @@ def filter_amazon_scraped_data(
 
 
 
-try:
-    filter_amazon_scraped_data(
-        file_address='/Users/admin/Downloads/amazon_product_minimized.xlsx',
-        minimum_profit_target=120,
-        commission_per_sale=.05,
-        minimum_ratedBy=3,
-        ref_link=''
-    )
-except:
-    raise Exception('There was an error while trying to filters amazon scrapped data')
+# try:
+#     filter_amazon_scraped_data(
+#         file_address='/Users/admin/Downloads/amazon_product_minimized.xlsx',
+#         minimum_profit_target=120,
+#         commission_per_sale=.05,
+#         minimum_ratedBy=3,
+#         ref_link=''
+#     )
+# except:
+#     raise Exception('There was an error while trying to filters amazon scrapped data')

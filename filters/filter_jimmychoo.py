@@ -182,12 +182,12 @@ def filter_jimmychoo_scraped_data(
     print(f"num of item before clean up : {len_before_filtering}")
     print(f"num of items removed from jimmychoo's scrapped data: {num_items_removed_from_list}")
 
-try:
-    filter_jimmychoo_scraped_data(
-        file_address='/Users/admin/Downloads/jimmychoo_product_corrected.xlsx',
-        minimum_profit_target=150,
-        commission_per_sale=.08,
-        ref_link=''
-    )
-except:
-    raise Exception('There was an error while trying to filters jimmychoo scrapped data')
+# try:
+#     filter_jimmychoo_scraped_data(
+#         file_address='/Users/admin/Downloads/jimmychoo_product_corrected.xlsx',
+#         minimum_profit_target=150,
+#         commission_per_sale=.08,
+#         ref_link=''
+#     )
+# except:
+#     raise Exception('There was an error while trying to filters jimmychoo scrapped data')
