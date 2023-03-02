@@ -18,7 +18,7 @@ def filter_nanushka_scraped_data(
     least_product_price_to_display = (minimum_profit_target / (commission_per_sale * 100)) * 100
 
     # CLEAN UP AND FILTER SECTION
-    nanushka_scrapped_data = pd.read_excel(file_address)
+    nanushka_scrapped_data = pd.read_csv(file_address)
 
     nanushka_scrapped_data_columns = nanushka_scrapped_data.columns
     print(f'nanushka_scrapped_data_columns: {nanushka_scrapped_data_columns}')

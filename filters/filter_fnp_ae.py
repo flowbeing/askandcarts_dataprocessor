@@ -18,7 +18,7 @@ def filter_fnp_ae_scraped_data(
     least_product_price_to_display = (minimum_profit_target / (commission_per_sale * 100)) * 100
 
     # CLEAN UP AND FILTER SECTION
-    fnp_ae_scrapped_data = pd.read_excel(file_address)
+    fnp_ae_scrapped_data = pd.read_csv(file_address)
 
     fnp_ae_scrapped_data_columns = fnp_ae_scrapped_data.columns
     # print(f'fnp_ae_scrapped_data_columns: {fnp_ae_scrapped_data_columns}')

@@ -18,7 +18,7 @@ def filter_fwrd_scraped_data(
     least_product_price_to_display = (minimum_profit_target / (commission_per_sale * 100)) * 100
 
     # CLEAN UP AND FILTER SECTION
-    fwrd_scrapped_data = pd.read_excel(file_address)
+    fwrd_scrapped_data = pd.read_csv(file_address)
 
     fwrd_scrapped_data_columns = fwrd_scrapped_data.columns
     print(f'fwrd_scrapped_data_columns: {fwrd_scrapped_data_columns}')

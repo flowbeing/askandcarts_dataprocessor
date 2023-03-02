@@ -1,3 +1,5 @@
+import time
+
 from filters.filter_amazon import *
 from filters.filter_anthropologie import *
 from filters.filter_ashford import *
@@ -8,6 +10,10 @@ from filters.filter_livwatches import *
 from filters.filter_mujeri import *
 from filters.filter_theluxurycloset import *
 from filters.filter_watches_com import *
+
+import pandas as pd
+
+import traceback
 
 commission_per_site = {
 
@@ -133,9 +139,8 @@ def process_scraped_site(
                         try:
 
                             amazon_variant_filter_function = filter_functions_per_site[amazon_variant]
-                            # print(f'amazon_variant_filter_function: {amazon_variant_filter_function}')
 
-                            amazon_variant_filter_function(
+                            amazon_filter_data = amazon_variant_filter_function(
                                 file_address=scraped_sitemap_csv_file_address,
                                 minimum_profit_target=150,
                                 commission_per_sale=current_products_commission_as_per_amazon_variant,
@@ -143,7 +148,15 @@ def process_scraped_site(
                                 ref_link=''
                             )
 
+                            print(f'amazon_filter_data: {amazon_filter_data}')
+
+
                         except:
+
+                            time.sleep(3)
+                            print()
+                            traceback.print_exc()
+                            time.sleep(3)
 
                             raise Exception(f'There was an error while trying to filter {scraped_sitemap_csv_file_name}')
 
@@ -168,7 +181,7 @@ def process_scraped_site(
                     non_amazon_variant_filter_function = filter_functions_per_site[non_amazon_variant]
                     # print(f'non_amazon_variant_filter_function: {non_amazon_variant_filter_function}')
 
-                    filter_functions_per_site[non_amazon_variant](
+                    non_amazon_variant_filter_function(
                         file_address=scraped_sitemap_csv_file_address,
                         minimum_profit_target=150,
                         commission_per_sale=non_amazon_variants_commission,
@@ -177,6 +190,12 @@ def process_scraped_site(
                     )
 
                 except:
+
+                    time.sleep(3)
+                    print()
+                    traceback.print_exc()
+                    time.sleep(3)
+
 
                     raise Exception(f'There was an error while trying to filter {scraped_sitemap_csv_file_name}')
 

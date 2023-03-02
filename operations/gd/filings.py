@@ -9,6 +9,7 @@ import sys
 import re
 import pickle
 import datetime
+import traceback
 from collections import namedtuple
 from googleapiclient.errors import HttpError
 from google_auth_oauthlib.flow import Flow, InstalledAppFlow
@@ -273,6 +274,7 @@ def detect_files_within_returned_folders(
                                     scraped_sitemap_csv_file_address=csv_file_write_path
                                 )
                             except:
+
                                 filter_error_log_file_path = f"{dffns.all_scraped_data_folder}filter_errors_log.txt"
                                 filter_error_log_file = open(filter_error_log_file_path, 'a')
 
@@ -293,9 +295,13 @@ def detect_files_within_returned_folders(
                                 filter_error_log_file.write(
                                     f'{filter_operation_error_count}, '
                                     f'file_name: {csv_filename}, '
-                                    f'file_id: {csv_file_id}\n\n')
+                                    f'file_id: {csv_file_id}\n')
+
+                                # filter_error_log_file.write(
+                                #     f'{Error}\n\n')
 
                                 filter_error_log_file.close()
+
 
                                 filter_operation_error_count += 1
 

@@ -18,7 +18,7 @@ def filter_rado_scraped_data(
     least_product_price_to_display = (minimum_profit_target / (commission_per_sale * 100)) * 100
 
     # CLEAN UP AND FILTER SECTION
-    rado_scrapped_data = pd.read_excel(file_address)
+    rado_scrapped_data = pd.read_csv(file_address)
 
     rado_scrapped_data_columns = rado_scrapped_data.columns
     print(f'rado_scrapped_data_columns: {rado_scrapped_data_columns}')

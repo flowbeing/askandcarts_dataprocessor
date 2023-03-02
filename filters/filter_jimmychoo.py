@@ -18,7 +18,7 @@ def filter_jimmychoo_scraped_data(
     least_product_price_to_display = (minimum_profit_target / (commission_per_sale * 100)) * 100
 
     # CLEAN UP AND FILTER SECTION
-    jimmychoo_scrapped_data = pd.read_excel(file_address)
+    jimmychoo_scrapped_data = pd.read_csv(file_address)
 
     jimmychoo_scrapped_data_columns = jimmychoo_scrapped_data.columns
     print(f'jimmychoo_scrapped_data_columns: {jimmychoo_scrapped_data_columns}')

@@ -18,7 +18,7 @@ def filter_theluxurycloset_scraped_data(
     least_product_price_to_display = (minimum_profit_target / (commission_per_sale * 100)) * 100
 
     # CLEAN UP AND FILTER SECTION
-    theluxurycloset_scrapped_data = pd.read_excel(file_address)
+    theluxurycloset_scrapped_data = pd.read_csv(file_address)
 
     theluxurycloset_scrapped_data_columns = theluxurycloset_scrapped_data.columns
     print(f'theluxurycloset_scrapped_data_columns: {theluxurycloset_scrapped_data_columns}')

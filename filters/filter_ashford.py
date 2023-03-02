@@ -18,7 +18,7 @@ def filter_ashford_scraped_data(
     least_product_price_to_display = (minimum_profit_target / (commission_per_sale * 100)) * 100
 
     # CLEAN UP AND FILTER SECTION
-    ashford_scrapped_data = pd.read_excel(file_address)
+    ashford_scrapped_data = pd.read_csv(file_address)
 
     ashford_scrapped_data_columns = ashford_scrapped_data.columns
     #print(f'ashford_scrapped_data_columns: {ashford_scrapped_data_columns}')

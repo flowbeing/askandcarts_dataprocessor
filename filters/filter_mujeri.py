@@ -18,7 +18,7 @@ def filter_mujeri_scraped_data(
     least_product_price_to_display = (minimum_profit_target / (commission_per_sale * 100)) * 100
 
     # CLEAN UP AND FILTER SECTION
-    mujeri_scrapped_data = pd.read_excel(file_address)
+    mujeri_scrapped_data = pd.read_csv(file_address)
 
     mujeri_scrapped_data_columns = mujeri_scrapped_data.columns
     print(f'mujeri_scrapped_data_columns: {mujeri_scrapped_data_columns}')

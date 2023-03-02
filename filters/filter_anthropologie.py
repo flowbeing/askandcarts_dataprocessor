@@ -18,7 +18,7 @@ def filter_anthropologie_scraped_data(
     least_product_price_to_display = (minimum_profit_target / (commission_per_sale * 100)) * 100
 
     # CLEAN UP AND FILTER SECTION
-    anthropologie_scrapped_data = pd.read_excel(file_address)
+    anthropologie_scrapped_data = pd.read_csv(file_address)
 
     anthropologie_scrapped_data_columns = anthropologie_scrapped_data.columns
     #print(f'anthropologie_scrapped_data_columns: {anthropologie_scrapped_data_columns}')
