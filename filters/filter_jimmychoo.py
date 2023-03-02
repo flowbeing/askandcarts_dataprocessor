@@ -1,5 +1,11 @@
 import pandas as pd
+
+from settings.commissions import *
+
 from settings.pd_settings import *
+
+from settings.default_folder_and_filename_settings import all_scraped_data_folder
+
 
 '''productLink, image, name, brandname, description, currentprice'''
 
@@ -60,6 +66,8 @@ def filter_jimmychoo_scraped_data(
 
     countLinkNumber = 0
 
+    # print(jimmychoo_scrapped_data.head(100))
+
 
     for productLink, imageLink in zip(product_link, image_link):
 
@@ -68,22 +76,57 @@ def filter_jimmychoo_scraped_data(
         try:
             # defining current price and converting it to float
             product_in_focus_current_price = current_price[countLinkNumber]
+            product_in_focus_currency_symbol = ''
+
+            # obtaining first number in currency value
+            # product_in_focus_current_price = '1,2348AED'
+            index_first_number_in_current_price = 0
+            index_last_number_in_current_price = 0
+
+            for i in product_in_focus_current_price:
+                if i in '0123456789':
+                    first_number_in_currency_value = i
+                    index_first_number_in_current_price = product_in_focus_current_price.index(
+                        first_number_in_currency_value)
+
+                    # print(f'first_number_in_currency_value: {first_number_in_currency_value}')
+                    break
+
+            product_in_focus_current_price_reversed = "".join(reversed(product_in_focus_current_price))
+
+            # print(f'product_in_focus_current_price_reversed: {"".join(product_in_focus_current_price_reversed)}')
+
+            for i in product_in_focus_current_price_reversed:
+                if i in '0123456789':
+                    last_number_in_currency_value = i
+                    index_last_number_in_current_price = (-1 * product_in_focus_current_price_reversed.index(
+                        last_number_in_currency_value)) + -1
+
+                    break
+
+            # print(f'index_first_number_in_currency_value: {index_first_number_in_current_price}')
+            # print(f'index_last_number_in_currency_value: {index_last_number_in_current_price}')
+            if index_last_number_in_current_price == -1:
+
+                product_in_focus_currency_symbol = product_in_focus_current_price[:index_first_number_in_current_price]
+                product_in_focus_current_price = product_in_focus_current_price[index_first_number_in_current_price:]
+
+            elif index_last_number_in_current_price < -1:
+
+                product_in_focus_currency_symbol = product_in_focus_current_price[index_last_number_in_current_price + 1:]
+
+                product_in_focus_current_price = \
+                    product_in_focus_current_price[
+                        index_first_number_in_current_price:index_last_number_in_current_price + 1
+                    ]
+            # print()
 
 
-            product_in_focus_current_price = product_in_focus_current_price.split(' ')
 
-            # if supposed position of product's price currency symbol as defined below is right,
-            # set it as thus or vice versa..
-            supposed_product_in_focus_currency = product_in_focus_current_price[-1]
+            # print(f'product_in_focus_currency_symbol: {product_in_focus_currency_symbol}')
+            # print(f'product_in_focus_current_price: {product_in_focus_current_price}')
 
-            if supposed_product_in_focus_currency not in '0123456789':
-                product_in_focus_currency = product_in_focus_current_price[-1]
-                product_in_focus_current_price = product_in_focus_current_price[0]
-            else:
-                product_in_focus_currency = product_in_focus_current_price[0] # !!
-                product_in_focus_current_price = product_in_focus_current_price[-1]
-
-            current_price[countLinkNumber] = product_in_focus_currency + product_in_focus_current_price
+            current_price[countLinkNumber] = product_in_focus_currency_symbol + product_in_focus_current_price
 
             product_in_focus_current_price = product_in_focus_current_price.replace(',', '')
             product_in_focus_current_price_float = float(product_in_focus_current_price)
@@ -127,8 +170,8 @@ def filter_jimmychoo_scraped_data(
             # defining and setting product's image link
             product_in_focus_image_link = imageLink
             index_of_upload_slash = product_in_focus_image_link.index('upload/')
-            index_of_slash_rowprod = product_in_focus_image_link.index('/ROWPROD')
-            product_in_focus_image_link = imageLink[:index_of_upload_slash + 6] + imageLink[index_of_slash_rowprod:]
+            index_of_fit_slash = product_in_focus_image_link.index('fit/')
+            product_in_focus_image_link = imageLink[:index_of_upload_slash + 6] + imageLink[index_of_fit_slash + 3:]
             image_link[countLinkNumber] = product_in_focus_image_link
             # print(f'product_link[countLinkNumber]: {image_link[countLinkNumber]}')
 
@@ -185,12 +228,12 @@ def filter_jimmychoo_scraped_data(
 
     return cleaned_up_scraped_data_jimmychoo
 
-# try:
-#     filter_jimmychoo_scraped_data(
-#         file_address='/Users/admin/Downloads/jimmychoo_product_corrected.xlsx',
-#         minimum_profit_target=150,
-#         commission_per_sale=.08,
-#         ref_link=''
-#     )
-# except:
-#     raise Exception('There was an error while trying to filters jimmychoo scrapped data')
+try:
+    filter_jimmychoo_scraped_data(
+        file_address=f'{all_scraped_data_folder}thirty_SINGAPORE_BAGS_JIMMY_CHOO_MEN_ONLY.csv',
+        minimum_profit_target=130,
+        commission_per_sale=commission_per_site['JIMMY_CHOO'],
+        ref_link=''
+    )
+except:
+    raise Exception('There was an error while trying to filters jimmychoo scrapped data')

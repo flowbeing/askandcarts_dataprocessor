@@ -1,5 +1,10 @@
 import pandas as pd
+
+from settings.commissions import *
+
 from settings.pd_settings import *
+
+from settings.default_folder_and_filename_settings import all_scraped_data_folder
 
 '''productLink, image, name, brandname, description, currentprice'''
 
@@ -65,8 +70,21 @@ def filter_amazon_scraped_data(
     for productLink, imageLink in zip(product_link, image_link):
 
         try:
+
+            # obtaining first number in currency value
+            product_in_focus_current_price = current_price[countLinkNumber]
+            index_first_number_in_currency_value = 0
+
+            for i in product_in_focus_current_price:
+                if i in '0123456789':
+                    first_number_in_currency_value = i
+                    index_first_number_in_currency_value = product_in_focus_current_price.index(first_number_in_currency_value)
+                    break
+
+
             # converting current price string to float
-            product_in_focus_current_price = current_price[countLinkNumber][1:].replace(',','')  # extract the price without currency symbol !!
+            product_in_focus_current_price = \
+                current_price[countLinkNumber][index_first_number_in_currency_value:].replace(',','')  # extract the price without currency symbol !!
             product_in_focus_current_price = float(product_in_focus_current_price)
 
             # setting product rating
@@ -178,13 +196,16 @@ def filter_amazon_scraped_data(
     return cleaned_up_scraped_data_amazon
 
 
-# try:
-#     filter_amazon_scraped_data(
-#         file_address='/Users/admin/Downloads/amazon_product_minimized.xlsx',
-#         minimum_profit_target=120,
-#         commission_per_sale=.05,
-#         minimum_ratedBy=3,
-#         ref_link=''
-#     )
-# except:
-#     raise Exception('There was an error while trying to filters amazon scrapped data')
+try:
+    print(
+        filter_amazon_scraped_data(
+            file_address=f'{all_scraped_data_folder}fourty_one_UAE_SHOES_AMAZON_MEN.csv',
+            minimum_profit_target=120,
+            commission_per_sale=commission_per_site['AMAZON_SG']['WATCHES'],
+            minimum_ratedBy=3,
+            ref_link=''
+        )
+    )
+
+except:
+    raise Exception('There was an error while trying to filters amazon scrapped data')

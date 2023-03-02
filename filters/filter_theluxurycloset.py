@@ -1,5 +1,9 @@
 import pandas as pd
+
 from settings.pd_settings import *
+
+from settings.default_folder_and_filename_settings import all_scraped_data_folder
+
 
 '''productLink, image, name, brandname, description, currentprice'''
 
@@ -28,7 +32,7 @@ def filter_theluxurycloset_scraped_data(
     # ESSENTIAL DATA -> UNFILTERED
     try:
         theluxurycloset_scrapped_data = theluxurycloset_scrapped_data[
-            ['productLink-href', 'productImage-src', 'productName', 'brandName', 'onlyPriceOriginalPrice', 'curentPriceDiscountPrice',
+            ['productLink-href', 'productImage-src', 'productName', 'brandName', 'curentPriceDiscountPrice',
              'currentPriceBestOffer']
         ] # !!
     except:
@@ -261,7 +265,7 @@ def filter_theluxurycloset_scraped_data(
     # print()
 
     # GROUPING CLEANUP_UP theluxurycloset DATA WITH BRAND NAME AND CURRENTPRICE
-    grouped_data = cleaned_up_scraped_data_theluxurycloset[['productName', 'brandName', 'currentPrice']]. \
+    grouped_data = cleaned_up_scraped_data_theluxurycloset[['Title', 'brandName', 'Price']]. \
         groupby(['brandName'], as_index=False).agg(lambda x: len(x))
     grouped_data = grouped_data.sort_values('productName', ascending=False)
     print('NUMBER OF PRODUCTs PER BRAND AFTER CLEAN UP')
@@ -281,12 +285,12 @@ def filter_theluxurycloset_scraped_data(
     return cleaned_up_scraped_data_theluxurycloset
 
 
-# try:
-#     filter_theluxurycloset_scraped_data(
-#         file_address='/Users/admin/Downloads/theluxurycloset.xlsx',
-#         minimum_profit_target=100,
-#         commission_per_sale=.0767,
-#         ref_link='?refs'
-#     )
-# except:
-#     raise Exception('There was an error while trying to filters theluxurycloset scrapped data')
+try:
+    filter_theluxurycloset_scraped_data(
+        file_address=f'{all_scraped_data_folder}thirty_nine_UAE_HANDBAGS_THE_LUXURY_CLOSET_WOMEN_ONLY.csv',
+        minimum_profit_target=100,
+        commission_per_sale=.0767,
+        ref_link='?refs'
+    )
+except:
+    raise Exception('There was an error while trying to filters theluxurycloset scrapped data')

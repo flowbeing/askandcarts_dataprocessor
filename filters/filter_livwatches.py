@@ -1,6 +1,8 @@
 import pandas as pd
 from settings.pd_settings import *
 
+from settings.default_folder_and_filename_settings import all_scraped_data_folder
+
 '''productLink, image, name, brandname, description, currentprice'''
 
 def filter_livwatches_scraped_data(
@@ -60,6 +62,8 @@ def filter_livwatches_scraped_data(
 
     countLinkNumber = 0
 
+    print(livwatches_scrapped_data.head())
+
 
     for productLink, imageLink in zip(product_link, image_link):
 
@@ -83,7 +87,12 @@ def filter_livwatches_scraped_data(
                 product_in_focus_currency = product_in_focus_current_price[-1]
                 product_in_focus_current_price = product_in_focus_current_price[0][1:] # !! could change if website code changes
 
-            product_in_focus_current_price = product_in_focus_current_price.replace(',', '')
+            if 'EUR' in product_in_focus_currency:
+                product_in_focus_current_price = product_in_focus_current_price.replace(',', '.')
+            else:
+                product_in_focus_current_price = product_in_focus_current_price.replace(',', '')
+
+
             product_in_focus_current_price_float = float(product_in_focus_current_price)
 
             # defining product's name
@@ -131,6 +140,8 @@ def filter_livwatches_scraped_data(
             # product_in_focus_product_name = product_in_focus_product_name.replace('\n', ' ')  # !!
             # product_name[countLinkNumber] = product_in_focus_product_name
 
+            print(f'product_in_focus_currency: {product_in_focus_currency}')
+
             # define currency symbol and current price
             if (product_in_focus_currency == 'SGD'):
                 product_in_focus_currency = 'S$'
@@ -138,15 +149,17 @@ def filter_livwatches_scraped_data(
                 product_in_focus_currency = 'AED'
             elif (product_in_focus_currency == 'USD'):
                 product_in_focus_currency = '$ '
-            # elif (product_in_focus_currency == 'GBP'):
-            #     product_in_focus_currency = '£'
+            elif (product_in_focus_currency == 'GBP'):
+                product_in_focus_currency = '£'
+            elif (product_in_focus_currency == 'EUR'):
+                product_in_focus_currency = '€'
             else:
                 raise Exception("There was an error while parsing product's currency")
 
-            current_price[countLinkNumber] = product_in_focus_currency + product_in_focus_current_price
+            # current_price[countLinkNumber] = product_in_focus_currency + f'{product_in_focus_current_price:.2f}'
 
             # defining and setting current product's price
-            product_in_focus_price = product_in_focus_currency + f'{product_in_focus_current_price_float:.2f}'  # !!
+            product_in_focus_price = product_in_focus_currency + f'{product_in_focus_current_price_float:,.2f}'  # !!
             current_price[countLinkNumber] = product_in_focus_price
 
         countLinkNumber += 1
@@ -198,12 +211,12 @@ def filter_livwatches_scraped_data(
 
     return cleaned_up_scraped_data_livwatches
 
-# try:
-#     filter_livwatches_scraped_data(
-#         file_address='/Users/admin/Downloads/livwatches_product_corrected.xlsx',
-#         minimum_profit_target=150,
-#         commission_per_sale=.2,
-#         ref_link=''
-#     )
-# except:
-#     raise Exception('There was an error while trying to filters livwatches scrapped data')
+try:
+    filter_livwatches_scraped_data(
+        file_address=f'{all_scraped_data_folder}two_SINGAPORE_WATCHES_LIVWATCHES_REBEL_AR_SEBRING_MEN_ONLY.csv',
+        minimum_profit_target=100,
+        commission_per_sale=.2,
+        ref_link=''
+    )
+except:
+    raise Exception('There was an error while trying to filters livwatches scrapped data')
