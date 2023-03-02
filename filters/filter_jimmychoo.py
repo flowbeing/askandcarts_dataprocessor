@@ -228,12 +228,12 @@ def filter_jimmychoo_scraped_data(
 
     return cleaned_up_scraped_data_jimmychoo
 
-try:
-    filter_jimmychoo_scraped_data(
-        file_address=f'{all_scraped_data_folder}thirty_SINGAPORE_BAGS_JIMMY_CHOO_MEN_ONLY.csv',
-        minimum_profit_target=130,
-        commission_per_sale=commission_per_site['JIMMY_CHOO'],
-        ref_link=''
-    )
-except:
-    raise Exception('There was an error while trying to filters jimmychoo scrapped data')
+# try:
+#     filter_jimmychoo_scraped_data(
+#         file_address=f'{all_scraped_data_folder}thirty_SINGAPORE_BAGS_JIMMY_CHOO_MEN_ONLY.csv',
+#         minimum_profit_target=130,
+#         commission_per_sale=commission_per_site['JIMMY_CHOO'],
+#         ref_link=''
+#     )
+# except:
+#     raise Exception('There was an error while trying to filters jimmychoo scrapped data')

@@ -196,16 +196,16 @@ def filter_amazon_scraped_data(
     return cleaned_up_scraped_data_amazon
 
 
-try:
-    print(
-        filter_amazon_scraped_data(
-            file_address=f'{all_scraped_data_folder}fourty_one_UAE_SHOES_AMAZON_MEN.csv',
-            minimum_profit_target=120,
-            commission_per_sale=commission_per_site['AMAZON_SG']['WATCHES'],
-            minimum_ratedBy=3,
-            ref_link=''
-        )
-    )
-
-except:
-    raise Exception('There was an error while trying to filters amazon scrapped data')
+# try:
+#     print(
+#         filter_amazon_scraped_data(
+#             file_address=f'{all_scraped_data_folder}fourty_one_UAE_SHOES_AMAZON_MEN.csv',
+#             minimum_profit_target=120,
+#             commission_per_sale=commission_per_site['AMAZON_SG']['WATCHES'],
+#             minimum_ratedBy=3,
+#             ref_link=''
+#         )
+#     )
+#
+# except:
+#     raise Exception('There was an error while trying to filters amazon scrapped data')

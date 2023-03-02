@@ -285,12 +285,12 @@ def filter_theluxurycloset_scraped_data(
     return cleaned_up_scraped_data_theluxurycloset
 
 
-try:
-    filter_theluxurycloset_scraped_data(
-        file_address=f'{all_scraped_data_folder}thirty_nine_UAE_HANDBAGS_THE_LUXURY_CLOSET_WOMEN_ONLY.csv',
-        minimum_profit_target=100,
-        commission_per_sale=.0767,
-        ref_link='?refs'
-    )
-except:
-    raise Exception('There was an error while trying to filters theluxurycloset scrapped data')
+# try:
+#     filter_theluxurycloset_scraped_data(
+#         file_address=f'{all_scraped_data_folder}thirty_nine_UAE_HANDBAGS_THE_LUXURY_CLOSET_WOMEN_ONLY.csv',
+#         minimum_profit_target=100,
+#         commission_per_sale=.0767,
+#         ref_link='?refs'
+#     )
+# except:
+#     raise Exception('There was an error while trying to filters theluxurycloset scrapped data')

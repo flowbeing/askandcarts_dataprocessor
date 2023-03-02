@@ -211,12 +211,12 @@ def filter_livwatches_scraped_data(
 
     return cleaned_up_scraped_data_livwatches
 
-try:
-    filter_livwatches_scraped_data(
-        file_address=f'{all_scraped_data_folder}two_SINGAPORE_WATCHES_LIVWATCHES_REBEL_AR_SEBRING_MEN_ONLY.csv',
-        minimum_profit_target=100,
-        commission_per_sale=.2,
-        ref_link=''
-    )
-except:
-    raise Exception('There was an error while trying to filters livwatches scrapped data')
+# try:
+#     filter_livwatches_scraped_data(
+#         file_address=f'{all_scraped_data_folder}two_SINGAPORE_WATCHES_LIVWATCHES_REBEL_AR_SEBRING_MEN_ONLY.csv',
+#         minimum_profit_target=100,
+#         commission_per_sale=.2,
+#         ref_link=''
+#     )
+# except:
+#     raise Exception('There was an error while trying to filters livwatches scrapped data')
