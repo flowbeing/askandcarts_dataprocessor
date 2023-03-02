@@ -174,7 +174,7 @@ def filter_amazon_scraped_data(
     print(f"num of item before clean up : {len_before_filtering}")
     print(f"num of items removed from amazon's scrapped data: {num_items_removed_from_list}")
 
-
+    return cleaned_up_scraped_data_amazon
 
 
 # try:

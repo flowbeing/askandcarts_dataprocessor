@@ -192,6 +192,8 @@ def filter_rado_scraped_data(
     print(f"num of item before clean up : {len_before_filtering}")
     print(f"num of items removed from rado's scrapped data: {num_items_removed_from_list}")
 
+    return cleaned_up_scraped_data_rado
+
 # try:
 #     filter_rado_scraped_data(
 #         file_address='/Users/admin/Downloads/rado_product_minimized.xlsx',

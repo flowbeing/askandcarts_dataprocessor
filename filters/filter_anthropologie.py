@@ -132,6 +132,8 @@ def filter_anthropologie_scraped_data(
     print(f"num of item before clean up : {len_before_filtering}")
     print(f"num of items removed from anthropologie's scrapped data: {num_items_removed_from_list}")
 
+    return cleaned_up_scraped_data_anthropologie
+
 # try:
 #     filter_anthropologie_scraped_data(
 #         file_address='/Users/admin/Downloads/anthropologie_product_corrected.xlsx',

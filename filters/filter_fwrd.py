@@ -188,6 +188,8 @@ def filter_fwrd_scraped_data(
     print(f"num of item before clean up : {len_before_filtering}")
     print(f"num of items removed from fwrd's scrapped data: {num_items_removed_from_list}")
 
+    return cleaned_up_scraped_data_fwrd
+
 # try:
 #     filter_fwrd_scraped_data(
 #         file_address='/Users/admin/Downloads/fwrd_product_corrected.xlsx',

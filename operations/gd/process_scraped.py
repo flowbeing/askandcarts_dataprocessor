@@ -64,6 +64,8 @@ commission_per_site = {
      'LIVWATCHES': 0.2,
      'MUJERI': 0.05,
      'THE_LUXURY_CLOSET': 0.0767,
+     # making up for the luxury closet's naming error
+     'THE_LUXURY_STORE': 0.0767,
      'WATCHES_COM': 0.1
     }
 
@@ -79,6 +81,8 @@ filter_functions_per_site = {
     'LIVWATCHES': filter_livwatches_scraped_data,
     'MUJERI': filter_mujeri_scraped_data,
     'THE_LUXURY_CLOSET': filter_theluxurycloset_scraped_data,
+    # making up for the luxury closet's naming error
+    'THE_LUXURY_STORE': filter_theluxurycloset_scraped_data,
     'WATCHES_COM': filter_watches_com_scraped_data
 }
 
@@ -129,6 +133,7 @@ def process_scraped_site(
                         try:
 
                             amazon_variant_filter_function = filter_functions_per_site[amazon_variant]
+                            # print(f'amazon_variant_filter_function: {amazon_variant_filter_function}')
 
                             amazon_variant_filter_function(
                                 file_address=scraped_sitemap_csv_file_address,
@@ -161,8 +166,9 @@ def process_scraped_site(
                 try:
 
                     non_amazon_variant_filter_function = filter_functions_per_site[non_amazon_variant]
+                    # print(f'non_amazon_variant_filter_function: {non_amazon_variant_filter_function}')
 
-                    non_amazon_variant_filter_function(
+                    filter_functions_per_site[non_amazon_variant](
                         file_address=scraped_sitemap_csv_file_address,
                         minimum_profit_target=150,
                         commission_per_sale=non_amazon_variants_commission,

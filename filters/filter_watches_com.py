@@ -193,6 +193,8 @@ def filter_watches_com_scraped_data(
     print(f"num of item before clean up : {len_before_filtering}")
     print(f"num of items removed from watches_com's scrapped data: {num_items_removed_from_list}")
 
+    return cleaned_up_scraped_data_watches_com
+
 # try:
 #     filter_watches_com_scraped_data(
 #         file_address='/Users/admin/Downloads/watches_com_product_minimized.xlsx',
