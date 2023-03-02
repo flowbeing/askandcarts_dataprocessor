@@ -74,15 +74,15 @@ most_recent_all_sitemaps_file_address = obtain_most_recent_all_sitemaps_filename
 )
 
 # CONVERT THE MOST RECENT ALL SITEMAPS JSON TO DICTIONARY
-try:
-    most_recent_all_sitemap_as_dict = convert_sitemap_json_to_dictionary(
-        json_file_address = most_recent_all_sitemaps_file_address
-    )
-except:
-    most_recent_all_sitemap_as_dict = convert_sitemap_json_to_dictionary(
-        json_file_address=most_recent_all_sitemaps_file_address,
-        is_join_content=True
-    )
+# try:
+#     most_recent_all_sitemap_as_dict = convert_sitemap_json_to_dictionary(
+#         json_file_address = most_recent_all_sitemaps_file_address
+#     )
+# except:
+#     most_recent_all_sitemap_as_dict = convert_sitemap_json_to_dictionary(
+#         json_file_address=most_recent_all_sitemaps_file_address,
+#         is_join_content=True
+#     )
 
 # ORIGIN SITEMAP(S) TO DICTIONARY
 try:
@@ -96,8 +96,8 @@ except:
     )
 
 
-print(most_recent_all_sitemap_as_dict)
-print()
-print(f'most_recent_all_sitemaps_file_address: {most_recent_all_sitemaps_file_address}')
-print()
-print(f'length of most_recent_all_sitemaps: {len(most_recent_all_sitemap_as_dict)}')
+# print(most_recent_all_sitemap_as_dict)
+# print()
+# print(f'most_recent_all_sitemaps_file_address: {most_recent_all_sitemaps_file_address}')
+# print()
+# print(f'length of most_recent_all_sitemaps: {len(most_recent_all_sitemap_as_dict)}')

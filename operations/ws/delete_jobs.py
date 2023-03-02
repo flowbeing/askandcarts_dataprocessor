@@ -134,5 +134,5 @@ print(all_scraping_jobs_dict)
 # DELETE SCRAPING JOBS
 delete_scraping_job_batch(
     all_scraping_jobs_dict,
-    # list_of_countries_category_or_gender_to_exclude = ['SINGAPORE']
+    # list_of_countries_category_or_gender_to_exclude = ['FWRD']
 )

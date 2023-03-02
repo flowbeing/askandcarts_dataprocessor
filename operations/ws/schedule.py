@@ -158,7 +158,7 @@ def enable_sitemap_schedule_batch(
 
                             enable_sitemap_schedule_single(
                                 sitemap_id=sitemap_id,
-                                cron_hour='*/6'
+                                cron_day='*/1'
                             )
 
                             time.sleep(5)
@@ -173,7 +173,7 @@ def enable_sitemap_schedule_batch(
 
             enable_sitemap_schedule_single(
                 sitemap_id=sitemap_id,
-                cron_hour='*/6'
+                cron_day='*/1'
             )
 
             time.sleep(5)
@@ -275,12 +275,12 @@ def disable_sitemap_schedule_batch(
 
 # enable_sitemap_schedule_batch(
 #     dict_containing_all_sitemaps_id = clsstd.origin_sitemaps_as_dict,
-#     list_of_countries_category_or_gender_to_exclude = ['HUNGARY']
-#     # list_of_items_to_only_service = ['HUNGARY']
+#     # list_of_countries_category_or_gender_to_exclude = ['HUNGARY']
+#     list_of_items_to_only_service = ['FWRD']
 # )
 
 disable_sitemap_schedule_batch(
     dict_containing_all_sitemaps_id = clsstd.origin_sitemaps_as_dict,
-    list_of_countries_category_or_gender_to_exclude = ['HUNGARY']
-    # list_of_items_to_only_service = ['HUNGARY']
+    # list_of_countries_category_or_gender_to_exclude = ['HUNGARY']
+    list_of_items_to_only_service = ['FWRD']
 )
