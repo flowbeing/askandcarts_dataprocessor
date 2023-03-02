@@ -1,4 +1,5 @@
 import pandas as pd
+from settings.pd_settings import *
 
 '''productLink, image, name, brandname, description, currentprice'''
 
