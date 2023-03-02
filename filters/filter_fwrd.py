@@ -166,15 +166,15 @@ def filter_fwrd_scraped_data(
 
     print(cleaned_up_scraped_data_fwrd)
 
-    cleaned_up_scraped_data_fwrd['currentPrice'] = [float(i.split(" ")[-1][1:].replace(",", "")) for i in
-                                           cleaned_up_scraped_data_fwrd['currentPrice']]
+    cleaned_up_scraped_data_fwrd['Price'] = [float(i.split(" ")[-1][1:].replace(",", "")) for i in
+                                           cleaned_up_scraped_data_fwrd['Price']]
 
     print()
 
     # GROUPING CLEANUP_UP FWRD DATA WITH BRAND NAME AND CURRENTPRICE
-    grouped_data = cleaned_up_scraped_data_fwrd[['productName', 'brandName', 'currentPrice']]. \
+    grouped_data = cleaned_up_scraped_data_fwrd[['Title', 'brandName', 'Price']]. \
         groupby(['brandName'], as_index=False).agg(lambda x: len(x))
-    grouped_data = grouped_data.sort_values('productName', ascending=False)
+    grouped_data = grouped_data.sort_values('Title', ascending=False)
     print('NUMBER OF PRODUCTs PER BRAND AFTER CLEAN UP')
     print(grouped_data)
 

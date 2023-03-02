@@ -114,7 +114,7 @@ def filter_anthropologie_scraped_data(
         ['productLink', 'Image Src', 'Title', 'Price']
 
     anthropologie_scrapped_data['productLink'] = product_link
-    anthropologie_scrapped_data['Image Sr'] = image_link
+    anthropologie_scrapped_data['Image Src'] = image_link
     anthropologie_scrapped_data['Title'] = product_name
     anthropologie_scrapped_data['Price'] = current_price
 

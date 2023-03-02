@@ -295,7 +295,7 @@ def detect_files_within_returned_folders(
                                 filter_error_log_file.write(
                                     f'{filter_operation_error_count}, '
                                     f'file_name: {csv_filename}, '
-                                    f'file_id: {csv_file_id}\n')
+                                    f'file_id: {csv_file_id}\n\n')
 
                                 # filter_error_log_file.write(
                                 #     f'{Error}\n\n')

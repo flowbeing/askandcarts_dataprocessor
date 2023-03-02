@@ -92,6 +92,7 @@ filter_functions_per_site = {
     'WATCHES_COM': filter_watches_com_scraped_data
 }
 
+# future -> rimowa, rado, nanushka
 
 def process_scraped_site(
         scraped_sitemap_csv_file_name,
@@ -181,11 +182,11 @@ def process_scraped_site(
                     non_amazon_variant_filter_function = filter_functions_per_site[non_amazon_variant]
                     # print(f'non_amazon_variant_filter_function: {non_amazon_variant_filter_function}')
 
+
                     non_amazon_variant_filter_function(
                         file_address=scraped_sitemap_csv_file_address,
                         minimum_profit_target=150,
                         commission_per_sale=non_amazon_variants_commission,
-                        minimum_ratedBy=3,
                         ref_link=''
                     )
 
