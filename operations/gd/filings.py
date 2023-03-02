@@ -339,6 +339,14 @@ def find_duplicates_among_return_folders_or_files_and_delete_unnecesary_files(
         is_focus_on_folders=False,
         is_delete_non_folder = False
 ):
+    # ensure that the list being focused on is a list of folders or a list of CSVs
+    if is_focus_on_folders == False and is_focus_on_scraped_CSVs == False:
+        raise Exception(
+            'Please set one of the following to True\n'
+            'a. is_focus_on_scraped_CSVs\n'
+            'b. is_focus_on_folders'
+        )
+
     # ensure that only filetype is being focused on
     if is_focus_on_folders == True and is_focus_on_scraped_CSVs == True:
         raise Exception(""
@@ -365,13 +373,13 @@ def find_duplicates_among_return_folders_or_files_and_delete_unnecesary_files(
     list_of_filenames = [file['name'][23:] for file in returned_list_of_folders_or_files]
     file_count_list = [list_of_filenames.count(file) for file in list_of_filenames]
 
-    list_of_duplicates_scraped_csv = []
+    list_of_duplicate_csv_files_within_current_folder = []
     dict_of_duplicated_sitemap_folders = {
 
     }
 
     file_index = 0
-    most_recent_files_creation_date = datetime
+    most_recent_duplicates_creation_date = datetime
 
     for file in zip(list_of_filenames, file_count_list):
 
@@ -385,7 +393,7 @@ def find_duplicates_among_return_folders_or_files_and_delete_unnecesary_files(
         if is_focus_on_scraped_CSVs == True and is_delete_non_csv == True and current_file_or_folder_type != 'text/csv':
             try:
                 delete_non_csv_file = service.files().delete(fileId=current_file_or_folder_id).execute()
-                print(f'non csv file deletion: {delete_non_csv_file}')
+                print(f'Delete Non CSV Files Report: {delete_non_csv_file}')
             except:
                 raise Exception(f'There was an error while trying to delete a non csv:\n'
                                 f'{current_file_folder_name}')
@@ -394,11 +402,12 @@ def find_duplicates_among_return_folders_or_files_and_delete_unnecesary_files(
         if is_focus_on_folders == True and is_delete_non_folder == True and \
                 current_file_or_folder_type != 'application/vnd.google-apps.folder':
             try:
-                delete_non_csv_file = service.files().delete(fileId=current_file_or_folder_id).execute()
-                print(f'non csv file deletion: {delete_non_csv_file}')
+                delete_non_folder_files = service.files().delete(fileId=current_file_or_folder_id).execute()
+                print(f'Delete Non Folder Files Report: {delete_non_folder_files}')
             except:
                 raise Exception(f'There was an error while trying to delete a non csv:\n'
                                 f'{current_file_folder_name}')
+
 
         # IF THE CURRENT FILE IS A CSV FILE, ASSUME THAT IT IS A CSV THAT'S WITHIN A (SITEMAP) FOLDER AND GET:
         # A. DUPLICATES (INFO) OF THAT CSV FILE AND
@@ -414,16 +423,16 @@ def find_duplicates_among_return_folders_or_files_and_delete_unnecesary_files(
             )
 
             # determining the creation time most recent scraped data within a sitemap's folder
-            if most_recent_files_creation_date == datetime:
-                most_recent_files_creation_date = current_file_or_folder_creation_date
+            if most_recent_duplicates_creation_date == datetime:
+                most_recent_duplicates_creation_date = current_file_or_folder_creation_date
                 # print(f'most_recent_files_creation_date_test: {most_recent_files_creation_date}')
-            elif current_file_or_folder_creation_date > most_recent_files_creation_date:
-                most_recent_files_creation_date = current_file_or_folder_creation_date
+            elif current_file_or_folder_creation_date > most_recent_duplicates_creation_date:
+                most_recent_duplicates_creation_date = current_file_or_folder_creation_date
                 # print(f'most_recent_files_creation_date_magnitude: {most_recent_files_creation_date}')
 
 
             if current_file_or_folder_count > 1:
-                list_of_duplicates_scraped_csv.append({
+                list_of_duplicate_csv_files_within_current_folder.append({
                     'file_id': current_file_or_folder_id,
                     'file_name': current_file_folder_name,
                     'file_count': current_file_or_folder_count,
@@ -431,11 +440,11 @@ def find_duplicates_among_return_folders_or_files_and_delete_unnecesary_files(
                     'file_type': current_file_or_folder_type
                 })
 
+
         # IF THE CURRENT FILE IS FOLDER, ASSUME THAT IT IS FOLDER THAT'S WITHIN 'WEB SCRAPER' FOLDER AND GET:
         # A. DUPLICATES (INFO) OF THAT FOLDER AND
         # B. THE CREATION TIME OF THE MOST RECENT DUPLICATE OF THAT CSV FILE
-        # ** MAKE SURE THEN APPEND A & B ABOVE TO dict_of_duplicated_sitemap_folders APPROPRIATELY
-
+        # ** MAKE SURE THEN APPEND A & B ABOVE TO 'dict_of_duplicated_sitemap_folders' APPROPRIATELY
         elif current_file_or_folder_type == 'application/vnd.google-apps.folder':
 
             file_creation_date_str = returned_list_of_folders_or_files[file_index]['createdTime']
@@ -460,22 +469,22 @@ def find_duplicates_among_return_folders_or_files_and_delete_unnecesary_files(
                 # defining a list that'll contain current folder's duplicates to the dict_of_duplicate_sitemap_folders
                 # if it's not already been defined
                 dict_of_duplicated_sitemap_folders.get(
-                    current_file_folder_name['list_of_duplicates_of_current_sitemap_folder'], []
+                    current_file_folder_name['duplicates_of_this_folder'], []
                 )
 
                 # defining a variable that'll hold the creation time of the most recent instance of a folder
                 # that's been duplicated, if it's not already been defined
                 dict_of_duplicated_sitemap_folders.get(
-                    current_file_folder_name['most_recent_instance_of_this_files_creation_date'],
+                    current_file_folder_name['most_recent_duplicates_creation_date'],
                     datetime
                 )
 
 
                 list_of_duplicates_of_current_folder = \
-                    current_file_folder_name['list_of_duplicates_of_current_sitemap_folder']
+                    current_file_folder_name['duplicates_of_this_folder']
 
                 current_folders_most_recent_instance_creation_date = \
-                    current_file_folder_name['most_recent_instance_of_this_files_creation_date']
+                    current_file_folder_name['most_recent_duplicates_creation_date']
 
                 # determining the creation time of the most recent instance of the current duplicated folder
                 if current_folders_most_recent_instance_creation_date == datetime:
@@ -510,7 +519,19 @@ def find_duplicates_among_return_folders_or_files_and_delete_unnecesary_files(
 
     # print(f'most_recent_files_creation_date_test: {most_recent_files_creation_date}')
 
-    return [list_of_duplicates_scraped_csv, most_recent_files_creation_date]
+    duplicates = None
+
+    # if assumably, files being focused on are scraped csv files, return a list that contains all duplicates of the
+    # scraped csv file that's within each returned (sitemap) folder
+    if is_focus_on_scraped_CSVs == True:
+        duplicates = [list_of_duplicate_csv_files_within_current_folder, most_recent_duplicates_creation_date]
+
+    # else if assumably, files being focused on are (sitemap) folders, return a dictionary that contains each (sitemap)
+    # folder, it's duplicates' info and the creation time of its most recent duplicate
+    elif is_focus_on_folders == True:
+        duplicates = dict_of_duplicated_sitemap_folders
+
+    return duplicates
 
 
 def delete_duplicate_folders_or_csv_files_in_specified_dictionary_of_folders_and_their_returned_folders_or_csv_files(
@@ -527,20 +548,38 @@ def delete_duplicate_folders_or_csv_files_in_specified_dictionary_of_folders_and
         list_of_files_within_current_folder = folders_and_their_files_list_dict[folder]
         current_folders_name = folder
 
-        # if the the number of files within th current folder in focus in the dictionary is not one,
+        # if the number of files within th current folder in focus in the dictionary is not one,
         # find duplicates and the most recent file or folder's creation date
         if len(list_of_files_within_current_folder) > 1:
 
-            duplicates_within_current_folder = find_duplicates_among_return_folders_or_files_and_delete_unnecesary_files(
+            duplicates_within_current_folder_and_most_recent_duplicates_creation_time = \
+                find_duplicates_among_return_folders_or_files_and_delete_unnecesary_files(
                 source_folders_name=current_folders_name,
                 returned_list_of_folders_or_files=list_of_files_within_current_folder
             )
 
-            if len(duplicates_within_current_folder) != 0:
+            # i.e if scraped csv files was focused on, populate the 'duplicates_within_folders' dictionary with
+            # (sitemap) folder's file name, info of duplicated (CSV) files within the (sitemap) folder, and the creation
+            # time of the most recent duplicate (CSV)
+            if type(duplicates_within_current_folder_and_most_recent_duplicates_creation_time) == list:
+                if len(duplicates_within_current_folder_and_most_recent_duplicates_creation_time) != 0:
 
-                duplicates_within_folders[current_folders_name] = {}
-                duplicates_within_folders[current_folders_name]['duplicates'] = duplicates_within_current_folder[0]
-                duplicates_within_folders[current_folders_name]['most_recent_files_creation_date'] = duplicates_within_current_folder[1]
+                    duplicates_within_folders[current_folders_name] = {}
+
+                    duplicates_within_folders[current_folders_name]['list_of_duplicate_csv_files_within_current_folder'] = \
+                        duplicates_within_current_folder_and_most_recent_duplicates_creation_time[0]
+
+                    duplicates_within_folders[current_folders_name]['most_recent_duplicates_creation_date'] = \
+                    duplicates_within_current_folder_and_most_recent_duplicates_creation_time[1]
+
+            # i.e if 'web scraper' folder was focused on, and it's not empty, 'duplicates_within_folders' equals
+            # dictionary that contains folders have been duplicated that's within 'web scraper' folder,
+            # duplicate folders info and the creation time of the most recent duplicate (folder)
+            elif type(duplicates_within_current_folder_and_most_recent_duplicates_creation_time) == dict:
+                if len(duplicates_within_current_folder_and_most_recent_duplicates_creation_time) != 0:
+
+                    duplicates_within_folders[current_folders_name] = \
+                        duplicates_within_current_folder_and_most_recent_duplicates_creation_time
 
             print()
             print()
@@ -551,13 +590,13 @@ def delete_duplicate_folders_or_csv_files_in_specified_dictionary_of_folders_and
 
     for folder in duplicates_within_folders:
 
-        duplicates_within_current_folder = duplicates_within_folders[folder]['duplicates']
+        duplicates_within_current_folder_and_most_recent_duplicates_creation_time = duplicates_within_folders[folder]['duplicates']
         most_recent_files_within_current_folders_creation_date = duplicates_within_folders[folder]['most_recent_files_creation_date']
 
         print()
         print(f'DUPLICATES WITHIN {folder}')
         print('------------------------------')
-        for duplicate in duplicates_within_current_folder:
+        for duplicate in duplicates_within_current_folder_and_most_recent_duplicates_creation_time:
             print(f'duplicate -> {duplicate}')
 
             duplicate_files_creation_date = duplicate['file_creation_date']
@@ -567,7 +606,7 @@ def delete_duplicate_folders_or_csv_files_in_specified_dictionary_of_folders_and
             # ensure that only duplicate csv files within sitemap folders can be deleted..
             if duplicate_files_file_type == 'text/csv':
                 # if duplicate_files_creation_date != most_recent_files_within_current_folders_creation_date:
-                if duplicate != duplicates_within_current_folder[0]:
+                if duplicate != duplicates_within_current_folder_and_most_recent_duplicates_creation_time[0]:
                     print('This file is not the most_recent_file')
                     # delete_duplicate = service.files().delete(fileId=duplicate_files_file_id).execute()
 
