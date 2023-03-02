@@ -23,6 +23,7 @@ commission_per_site = {
          'PERFUME': .07,
          'NECKLACE': .08,
          'RING': .08,
+         'WATCHES': .08,
      },
 
      'AMAZON_SG': {
@@ -37,6 +38,7 @@ commission_per_site = {
          'PERFUME': .055,
          'NECKLACE': .12,
          'RING': .12,
+         'WATCHES': .12,
      },
 
      'AMAZON_US': {
@@ -51,6 +53,7 @@ commission_per_site = {
          'PERFUME': .01,
          'NECKLACE': .04,
          'RING': .04,
+         'WATCHES': .04,
      },
 
      'ANTHROPOLOGIE': .06,
@@ -60,7 +63,7 @@ commission_per_site = {
      'JIMMY_CHOO': 0.08,
      'LIVWATCHES': 0.2,
      'MUJERI': 0.05,
-     'THELUXURYCLOSET': 0.0767,
+     'THE_LUXURY_CLOSET': 0.0767,
      'WATCHES_COM': 0.1
     }
 
@@ -75,7 +78,7 @@ filter_functions_per_site = {
     'JIMMY_CHOO': filter_jimmychoo_scraped_data,
     'LIVWATCHES': filter_livwatches_scraped_data,
     'MUJERI': filter_mujeri_scraped_data,
-    'THELUXURYCLOSET': filter_theluxurycloset_scraped_data,
+    'THE_LUXURY_CLOSET': filter_theluxurycloset_scraped_data,
     'WATCHES_COM': filter_watches_com_scraped_data
 }
 
@@ -86,14 +89,34 @@ def process_scraped_site(
 ):
 
     list_of_amazon_variants = list(commission_per_site.keys())[0:3]
+    list_of_amazon_countries_syntax = ['_UAE_', '_SINGAPORE_', ['_USA_', '_US_']]
     list_of_non_amazon_variants = list(commission_per_site.keys())[3:]
 
+    print()
     # Get the commission for the current product per its relevant amazon variant
     if 'AMAZON' in scraped_sitemap_csv_file_name:
 
         for amazon_variant in list_of_amazon_variants:
 
-            if amazon_variant in scraped_sitemap_csv_file_name:
+            index_of_current_amazon_variant = list_of_amazon_variants.index(amazon_variant)
+
+            amazon_variants_country_syntax = list_of_amazon_countries_syntax[index_of_current_amazon_variant]
+            amazon_variants_country_syntax_one = ''
+            amazon_variants_country_syntax_two = ''
+
+            # making up for '_US_' '_USA_' file naming mismatch
+            if type(amazon_variants_country_syntax) == list:
+                amazon_variants_country_syntax_one = amazon_variants_country_syntax[0]
+                amazon_variants_country_syntax_two = amazon_variants_country_syntax[1]
+            else:
+                amazon_variants_country_syntax_one = amazon_variants_country_syntax
+                amazon_variants_country_syntax_two = amazon_variants_country_syntax
+
+            print(f'{amazon_variants_country_syntax} {scraped_sitemap_csv_file_name}')
+
+
+            if amazon_variants_country_syntax_one in scraped_sitemap_csv_file_name or \
+                    amazon_variants_country_syntax_two in scraped_sitemap_csv_file_name:
 
                 amazon_variants_product_categories = commission_per_site[amazon_variant]
 

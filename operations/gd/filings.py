@@ -193,6 +193,9 @@ def detect_files_within_returned_folders(
     print('---------------------------------------------------------------------------------')
     files_within_each_folder = {}
 
+    filter_operation_error_count = 1
+    csv_file_count = 1
+
     for folder_info in returned_folder:
         current_folder_filetype = folder_info['mimeType']
         if current_folder_filetype == 'application/vnd.google-apps.folder':
@@ -204,6 +207,7 @@ def detect_files_within_returned_folders(
             print()
             print(f'FILES WITHIN {current_folder_name}')
             print('-------------------------------')
+
             files_within_current_sitemap_folder = search_file(
                 service,
                 current_folder_id,
@@ -221,6 +225,9 @@ def detect_files_within_returned_folders(
                         supposed_csv_files_filetype = file_info['mimeType']
 
                         if supposed_csv_files_filetype == 'text/csv':
+
+                            print(f'csv_file_count: {csv_file_count}')
+                            csv_file_count += 1
 
                             csv_file_id = file_info['id']
                             csv_filename = file_info['name'][23:]
@@ -259,11 +266,40 @@ def detect_files_within_returned_folders(
                             #     reader = csv.reader(codecs.EncodedFile(infile, 'utf-8', 'utf-8-sig'), delimiter=";")
                             #     print(reader)
 
-                            # perform filter operation on current sitemap's (scraped site's) csv file
-                            process_scraped_site(
-                                scraped_sitemap_csv_file_name=csv_filename,
-                                scraped_sitemap_csv_file_address=csv_file_write_path
-                            )
+                            # PERFORM FILTER OPERATION ON CURRENT SITEMAP'S (SCRAPED SITE'S) CSV FILE
+                            try:
+                                process_scraped_site(
+                                    scraped_sitemap_csv_file_name=csv_filename,
+                                    scraped_sitemap_csv_file_address=csv_file_write_path
+                                )
+                            except:
+                                filter_error_log_file_path = f"{dffns.all_scraped_data_folder}filter_errors_log.txt"
+                                filter_error_log_file = open(filter_error_log_file_path, 'a')
+
+                                # clear filter error log file if errors are being re-written
+                                if filter_operation_error_count == 1:
+                                    with open(filter_error_log_file_path, 'w') as filter_error_log_file_:
+
+                                        filter_error_log_file_.truncate(0)
+
+                                        filter_error_log_file_.write(
+                                            f'FILTER ERRORS\n'
+                                            f'--------------\n'
+                                        )
+
+                                        filter_error_log_file_.close()
+
+                                # append each error
+                                filter_error_log_file.write(
+                                    f'{filter_operation_error_count}, '
+                                    f'file_name: {csv_filename}, '
+                                    f'file_id: {csv_file_id}\n\n')
+
+                                filter_error_log_file.close()
+
+                                filter_operation_error_count += 1
+
+                                pass
 
 
 
@@ -271,7 +307,6 @@ def detect_files_within_returned_folders(
             except HttpError as error:
                 print(F'An error occurred: {error}')
                 file = None
-
 
 
 
