@@ -27,7 +27,7 @@ def filter_fwrd_scraped_data(
     # ESSENTIAL DATA -> UNFILTERED
     try:
         fwrd_scrapped_data = fwrd_scrapped_data[
-            ['productLink-href', 'productImage-src', 'productName', 'brandName', 'originalPrice', 'curentPriceDiscountPrice']
+            ['productLink-href', 'productImage', 'productName', 'brandName', 'originalPrice', 'curentPriceDiscountPrice']
         ] # !!
     except:
         raise Exception('There was an error while trying to create essential data sheet')
@@ -45,7 +45,7 @@ def filter_fwrd_scraped_data(
     # CLEANING UP
     print()
     product_link = fwrd_scrapped_data['productLink-href']
-    image_link = fwrd_scrapped_data['productImage-src']
+    image_link = fwrd_scrapped_data['productImage']
     product_name = fwrd_scrapped_data['productName']
     brand_name = fwrd_scrapped_data['brandName']
     original_price = fwrd_scrapped_data['originalPrice']
@@ -134,7 +134,10 @@ def filter_fwrd_scraped_data(
             raise Exception(f"PRODUCT'S BRAND NAME IN ROW {countLinkNumber} IS NOT A STRING")
 
         else:
-            product_in_focus_product_link = product_link[countLinkNumber] + ref_link
+            product_in_focus_product_link = product_link[countLinkNumber]
+            product_in_focus_product_link = product_in_focus_product_link.split(' ')
+            product_in_focus_product_link = product_in_focus_product_link[0]
+            product_in_focus_product_link = product_in_focus_product_link + ref_link
             product_link[countLinkNumber] = product_in_focus_product_link
 
 

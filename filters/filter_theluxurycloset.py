@@ -32,7 +32,7 @@ def filter_theluxurycloset_scraped_data(
     # ESSENTIAL DATA -> UNFILTERED
     try:
         theluxurycloset_scrapped_data = theluxurycloset_scrapped_data[
-            ['productLink-href', 'productImage-src', 'productName', 'brandName', 'curentPriceDiscountPrice',
+            ['productLink-href', 'productImage-src', 'productName', 'brandName','onlyPriceOriginalPrice', 'curentPriceDiscountPrice',
              'currentPriceBestOffer']
         ] # !!
     except:
@@ -287,7 +287,7 @@ def filter_theluxurycloset_scraped_data(
 
 # try:
 #     filter_theluxurycloset_scraped_data(
-#         file_address=f'{all_scraped_data_folder}thirty_nine_UAE_HANDBAGS_THE_LUXURY_CLOSET_WOMEN_ONLY.csv',
+#         file_address=f'{all_scraped_data_folder}thirty_nine_UAE_HANDBAGS_THE_LUXURY_CLOSET_WOMEN_ONLY.xlsx',
 #         minimum_profit_target=100,
 #         commission_per_sale=.0767,
 #         ref_link='?refs'

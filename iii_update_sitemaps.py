@@ -86,7 +86,7 @@ def update_sitemaps(
 
             print(f"update_status : {update_sitemap(update_url, json_update_data).content}")
 
-            time.sleep(5)
+            time.sleep(10)
 
             count += 1
 

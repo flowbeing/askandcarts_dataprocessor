@@ -9,6 +9,7 @@ import sys
 import re
 import pickle
 import datetime
+import time
 import traceback
 from collections import namedtuple
 from googleapiclient.errors import HttpError
@@ -185,10 +186,11 @@ def search_file(
 
 
 
-def detect_files_within_returned_folders(
+def detect_and_optional_download_and_process_files_within_returned_folders(
         folder_name,
-        returned_folder,
-        download_and_process_sitemaps_csv = False
+        returned_folders,
+        is_download_sitemaps_csv_file = False,
+        is_process_scraped_site_csv = False
 ):
     print()
     print(f'DETECTING FILES THAT EXIST WITHIN FOLDERS THAT EXIST WITHIN {folder_name} FOLDER')
@@ -198,12 +200,15 @@ def detect_files_within_returned_folders(
     filter_operation_error_count = 1
     csv_file_count = 1
 
-    for folder_info in returned_folder:
+    for folder_info in returned_folders:
         current_folder_filetype = folder_info['mimeType']
         if current_folder_filetype == 'application/vnd.google-apps.folder':
 
             current_folder_id = folder_info['id']
             current_folder_name = folder_info['name']
+
+
+            # print(f'current_folder_name: {current_folder_name}')
 
             print()
             print()
@@ -220,7 +225,7 @@ def detect_files_within_returned_folders(
 
             try:
 
-                if download_and_process_sitemaps_csv == True:
+                if is_download_sitemaps_csv_file == True:
 
                     for file_info in files_within_current_sitemap_folder:
 
@@ -232,7 +237,15 @@ def detect_files_within_returned_folders(
                             csv_file_count += 1
 
                             csv_file_id = file_info['id']
-                            csv_filename = file_info['name'][23:]
+                            csv_filename = file_info['name']
+
+                            for char in csv_filename:
+                                if char in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ':
+                                    index_of_first_letter_in_folder_name = csv_filename.index(char)
+                                    csv_filename = csv_filename[index_of_first_letter_in_folder_name:]
+                                    break
+
+                            # print(f'csv_filename: {csv_filename}')
 
                             request = service.files().get_media(fileId=csv_file_id)
                             file = io.BytesIO()
@@ -268,45 +281,45 @@ def detect_files_within_returned_folders(
                             #     reader = csv.reader(codecs.EncodedFile(infile, 'utf-8', 'utf-8-sig'), delimiter=";")
                             #     print(reader)
 
-                            # PERFORM FILTER OPERATION ON CURRENT SITEMAP'S (SCRAPED SITE'S) CSV FILE
-                            try:
-                                process_scraped_site(
-                                    scraped_sitemap_csv_file_name=csv_filename,
-                                    scraped_sitemap_csv_file_address=csv_file_write_path
-                                )
-                            except:
+                            if is_process_scraped_site_csv == True:
 
-                                filter_error_log_file_path = f"{all_scraped_data_folder}filter_errors_log.txt"
-                                filter_error_log_file = open(filter_error_log_file_path, 'a')
+                                # PERFORM FILTER OPERATION ON CURRENT SITEMAP'S (SCRAPED SITE'S) CSV FILE
+                                try:
+                                    process_scraped_site(
+                                        scraped_sitemap_csv_file_name=csv_filename,
+                                        scraped_sitemap_csv_file_address=csv_file_write_path
+                                    )
+                                except:
 
-                                # clear filter error log file if errors are being re-written
-                                if filter_operation_error_count == 1:
-                                    with open(filter_error_log_file_path, 'w') as filter_error_log_file_:
+                                    filter_error_log_file_path = f"{all_scraped_data_folder}filter_errors_log.txt"
+                                    filter_error_log_file = open(filter_error_log_file_path, 'a')
 
-                                        filter_error_log_file_.truncate(0)
+                                    # clear filter error log file if errors are being re-written
+                                    if filter_operation_error_count == 1:
+                                        with open(filter_error_log_file_path, 'w') as filter_error_log_file_:
+                                            filter_error_log_file_.truncate(0)
 
-                                        filter_error_log_file_.write(
-                                            f'FILTER ERRORS\n'
-                                            f'--------------\n'
-                                        )
+                                            filter_error_log_file_.write(
+                                                f'FILTER ERRORS\n'
+                                                f'--------------\n'
+                                            )
 
-                                        filter_error_log_file_.close()
+                                            filter_error_log_file_.close()
 
-                                # append each error
-                                filter_error_log_file.write(
-                                    f'{filter_operation_error_count}, '
-                                    f'file_name: {csv_filename}, '
-                                    f'file_id: {csv_file_id}\n\n')
+                                    # append each error
+                                    filter_error_log_file.write(
+                                        f'{filter_operation_error_count}, '
+                                        f'file_name: {csv_filename}, '
+                                        f'file_id: {csv_file_id}\n\n')
 
-                                # filter_error_log_file.write(
-                                #     f'{Error}\n\n')
+                                    # filter_error_log_file.write(
+                                    #     f'{Error}\n\n')
 
-                                filter_error_log_file.close()
+                                    filter_error_log_file.close()
 
+                                    filter_operation_error_count += 1
 
-                                filter_operation_error_count += 1
-
-                                pass
+                                    pass
 
 
 
@@ -404,24 +417,7 @@ def find_duplicates_among_return_folders_or_files_and_delete_unnecesary_files(
         current_file_or_folder_count = file[1]
         current_file_or_folder_creation_date = datetime
 
-        # if file within each (sitemap) folder is not a csv file, delete it
-        if is_focus_on_scraped_CSVs == True and is_delete_non_csv == True and current_file_or_folder_type != 'text/csv':
-            try:
-                delete_non_csv_file = service.files().delete(fileId=current_file_or_folder_id).execute()
-                print(f'Delete Non CSV Files Report: {delete_non_csv_file}')
-            except:
-                raise Exception(f'There was an error while trying to delete a non csv:\n'
-                                f'{current_file_folder_name}')
-
-        # if file within web scraper folder is not a folder, delete it
-        if is_focus_on_folders == True and is_delete_non_folder == True and \
-                current_file_or_folder_type != 'application/vnd.google-apps.folder':
-            try:
-                delete_non_folder_files = service.files().delete(fileId=current_file_or_folder_id).execute()
-                print(f'Delete Non Folder Files Report: {delete_non_folder_files}')
-            except:
-                raise Exception(f'There was an error while trying to delete a non csv:\n'
-                                f'{current_file_folder_name}')
+        # print(f'current_file_folder_name: {current_file_folder_name}')
 
 
         # IF THE CURRENT FILE IS A CSV FILE, ASSUME THAT IT IS A CSV THAT'S WITHIN A (SITEMAP) FOLDER AND GET:
@@ -454,6 +450,9 @@ def find_duplicates_among_return_folders_or_files_and_delete_unnecesary_files(
                     'file_creation_date': current_file_or_folder_creation_date,
                     'file_type': current_file_or_folder_type
                 })
+
+
+            # print(f"list_of_duplicate_csv_files_within_current_folder: {list_of_duplicate_csv_files_within_current_folder}")
 
             file_index += 1
 
@@ -558,6 +557,30 @@ def find_duplicates_among_return_folders_or_files_and_delete_unnecesary_files(
                 # print(file_index)
 
                 file_index += 1
+
+        # if file within each (sitemap) folder is not a csv file, delete it
+        if is_focus_on_scraped_CSVs == True and is_delete_non_csv == True and current_file_or_folder_type != 'text/csv':
+            try:
+                delete_non_csv_file = service.files().delete(fileId=current_file_or_folder_id).execute()
+                # print(f'Delete Non CSV Files Report: {delete_non_csv_file}')
+                # time.sleep(10)
+            except:
+                time.sleep(7)
+                traceback.print_exc()
+                print(f'There was an error while trying to delete a non csv:\n'
+                      f'{current_file_folder_name}')
+
+        # if file within web scraper folder is not a folder, delete it
+        if is_focus_on_folders == True and is_delete_non_folder == True and \
+                current_file_or_folder_type != 'application/vnd.google-apps.folder':
+            try:
+                delete_non_folder_files = service.files().delete(fileId=current_file_or_folder_id).execute()
+               #  print(f'Delete Non Folder Files Report: {delete_non_folder_files}')
+            except:
+                time.sleep(7)
+                traceback.print_exc()
+                print(f'There was an error while trying to delete a non csv:\n'
+                      f'{current_file_folder_name}')
 
         # print()
             # print(
@@ -688,11 +711,15 @@ def delete_duplicate_folders_or_csv_files_in_specified_dictionary_of_folders_and
 
                     duplicates_within_folders =  duplicates_within_current_folder_and_most_recent_duplicates_creation_time
 
-            print()
-            print()
+            # print()
+            # print()
 
-    print(duplicates_within_folders)
+    # print(duplicates_within_folders)
+
+    print()
+    print()
     print(f'len(duplicates_within_folders): {len(duplicates_within_folders)}')
+    # print(f'duplicates_within_folders: {duplicates_within_folders}')
 
     # CHECK WHETHER THE FOLDER THAT HAS BEEN SERVICE IS 'WEBSCRAPER'
 
@@ -713,7 +740,8 @@ def delete_duplicate_folders_or_csv_files_in_specified_dictionary_of_folders_and
 
         elif is_focus_on_scraped_CSVs == True:
 
-            print(f'DUPLICATES WITHIN SITEMAP FOLDERS')
+
+            print(f'DUPLICATES WITHIN {folder_name} FOLDER')
 
             list_of_duplicates_within_current_folder = \
                 duplicates_within_folders[folder_name]['list_of_duplicate_csv_files_within_current_folder']
@@ -726,24 +754,86 @@ def delete_duplicate_folders_or_csv_files_in_specified_dictionary_of_folders_and
             duplicate_files_creation_date = duplicate['file_creation_date']
             duplicate_files_file_id = duplicate['file_id']
             duplicate_files_file_type = duplicate['file_type']
+            duplicate_files_name = duplicate['file_name']
 
 
             # ensure that only duplicate csv files within sitemap folders can be deleted..
             if duplicate_files_file_type == 'text/csv' or 'application/vnd.google-apps.folder':
                 # if duplicate_files_creation_date != most_recent_files_within_current_folders_creation_date:
 
-                if duplicate != list_of_duplicates_within_current_folder[0]: # use this when there's been a large free copy
-                # if duplicate_files_creation_date < most_recent_duplicates_creation_date: # use this when there's a normal order
-                    print(f'most_recent_duplicates_creation_date: {most_recent_duplicates_creation_date}')
-                    print('This file is not the most_recent_file')
-                    # service.files().delete(fileId=duplicate_files_file_id).execute()
+                # if duplicate != list_of_duplicates_within_current_folder[0]: # use this when there's been a large free copy
+                if duplicate_files_creation_date < most_recent_duplicates_creation_date: # use this when there's a normal order
+                    try:
 
-                    # print(f'DELETED FILE INFO: {delete_old_copy}')
+                        # print(f'most_recent_duplicates_creation_date: {most_recent_duplicates_creation_date}')
+                        print('This file is not the most_recent_file')
+                        service.files().delete(fileId=duplicate_files_file_id).execute()
+
+                        # print(f'DELETED FILE INFO: {delete_old_copy}')
+
+                    except:
+
+                        traceback.print_exc()
+                        print(f'There was an error while trying to delete {duplicate_files_name}')
+
 
         print()
         # print(f'most_recent_files_creation_date: {most_recent_files_creation_date}')
 
 
+def delete_duplicate_csv_and_other_unnecessary_files_within_sitemap_folders(
+        # folders_in_webscraper_folder
+):
+    # --------------------------------------------------
+    # # DETECT FILES WITHIN EACH SITEMAP FOLDERS
+
+    list_of_sitemap_folders = detect_and_optional_download_and_process_files_within_returned_folders(
+        folder_name=ws_filename,
+        returned_folders=folders_in_webscraper_folder,
+        download_and_process_sitemaps_csv=False
+    )
+    # --------------------------------------------------
+
+    # --------------------------------------------------
+    # DELETE DUPLICATE CSVs WITHIN SITEMAP FOLDERS
+    # print(list_of_sitemap_folders)
+
+    delete_duplicate_folders_or_csv_files_in_specified_dictionary_of_folders_and_their_returned_folders_or_csv_files(
+        folders_and_their_files_list_dict=list_of_sitemap_folders,
+        is_focus_on_scraped_CSVs=True,
+        is_delete_non_csv=True,
+    )
+
+    # --------------------------------------------------
+
+
+
+def delete_duplicate_sitemap_folders_other_unnecessary_files_within_webscraper_folders():
+    # --------------------------------------------------
+    # # DETECT FILES WITHIN WEBSCRAPER FOLDER AND DELETE DUPLICATES
+
+    webscraper_folder_and_its_list_of_subfolders_dict = {
+        ws_filename: folders_in_webscraper_folder
+    }
+
+    cleanup_folders_within_webscraper_folder = \
+        delete_duplicate_folders_or_csv_files_in_specified_dictionary_of_folders_and_their_returned_folders_or_csv_files(
+            folders_and_their_files_list_dict=webscraper_folder_and_its_list_of_subfolders_dict,
+            is_focus_on_folders=True,
+            is_delete_non_folder=True
+        )
+
+    # --------------------------------------------------
+
+
+def detect_and_optional_download_and_process_csv_files_within_sitemap_folders():
+
+    detect_and_optional_download_and_process_files_within_returned_folders(
+        folder_name=ws_filename,
+        returned_folders=folders_in_webscraper_folder,
+        is_download_sitemaps_csv_file=True,
+        is_process_scraped_site_csv=False
+    )
 
 
 
@@ -759,51 +849,25 @@ folders_in_webscraper_folder = search_file(
     folder_id= othersettings.ws_folder_id
 )
 
+# 1
+# delete_duplicate_sitemap_folders_other_unnecessary_files_within_webscraper_folders()
+
+# 2
+# delete_duplicate_csv_and_other_unnecessary_files_within_sitemap_folders()
+
+# 3
+detect_and_optional_download_and_process_csv_files_within_sitemap_folders()
+
+
+
+
+
+
+
+
+
+
 # print(f'files_in_webscraper_folder: {files_in_webscraper_folder}')
-
-# --------------------------------------------------
-# # DETECT FILES WITHIN WEBSCRAPER FOLDER AND DELETE DUPLICATES
-
-# webscraper_folder_and_its_list_of_subfolders_dict = {
-#     ws_filename: files_in_webscraper_folder
-# }
-#
-#
-# cleanup_folders_within_webscraper_folder = \
-#     delete_duplicate_folders_or_csv_files_in_specified_dictionary_of_folders_and_their_returned_folders_or_csv_files(
-#         folders_and_their_files_list_dict = webscraper_folder_and_its_list_of_subfolders_dict,
-#         is_focus_on_folders=True,
-#         is_delete_non_folder=True
-#     )
-
-
-# --------------------------------------------------
-
-
-
-# --------------------------------------------------
-# # DETECT FILES WITHIN EACH SITEMAP FOLDERS
-
-files_within_each_sitemap = detect_files_within_returned_folders(
-    folder_name = ws_filename,
-    returned_folder = folders_in_webscraper_folder,
-    download_and_process_sitemaps_csv= False
-)
-# --------------------------------------------------
-
-
-# --------------------------------------------------
-# DELETE DUPLICATE CSVs WITHIN SITEMAP FOLDERS
-# print(files_within_each_sitemap)
-
-delete_duplicate_folders_or_csv_files_in_specified_dictionary_of_folders_and_their_returned_folders_or_csv_files(
-    folders_and_their_files_list_dict = files_within_each_sitemap,
-    is_focus_on_scraped_CSVs=True,
-    is_delete_non_csv=True,
-
-)
-
-# --------------------------------------------------
 
 
 
