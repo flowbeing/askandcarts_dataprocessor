@@ -141,3 +141,23 @@ def process_scraped_site(
 
                 break
 
+
+duplicates_within_folders = {
+}
+
+folder_name_value = duplicates_within_folders.get('folder_name', None)
+
+if folder_name_value == None:
+    folder_name_value = duplicates_within_folders['folder'] = {}
+else:
+    folder_name_value  = duplicates_within_folders['folder']
+
+duplicates_value = folder_name_value.get('duplicates_value', None)
+
+if duplicates_value == None:
+    duplicate_value = folder_name_value['duplicates_value'] = []
+else:
+    duplicates_value = folder_name_value['duplicates_value']
+
+print(duplicates_within_folders)
+

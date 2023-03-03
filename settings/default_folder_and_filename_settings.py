@@ -39,3 +39,6 @@ origin_sitemaps_file_address = '/Users/admin/OneDrive/docs/affiliate/sitemaps/or
 # FILE NAMES
 all_sitemaps_save_filename = 'all_sitemaps_dict'
 
+# WEB SCRAPER FILE NAME
+ws_filename = 'WEBSCRAPER'
+
