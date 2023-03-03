@@ -62,7 +62,7 @@ def filter_livwatches_scraped_data(
 
     countLinkNumber = 0
 
-    print(livwatches_scrapped_data.head())
+    # print(livwatches_scrapped_data.head())
 
 
     for productLink, imageLink in zip(product_link, image_link):

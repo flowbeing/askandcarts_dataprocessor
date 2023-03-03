@@ -281,45 +281,61 @@ def detect_and_optional_download_and_process_files_within_returned_folders(
                             #     reader = csv.reader(codecs.EncodedFile(infile, 'utf-8', 'utf-8-sig'), delimiter=";")
                             #     print(reader)
 
-                            if is_process_scraped_site_csv == True:
+                if is_process_scraped_site_csv == True:
 
-                                # PERFORM FILTER OPERATION ON CURRENT SITEMAP'S (SCRAPED SITE'S) CSV FILE
-                                try:
-                                    process_scraped_site(
-                                        scraped_sitemap_csv_file_name=csv_filename,
-                                        scraped_sitemap_csv_file_address=csv_file_write_path
+                    for file_info in files_within_current_sitemap_folder:
+
+                        csv_file_id = file_info['id']
+                        csv_filename = file_info['name']
+
+                        for char in csv_filename:
+                            if char in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ':
+                                index_of_first_letter_in_folder_name = csv_filename.index(char)
+                                csv_filename = csv_filename[index_of_first_letter_in_folder_name:]
+                                break
+
+
+                        csv_file_write_path = f"{all_scraped_data_folder}{csv_filename}"
+
+
+                        # PERFORM FILTER OPERATION ON CURRENT SITEMAP'S (SCRAPED SITE'S) CSV FILE
+                        try:
+                            process_scraped_site(
+                                scraped_sitemap_csv_file_name=csv_filename,
+                                scraped_sitemap_csv_file_address=csv_file_write_path
+                            )
+                        except:
+
+                            filter_error_log_file_path = f"{all_scraped_data_folder}filter_errors_log.txt"
+                            filter_error_log_file = open(filter_error_log_file_path, 'a')
+
+                            # clear filter error log file if errors are being re-written
+                            if filter_operation_error_count == 1:
+                                with open(filter_error_log_file_path, 'w') as filter_error_log_file_:
+                                    filter_error_log_file_.truncate(0)
+
+                                    filter_error_log_file_.write(
+                                        f'FILTER ERRORS\n'
+                                        f'--------------\n'
                                     )
-                                except:
 
-                                    filter_error_log_file_path = f"{all_scraped_data_folder}filter_errors_log.txt"
-                                    filter_error_log_file = open(filter_error_log_file_path, 'a')
+                                    filter_error_log_file_.close()
 
-                                    # clear filter error log file if errors are being re-written
-                                    if filter_operation_error_count == 1:
-                                        with open(filter_error_log_file_path, 'w') as filter_error_log_file_:
-                                            filter_error_log_file_.truncate(0)
+                            # append each error
+                            filter_error_log_file.write(
+                                f'{filter_operation_error_count}, '
+                                f'file_name: {csv_filename}, '
+                                f'file_id: {csv_file_id}\n\n')
 
-                                            filter_error_log_file_.write(
-                                                f'FILTER ERRORS\n'
-                                                f'--------------\n'
-                                            )
+                            # filter_error_log_file.write(
+                            #     f'{Error}\n\n')
 
-                                            filter_error_log_file_.close()
+                            filter_error_log_file.close()
 
-                                    # append each error
-                                    filter_error_log_file.write(
-                                        f'{filter_operation_error_count}, '
-                                        f'file_name: {csv_filename}, '
-                                        f'file_id: {csv_file_id}\n\n')
+                            filter_operation_error_count += 1
 
-                                    # filter_error_log_file.write(
-                                    #     f'{Error}\n\n')
+                            pass
 
-                                    filter_error_log_file.close()
-
-                                    filter_operation_error_count += 1
-
-                                    pass
 
 
 
@@ -831,8 +847,8 @@ def detect_and_optional_download_and_process_csv_files_within_sitemap_folders():
     detect_and_optional_download_and_process_files_within_returned_folders(
         folder_name=ws_filename,
         returned_folders=folders_in_webscraper_folder,
-        is_download_sitemaps_csv_file=True,
-        is_process_scraped_site_csv=False
+        is_download_sitemaps_csv_file=False,
+        is_process_scraped_site_csv=True
     )
 
 

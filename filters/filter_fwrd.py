@@ -135,10 +135,14 @@ def filter_fwrd_scraped_data(
 
         else:
             product_in_focus_product_link = product_link[countLinkNumber]
-            product_in_focus_product_link = product_in_focus_product_link.split(' ')
-            product_in_focus_product_link = product_in_focus_product_link[0]
-            product_in_focus_product_link = product_in_focus_product_link + ref_link
-            product_link[countLinkNumber] = product_in_focus_product_link
+            product_link[countLinkNumber] = product_in_focus_product_link + ref_link
+
+
+            # defining product in focus' image link
+            product_in_focus_image_link = image_link[countLinkNumber]
+            product_in_focus_image_link = product_in_focus_image_link.split(' ')
+            product_in_focus_image_link = product_in_focus_image_link[0]
+            image_link[countLinkNumber] = product_in_focus_image_link
 
 
 
