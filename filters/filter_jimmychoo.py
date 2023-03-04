@@ -66,7 +66,7 @@ def filter_jimmychoo_scraped_data(
 
     countLinkNumber = 0
 
-    # print(jimmychoo_scrapped_data.head(100))
+    print(jimmychoo_scrapped_data.head())
 
 
     for productLink, imageLink in zip(product_link, image_link):
@@ -167,13 +167,23 @@ def filter_jimmychoo_scraped_data(
             product_in_focus_product_link = product_link[countLinkNumber] + ref_link
             product_link[countLinkNumber] = product_in_focus_product_link
 
-            # defining and setting product's image link
-            product_in_focus_image_link = imageLink
-            index_of_upload_slash = product_in_focus_image_link.index('upload/')
-            index_of_fit_slash = product_in_focus_image_link.index('fit/')
-            product_in_focus_image_link = imageLink[:index_of_upload_slash + 6] + imageLink[index_of_fit_slash + 3:]
-            image_link[countLinkNumber] = product_in_focus_image_link
-            # print(f'product_link[countLinkNumber]: {image_link[countLinkNumber]}')
+            # defining and setting product's image link if 'f_auto' is present in image link
+            if 'f_auto' in imageLink:
+                index_of_f_auto = imageLink.index('f_auto')
+
+                every_string_before_f_auto = imageLink[:index_of_f_auto]
+                every_string_from_f_auto = imageLink[index_of_f_auto:]
+                every_string_after_f_autos_slash = ''
+
+                chars_after_f_auto_until_slash_counter = 0
+                for char in every_string_from_f_auto:
+                    chars_after_f_auto_until_slash_counter += 1
+                    if char == '/':
+                        index_of_slash_immediately_after_f_auto = index_of_f_auto + chars_after_f_auto_until_slash_counter
+                        every_string_after_f_autos_slash = imageLink[index_of_slash_immediately_after_f_auto]
+                        break
+
+                image_link[countLinkNumber] = every_string_before_f_auto + every_string_after_f_autos_slash
 
             # defining and setting product name
             product_in_focus_product_name = product_in_focus_product_name.replace('\n', ' ')  # !!

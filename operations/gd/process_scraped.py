@@ -88,7 +88,7 @@ def process_scraped_site(
                                 ref_link=''
                             )
 
-                            print(f'amazon_filter_data: {amazon_filter_data}')
+                            # print(f'{amazon_filter_data}')
 
 
                         except:
@@ -122,12 +122,14 @@ def process_scraped_site(
                     # print(f'non_amazon_variant_filter_function: {non_amazon_variant_filter_function}')
 
 
-                    non_amazon_variant_filter_function(
+                    non_amazon_filter_data = non_amazon_variant_filter_function(
                         file_address=scraped_sitemap_csv_file_address,
                         minimum_profit_target=150,
                         commission_per_sale=non_amazon_variants_commission,
                         ref_link=''
                     )
+
+                    # print(f'{non_amazon_filter_data}')
 
                 except:
 

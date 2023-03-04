@@ -71,6 +71,9 @@ def filter_mujeri_scraped_data(
 
             product_in_focus_current_price = product_in_focus_current_price.split(' ')
 
+            product_in_focus_current_price_str = product_in_focus_current_price[-1] # Removed 'From' from current price value
+            current_price[countLinkNumber] = product_in_focus_current_price_str
+
             product_in_focus_current_price = product_in_focus_current_price[-1][1:]
 
             product_in_focus_current_price = product_in_focus_current_price.replace(',', '')

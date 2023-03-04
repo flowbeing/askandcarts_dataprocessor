@@ -183,6 +183,8 @@ def filter_amazon_scraped_data(
 
     cleaned_up_scraped_data_amazon = amazon_scrapped_data
 
+    print(cleaned_up_scraped_data_amazon)
+
     cleaned_up_scraped_data_amazon.to_csv(r'/Users/admin/Downloads/amazon_product_cleaned.csv', index=False)
 
     # NUMBER OF ITEMS THAT HAVE BEEN REMOVED FROM THE LIST

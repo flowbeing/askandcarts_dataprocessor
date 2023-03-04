@@ -28,12 +28,15 @@ def filter_theluxurycloset_scraped_data(
     theluxurycloset_scrapped_data_columns = theluxurycloset_scrapped_data.columns
     print(f'theluxurycloset_scrapped_data_columns: {theluxurycloset_scrapped_data_columns}')
 
+    theluxurycloset_scrapped_data['Price'] = [i for i in theluxurycloset_scrapped_data['onlyPriceOriginalPrice']]
+
+
 
     # ESSENTIAL DATA -> UNFILTERED
     try:
         theluxurycloset_scrapped_data = theluxurycloset_scrapped_data[
             ['productLink-href', 'productImage-src', 'productName', 'brandName','onlyPriceOriginalPrice', 'curentPriceDiscountPrice',
-             'currentPriceBestOffer']
+             'currentPriceBestOffer', 'Price']
         ] # !!
     except:
         raise Exception('There was an error while trying to create essential data sheet')
@@ -59,6 +62,7 @@ def filter_theluxurycloset_scraped_data(
     original_price_current_price = theluxurycloset_scrapped_data['onlyPriceOriginalPrice']
     discount_price = theluxurycloset_scrapped_data['curentPriceDiscountPrice']
     best_price = theluxurycloset_scrapped_data['currentPriceBestOffer']
+    Price = theluxurycloset_scrapped_data['Price']
 
 
     # print(product_link)
@@ -77,16 +81,16 @@ def filter_theluxurycloset_scraped_data(
 
         # 1.
         try:
-            # defining current price (and currency) and converting it to float
-            product_in_focus_current_price = ''
-            product_in_focus_currency = ''
 
+            # defining current price and converting it to float
 
             # if the following are not empty, set the the current price accordingly
             product_in_focus_original_price_current_price = original_price_current_price[countLinkNumber]
             product_in_focus_discount_price = discount_price[countLinkNumber]
             product_in_focus_best_price = best_price[countLinkNumber]
 
+            product_in_focus_current_price = ''
+            product_in_focus_currency_symbol = ''
 
             if not pd.isnull(product_in_focus_original_price_current_price):
                 product_in_focus_current_price = product_in_focus_original_price_current_price
@@ -95,35 +99,55 @@ def filter_theluxurycloset_scraped_data(
             elif not pd.isnull(product_in_focus_best_price):
                 product_in_focus_current_price = product_in_focus_best_price
 
-            # print(type(product_in_focus_current_price))
 
-            # defining supposed currency for current product
-            product_in_focus_current_price = product_in_focus_current_price.split(' ')
-            supposed_product_in_focus_currency = product_in_focus_current_price[-1]
+            # obtaining first number in currency value
+            # product_in_focus_current_price = '1,2348AED'
+            index_first_number_in_current_price = 0
+            index_last_number_in_current_price = 0
 
-            product_in_focus_currency = ''
+            for i in product_in_focus_current_price:
+                if i in '0123456789':
+                    first_number_in_currency_value = i
+                    index_first_number_in_current_price = product_in_focus_current_price.index(
+                        first_number_in_currency_value)
 
-            # if the last character in the supposed position (and length) of product's price currency symbol as defined
-            # below is right, set it as thus and vice versa...
-            if supposed_product_in_focus_currency[-1] not in '0123456789' and \
-                    len(supposed_product_in_focus_currency) <= 3 and \
-                    product_in_focus_current_price[0][0] in '0123456789': # if the first item which in this condition is supposed to be a number is a number
+                    # print(f'first_number_in_currency_value: {first_number_in_currency_value}')
+                    break
 
-                product_in_focus_currency = product_in_focus_current_price[-1]
-                product_in_focus_current_price = product_in_focus_current_price[0][0:] # !! could change if website code changes
+            product_in_focus_current_price_reversed = "".join(reversed(product_in_focus_current_price))
 
-            elif supposed_product_in_focus_currency[-1] not in '0123456789' and \
-                    len(supposed_product_in_focus_currency) <= 3 and \
-                    product_in_focus_current_price[0][0] not in '0123456789': # if the first item which in this condition is supposed to be a number is not a number
+            # print(f'product_in_focus_current_price_reversed: {"".join(product_in_focus_current_price_reversed)}')
 
-                product_in_focus_currency = product_in_focus_current_price[-1]
-                product_in_focus_current_price = product_in_focus_current_price[0][1:]
+            for i in product_in_focus_current_price_reversed:
+                if i in '0123456789':
+                    last_number_in_currency_value = i
+                    index_last_number_in_current_price = (-1 * product_in_focus_current_price_reversed.index(
+                        last_number_in_currency_value)) + -1
 
-            else:
-                product_in_focus_currency = product_in_focus_current_price[0][0]
-                product_in_focus_current_price = product_in_focus_current_price[0][0:]
+                    break
 
-            # product_in_focus_current_price = product_in_focus_current_price.split(' ')
+            # print(f'index_first_number_in_currency_value: {index_first_number_in_current_price}')
+            # print(f'index_last_number_in_currency_value: {index_last_number_in_current_price}')
+            if index_last_number_in_current_price == -1:
+
+                product_in_focus_currency_symbol = product_in_focus_current_price[:index_first_number_in_current_price]
+                product_in_focus_current_price = product_in_focus_current_price[index_first_number_in_current_price:]
+
+            elif index_last_number_in_current_price < -1:
+
+                product_in_focus_currency_symbol = product_in_focus_current_price[
+                                                   index_last_number_in_current_price + 1:]
+
+                product_in_focus_current_price = \
+                    product_in_focus_current_price[
+                    index_first_number_in_current_price:index_last_number_in_current_price + 1
+                    ]
+            # print()
+
+            # print(f'product_in_focus_currency_symbol: {product_in_focus_currency_symbol}')
+            # print(f'product_in_focus_current_price: {product_in_focus_current_price}')
+
+            Price[countLinkNumber] = product_in_focus_currency_symbol + product_in_focus_current_price
 
             product_in_focus_current_price = product_in_focus_current_price.replace(',', '')
             product_in_focus_current_price_float = float(product_in_focus_current_price)
@@ -133,6 +157,57 @@ def filter_theluxurycloset_scraped_data(
 
             # defining product's brand name
             product_in_focus_brand_name = product_name[countLinkNumber]
+
+           # # defining current price (and currency) and converting it to float
+           # product_in_focus_current_price = ''
+           # product_in_focus_currency = ''
+
+
+           # # if the following are not empty, set the the current price accordingly
+           # product_in_focus_original_price_current_price = original_price_current_price[countLinkNumber]
+           # product_in_focus_discount_price = discount_price[countLinkNumber]
+           # product_in_focus_best_price = best_price[countLinkNumber]
+
+
+           # if not pd.isnull(product_in_focus_original_price_current_price):
+           #     product_in_focus_current_price = product_in_focus_original_price_current_price
+           # elif not pd.isnull(product_in_focus_discount_price):
+           #     product_in_focus_current_price = product_in_focus_discount_price
+           # elif not pd.isnull(product_in_focus_best_price):
+           #     product_in_focus_current_price = product_in_focus_best_price
+
+           # # print(type(product_in_focus_current_price))
+
+           # # defining supposed currency for current product
+           # product_in_focus_current_price = product_in_focus_current_price.split(' ')
+           # supposed_product_in_focus_currency = product_in_focus_current_price[-1]
+
+           # product_in_focus_currency = ''
+
+           # # if the last character in the supposed position (and length) of product's price currency symbol as defined
+           # # below is right, set it as thus and vice versa...
+           # if supposed_product_in_focus_currency[-1] not in '0123456789' and \
+           #         len(supposed_product_in_focus_currency) <= 3 and \
+           #         product_in_focus_current_price[0][0] in '0123456789': # if the first item which in this condition is supposed to be a number is a number
+
+           #     product_in_focus_currency = product_in_focus_current_price[-1]
+           #     product_in_focus_current_price = product_in_focus_current_price[0][0:] # !! could change if website code changes
+
+           # elif supposed_product_in_focus_currency[-1] not in '0123456789' and \
+           #         len(supposed_product_in_focus_currency) <= 3 and \
+           #         product_in_focus_current_price[0][0] not in '0123456789': # if the first item which in this condition is supposed to be a number is not a number
+
+           #     product_in_focus_currency = product_in_focus_current_price[-1]
+           #     product_in_focus_current_price = product_in_focus_current_price[0][1:]
+
+           # else:
+           #     product_in_focus_currency = product_in_focus_current_price[0][0]
+           #     product_in_focus_current_price = product_in_focus_current_price[0][0:]
+
+           # # product_in_focus_current_price = product_in_focus_current_price.split(' ')
+
+           # product_in_focus_current_price = product_in_focus_current_price.replace(',', '')
+           # product_in_focus_current_price_float = float(product_in_focus_current_price)
 
         except:
             raise Exception('There was an error while: \n '
@@ -189,18 +264,18 @@ def filter_theluxurycloset_scraped_data(
                 # product_name[countLinkNumber] = product_in_focus_product_name
 
                 # define currency symbol
-                if (product_in_focus_currency == 'SGD' ):
+                if (product_in_focus_currency_symbol == 'SGD' ):
                     product_in_focus_currency = 'S$'
-                elif (product_in_focus_currency == 'AED'):
+                elif (product_in_focus_currency_symbol == 'AED'):
                     product_in_focus_currency = 'AED'
-                elif (product_in_focus_currency == 'EUR'):
+                elif (product_in_focus_currency_symbol == 'EUR'):
                     product_in_focus_currency = '£'
-                elif (product_in_focus_currency == 'USD'):
+                elif (product_in_focus_currency_symbol == 'USD'):
                     product_in_focus_currency = '$ '
                 # elif (product_in_focus_currency == 'GBP'):
                 #     product_in_focus_currency = '£'
 
-                best_price[countLinkNumber] = product_in_focus_currency + f'{product_in_focus_current_price_float:,.2f}'
+                best_price[countLinkNumber] = product_in_focus_currency_symbol + f' {product_in_focus_current_price_float:,.2f}'
 
 
                 # defining and setting current product's price
@@ -215,18 +290,19 @@ def filter_theluxurycloset_scraped_data(
 
     theluxurycloset_scrapped_data = theluxurycloset_scrapped_data[
         ['productLink-href', 'productImage-src', 'productName', 'brandName', 'curentPriceDiscountPrice',
-             'currentPriceBestOffer']
+             'currentPriceBestOffer', 'Price']
     ]
 
     theluxurycloset_scrapped_data.columns = \
-        ['productLink', 'Image Src', 'Title', 'brandName', 'curentPriceDiscountPrice', 'Price']
+        ['productLink', 'Image Src', 'Title', 'brandName', 'curentPriceDiscountPrice', 'currentPriceBestOffer', 'Price']
 
     theluxurycloset_scrapped_data['productLink'] = product_link
     theluxurycloset_scrapped_data['Image Src'] = image_link
     theluxurycloset_scrapped_data['Title'] = product_name
     theluxurycloset_scrapped_data['brandName'] = brand_name
     theluxurycloset_scrapped_data['curentPriceDiscountPrice'] = discount_price
-    theluxurycloset_scrapped_data['Price'] = best_price
+    theluxurycloset_scrapped_data['currentPriceBestOffer'] = best_price
+    theluxurycloset_scrapped_data['Price'] = Price
 
 
     # DROPPING ALL PRODUCTS THAT DO HAVE a price that's lower than the price required to hit 'minimum_profit_target'
@@ -267,7 +343,7 @@ def filter_theluxurycloset_scraped_data(
     # GROUPING CLEANUP_UP theluxurycloset DATA WITH BRAND NAME AND CURRENTPRICE
     grouped_data = cleaned_up_scraped_data_theluxurycloset[['Title', 'brandName', 'Price']]. \
         groupby(['brandName'], as_index=False).agg(lambda x: len(x))
-    grouped_data = grouped_data.sort_values('productName', ascending=False)
+    grouped_data = grouped_data.sort_values('Title', ascending=False)
     print('NUMBER OF PRODUCTs PER BRAND AFTER CLEAN UP')
     print(grouped_data)
 
@@ -287,10 +363,11 @@ def filter_theluxurycloset_scraped_data(
 
 # try:
 #     filter_theluxurycloset_scraped_data(
-#         file_address=f'{all_scraped_data_folder}thirty_nine_UAE_HANDBAGS_THE_LUXURY_CLOSET_WOMEN_ONLY.xlsx',
+#         file_address=f'{all_scraped_data_folder}thirty_nine_UAE_HANDBAGS_THE_LUXURY_CLOSET_WOMEN_ONLY.csv',
 #         minimum_profit_target=100,
 #         commission_per_sale=.0767,
 #         ref_link='?refs'
 #     )
+#
 # except:
 #     raise Exception('There was an error while trying to filters theluxurycloset scrapped data')
