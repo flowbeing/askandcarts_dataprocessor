@@ -150,7 +150,6 @@ def search_file(
         page_token = None
         while True:
             # pylint: disable=maybe-no-member
-            service = Create_Service(client_secret_file, api_name, api_version, scopes)
             response = service.files().list(q=f"'{folder_id}' in parents",
                                             spaces='drive',
                                             fields='nextPageToken, '
@@ -245,7 +244,6 @@ def detect_and_optional_download_and_process_files_within_returned_folders(
                                     break
 
                             # print(f'csv_filename: {csv_filename}')
-                            service = Create_Service(client_secret_file, api_name, api_version, scopes)
                             request = service.files().get_media(fileId=csv_file_id)
                             file = io.BytesIO()
                             downloader = MediaIoBaseDownload(file, request)
@@ -584,7 +582,6 @@ def find_duplicates_among_return_folders_or_files_and_delete_unnecesary_files(
         # if file within each (sitemap) folder is not a csv file, delete it
         if is_focus_on_scraped_CSVs == True and is_delete_non_csv == True and current_file_or_folder_type != 'text/csv':
             try:
-                service = Create_Service(client_secret_file, api_name, api_version, scopes)
                 delete_non_csv_file = service.files().delete(fileId=current_file_or_folder_id).execute()
                 # print(f'Delete Non CSV Files Report: {delete_non_csv_file}')
                 # time.sleep(10)
@@ -598,7 +595,6 @@ def find_duplicates_among_return_folders_or_files_and_delete_unnecesary_files(
         if is_focus_on_folders == True and is_delete_non_folder == True and \
                 current_file_or_folder_type != 'application/vnd.google-apps.folder':
             try:
-                service = Create_Service(client_secret_file, api_name, api_version, scopes)
                 delete_non_folder_files = service.files().delete(fileId=current_file_or_folder_id).execute()
                #  print(f'Delete Non Folder Files Report: {delete_non_folder_files}')
             except:
@@ -803,10 +799,9 @@ def delete_duplicate_folders_or_csv_files_in_specified_dictionary_of_folders_and
                     try:
 
                         # print(f'most_recent_duplicates_creation_date: {most_recent_duplicates_creation_date}')
-                        print(f'duplicate_files_file_id: {duplicate_files_file_id}')
+                        # print(f'duplicate_files_file_id: {duplicate_files_file_id}')
                         print('This file is not the most_recent_file')
-                        # service = Create_Service(client_secret_file, api_name, api_version, scopes)
-                        # delete_duplicate_file = service.files().delete(fileId=duplicate_files_file_id).execute()
+                        delete_duplicate_file = service.files().delete(fileId=duplicate_files_file_id).execute()
 
                         # print(f'DELETED FILE INFO: {delete_duplicate_file}')
 
@@ -883,6 +878,9 @@ client_secret_file =  othersettings.cred_file_address
 api_name = 'drive'
 api_version = 'v3'
 scopes = ['https://www.googleapis.com/auth/drive'] # 'https://www.googleapis.com/auth/drive'
+
+service = Create_Service(client_secret_file, api_name, api_version, scopes)
+
 
 folders_in_webscraper_folder = search_file(
     folder_id= othersettings.ws_folder_id
