@@ -899,7 +899,7 @@ folders_in_webscraper_folder = search_file(
 # delete_duplicate_sitemap_folders_other_unnecessary_files_within_webscraper_folders()
 
 # 2
-delete_duplicate_csv_and_other_unnecessary_files_within_sitemap_folders()
+# delete_duplicate_csv_and_other_unnecessary_files_within_sitemap_folders()
 
 # 3
-# detect_and_optional_download_and_process_csv_files_within_sitemap_folders()
+detect_and_optional_download_and_process_csv_files_within_sitemap_folders()
