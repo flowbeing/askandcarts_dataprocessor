@@ -66,7 +66,7 @@ def filter_jimmychoo_scraped_data(
 
     countLinkNumber = 0
 
-    print(jimmychoo_scrapped_data.head())
+    # print(jimmychoo_scrapped_data.head())
 
 
     for productLink, imageLink in zip(product_link, image_link):
@@ -176,11 +176,12 @@ def filter_jimmychoo_scraped_data(
                 every_string_after_f_autos_slash = ''
 
                 chars_after_f_auto_until_slash_counter = 0
+
                 for char in every_string_from_f_auto:
                     chars_after_f_auto_until_slash_counter += 1
                     if char == '/':
                         index_of_slash_immediately_after_f_auto = index_of_f_auto + chars_after_f_auto_until_slash_counter
-                        every_string_after_f_autos_slash = imageLink[index_of_slash_immediately_after_f_auto]
+                        every_string_after_f_autos_slash = imageLink[index_of_slash_immediately_after_f_auto:]
                         break
 
                 image_link[countLinkNumber] = every_string_before_f_auto + every_string_after_f_autos_slash
