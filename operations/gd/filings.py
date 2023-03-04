@@ -591,6 +591,8 @@ def find_duplicates_among_return_folders_or_files_and_delete_unnecesary_files(
                 print(f'There was an error while trying to delete a non csv:\n'
                       f'{current_file_folder_name}')
 
+            file_index += 1
+
         # if file within web scraper folder is not a folder, delete it
         if is_focus_on_folders == True and is_delete_non_folder == True and \
                 current_file_or_folder_type != 'application/vnd.google-apps.folder':
@@ -602,6 +604,9 @@ def find_duplicates_among_return_folders_or_files_and_delete_unnecesary_files(
                 traceback.print_exc()
                 print(f'There was an error while trying to delete a non csv:\n'
                       f'{current_file_folder_name}')
+
+            file_index += 1
+
 
         # print()
             # print(
@@ -634,10 +639,6 @@ def find_duplicates_among_return_folders_or_files_and_delete_unnecesary_files(
 
 
     # print(f'duplicates: {duplicates}')
-
-    if len(list_of_duplicate_csv_files_within_current_folder) == 0 or len(dict_of_duplicated_sitemap_folders) == 0:
-        print()
-        print('NO DUPLICATES WERE DETECTED.')
 
 
     return duplicates
@@ -741,6 +742,10 @@ def delete_duplicate_folders_or_csv_files_in_specified_dictionary_of_folders_and
             # print()
             # print()
 
+    if len(duplicates_within_folders) == 0:
+        print()
+        print('NO DUPLICATES WERE DETECTED.')
+
     # print(duplicates_within_folders)
 
     print()
@@ -798,8 +803,8 @@ def delete_duplicate_folders_or_csv_files_in_specified_dictionary_of_folders_and
             if duplicate_files_file_type == 'text/csv' or 'application/vnd.google-apps.folder':
                 # if duplicate_files_creation_date != most_recent_files_within_current_folders_creation_date:
 
-                # if duplicate != list_of_duplicates_within_current_folder[0]: # use this when there's been a large free copy
-                if duplicate_files_creation_date < most_recent_duplicates_creation_date: # use this when there's a normal order
+                if duplicate != list_of_duplicates_within_current_folder[0]: # use this when there's been a large free copy
+                #if duplicate_files_creation_date < most_recent_duplicates_creation_date: # use this when there's a normal order
                     try:
 
                         # print(f'most_recent_duplicates_creation_date: {most_recent_duplicates_creation_date}')
@@ -891,10 +896,10 @@ folders_in_webscraper_folder = search_file(
 )
 
 # 1
-delete_duplicate_sitemap_folders_other_unnecessary_files_within_webscraper_folders()
+# delete_duplicate_sitemap_folders_other_unnecessary_files_within_webscraper_folders()
 
 # 2
-# delete_duplicate_csv_and_other_unnecessary_files_within_sitemap_folders()
+delete_duplicate_csv_and_other_unnecessary_files_within_sitemap_folders()
 
 # 3
 # detect_and_optional_download_and_process_csv_files_within_sitemap_folders()
