@@ -44,8 +44,8 @@ def filter_fwrd_scraped_data(
 
     # CLEANING UP
     print()
-    product_link = fwrd_scrapped_data['productLink-href']
-    image_link = fwrd_scrapped_data['productImage']
+    product_link = fwrd_scrapped_data['productLink-href'].copy()
+    image_link = fwrd_scrapped_data['productImage'].copy()
     product_name = fwrd_scrapped_data['productName']
     brand_name = fwrd_scrapped_data['brandName']
     original_price = fwrd_scrapped_data['originalPrice']
