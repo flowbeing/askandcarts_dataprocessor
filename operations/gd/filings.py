@@ -635,6 +635,10 @@ def find_duplicates_among_return_folders_or_files_and_delete_unnecesary_files(
 
     # print(f'duplicates: {duplicates}')
 
+    if len(list_of_duplicate_csv_files_within_current_folder) == 0 or len(dict_of_duplicated_sitemap_folders) == 0:
+        print()
+        print('NO DUPLICATES WERE DETECTED.')
+
 
     return duplicates
 
