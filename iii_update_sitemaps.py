@@ -95,8 +95,8 @@ def update_sitemaps(
     # check(amazon_product_minimized_dict)
 
 update_sitemaps(
-    update_files_filename= dffns.update_sitemaps_theluxurycloset_filename,
-    target_site_name_uppercase = 'LUXURY'
+    update_files_filename= dffns.update_sitemaps_fnp_ae_filename,
+    target_site_name_uppercase = 'FNP_AE'
 )
 
 # print(len(most_recent_all_sitemap_as_dict))

@@ -38,6 +38,9 @@ def filter_livwatches_scraped_data(
     livwatches_scrapped_data.dropna(inplace=True)
     livwatches_scrapped_data.reset_index(drop=True, inplace=True)
 
+    len_after_initial_drop_na = len(livwatches_scrapped_data.index)
+
+
     # print(livwatches_scrapped_data.head(70))
 
     len_before_filtering = len(livwatches_scrapped_data.index)
@@ -206,7 +209,8 @@ def filter_livwatches_scraped_data(
     num_items_removed_from_list = len_before_filtering - len_after_filtering
 
     print()
-    print(f"num of item before clean up : {len_before_filtering}")
+    print(f"num of items before clean up : {len_before_filtering}")
+    print(f'num of items after_initial_drop_na: {len_after_initial_drop_na}')
     print(f"num of items removed from livwatches's scrapped data: {num_items_removed_from_list}")
 
     return cleaned_up_scraped_data_livwatches

@@ -1,5 +1,11 @@
 import pandas as pd
+
+from settings.commissions import *
+
 from settings.pd_settings import *
+
+from settings.default_folder_and_filename_settings import all_scraped_data_folder
+
 
 '''productLink, image, name, brandname, description, currentprice'''
 
@@ -37,9 +43,18 @@ def filter_fnp_ae_scraped_data(
 
     len_before_filtering = len(fnp_ae_scrapped_data.index)
 
+    # print(fnp_ae_scrapped_data)
+
+
     # DROPPING ALL PRODUCTS THAT DO NOT HAVE a product link, product image, product name or current price
     fnp_ae_scrapped_data = fnp_ae_scrapped_data.dropna()
     fnp_ae_scrapped_data.reset_index(drop=True, inplace=True)
+
+    len_after_initial_drop_na = len(fnp_ae_scrapped_data.index)
+
+
+    # print(fnp_ae_scrapped_data)
+
 
     # CLEANING UP
     print()
@@ -169,15 +184,16 @@ def filter_fnp_ae_scraped_data(
     num_items_removed_from_list = len_before_filtering - len_after_filtering
 
     print()
-    print(f"num of item before clean up : {len_before_filtering}")
+    print(f"num of items before clean up : {len_before_filtering}")
+    print(f'num of items after_initial_drop_na: {len_after_initial_drop_na}')
     print(f"num of items removed from fnp_ae's scrapped data: {num_items_removed_from_list}")
 
     return cleaned_up_scraped_data_fnp_ae
 
 # try:
 #     filter_fnp_ae_scraped_data(
-#         file_address='/Users/admin/Downloads/fnp_ae_product_minimized.xlsx',
-#         minimum_profit_target=150,
+#         file_address=f'{all_scraped_data_folder}fourty_seven_UAE_FLOWER_FNP_AE_MEN_ONLY.csv',
+#         minimum_profit_target=0,
 #         commission_per_sale=.0615,
 #         ref_link='?refs'
 #     )

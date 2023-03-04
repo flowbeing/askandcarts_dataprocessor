@@ -42,6 +42,8 @@ def filter_ashford_scraped_data(
     ashford_scrapped_data = ashford_scrapped_data.dropna()
     ashford_scrapped_data.reset_index(drop=True, inplace=True)
 
+    len_after_initial_drop_na = len(ashford_scrapped_data.index)
+
     # CLEANING UP
     print()
     product_link = ashford_scrapped_data['productLink-href']
@@ -136,7 +138,8 @@ def filter_ashford_scraped_data(
     num_items_removed_from_list = len_before_filtering - len_after_filtering
 
     print()
-    print(f"num of item before clean up : {len_before_filtering}")
+    print(f"num of items before clean up : {len_before_filtering}")
+    print(f'num of items after_initial_drop_na: {len_after_initial_drop_na}')
     print(f"num of items removed from ashford's scrapped data: {num_items_removed_from_list}")
 
     return cleaned_up_scraped_data_ashford

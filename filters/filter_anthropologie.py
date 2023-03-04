@@ -42,6 +42,8 @@ def filter_anthropologie_scraped_data(
     anthropologie_scrapped_data = anthropologie_scrapped_data.dropna()
     anthropologie_scrapped_data.reset_index(drop=True, inplace=True)
 
+    len_after_initial_drop_na = len(anthropologie_scrapped_data.index)
+
     # CLEANING UP
     print()
     product_link = anthropologie_scrapped_data['productLink-href']
@@ -131,7 +133,9 @@ def filter_anthropologie_scraped_data(
     num_items_removed_from_list = len_before_filtering - len_after_filtering
 
     print()
-    print(f"num of item before clean up : {len_before_filtering}")
+    print()
+    print(f"num of items before clean up : {len_before_filtering}")
+    print(f'num of items after_initial_drop_na: {len_after_initial_drop_na}')
     print(f"num of items removed from anthropologie's scrapped data: {num_items_removed_from_list}")
 
     return cleaned_up_scraped_data_anthropologie

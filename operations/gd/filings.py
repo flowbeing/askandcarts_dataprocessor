@@ -734,8 +734,8 @@ def delete_duplicate_folders_or_csv_files_in_specified_dictionary_of_folders_and
 
     print()
     print()
-    print(f'len(duplicates_within_folders): {len(duplicates_within_folders)}')
-    # print(f'duplicates_within_folders: {duplicates_within_folders}')
+
+   #  print(f'duplicates_within_folders: {duplicates_within_folders}')
 
     # CHECK WHETHER THE FOLDER THAT HAS BEEN SERVICE IS 'WEBSCRAPER'
 
@@ -746,9 +746,13 @@ def delete_duplicate_folders_or_csv_files_in_specified_dictionary_of_folders_and
         most_recent_duplicates_creation_date = \
             duplicates_within_folders[folder_name]['most_recent_duplicates_creation_date']
 
+
         if is_focus_on_folders == True:
 
             print(f'DUPLICATES FOLDERS WITHIN {ws_filename} FOLDER')
+
+            print(f'-> most_recent_duplicates_creation_date: {most_recent_duplicates_creation_date} <-')
+            print()
 
             list_of_duplicates_within_current_folder = \
                 duplicates_within_folders[folder_name]['list_of_duplicates_folders_within_current_folder']
@@ -758,6 +762,10 @@ def delete_duplicate_folders_or_csv_files_in_specified_dictionary_of_folders_and
 
 
             print(f'DUPLICATES WITHIN {folder_name} FOLDER')
+
+            print()
+            print(f'-> most_recent_duplicates_creation_date: {most_recent_duplicates_creation_date} <-')
+            print()
 
             list_of_duplicates_within_current_folder = \
                 duplicates_within_folders[folder_name]['list_of_duplicate_csv_files_within_current_folder']
@@ -772,6 +780,8 @@ def delete_duplicate_folders_or_csv_files_in_specified_dictionary_of_folders_and
             duplicate_files_file_type = duplicate['file_type']
             duplicate_files_name = duplicate['file_name']
 
+            # print(f'duplicate_files_file_id: {duplicate_files_file_id}')
+
 
             # ensure that only duplicate csv files within sitemap folders can be deleted..
             if duplicate_files_file_type == 'text/csv' or 'application/vnd.google-apps.folder':
@@ -783,7 +793,7 @@ def delete_duplicate_folders_or_csv_files_in_specified_dictionary_of_folders_and
 
                         # print(f'most_recent_duplicates_creation_date: {most_recent_duplicates_creation_date}')
                         print('This file is not the most_recent_file')
-                        service.files().delete(fileId=duplicate_files_file_id).execute()
+                        delete_duplicate_file = service.files().delete(fileId=duplicate_files_file_id, supportsAllDrives=True).execute()
 
                         # print(f'DELETED FILE INFO: {delete_old_copy}')
 
@@ -792,36 +802,10 @@ def delete_duplicate_folders_or_csv_files_in_specified_dictionary_of_folders_and
                         traceback.print_exc()
                         print(f'There was an error while trying to delete {duplicate_files_name}')
 
-
+        print()
+        print(f'-> len(duplicates_within_folders): {len(duplicates_within_folders)} <-')
         print()
         # print(f'most_recent_files_creation_date: {most_recent_files_creation_date}')
-
-
-def delete_duplicate_csv_and_other_unnecessary_files_within_sitemap_folders(
-        # folders_in_webscraper_folder
-):
-    # --------------------------------------------------
-    # # DETECT FILES WITHIN EACH SITEMAP FOLDERS
-
-    list_of_sitemap_folders = detect_and_optional_download_and_process_files_within_returned_folders(
-        folder_name=ws_filename,
-        returned_folders=folders_in_webscraper_folder,
-        download_and_process_sitemaps_csv=False
-    )
-    # --------------------------------------------------
-
-    # --------------------------------------------------
-    # DELETE DUPLICATE CSVs WITHIN SITEMAP FOLDERS
-    # print(list_of_sitemap_folders)
-
-    delete_duplicate_folders_or_csv_files_in_specified_dictionary_of_folders_and_their_returned_folders_or_csv_files(
-        folders_and_their_files_list_dict=list_of_sitemap_folders,
-        is_focus_on_scraped_CSVs=True,
-        is_delete_non_csv=True,
-    )
-
-    # --------------------------------------------------
-
 
 
 def delete_duplicate_sitemap_folders_other_unnecessary_files_within_webscraper_folders():
@@ -840,6 +824,33 @@ def delete_duplicate_sitemap_folders_other_unnecessary_files_within_webscraper_f
         )
 
     # --------------------------------------------------
+
+
+
+def delete_duplicate_csv_and_other_unnecessary_files_within_sitemap_folders(
+        # folders_in_webscraper_folder
+):
+    # --------------------------------------------------
+    # # DETECT FILES WITHIN EACH SITEMAP FOLDERS
+
+    list_of_sitemap_folders = detect_and_optional_download_and_process_files_within_returned_folders(
+        folder_name=ws_filename,
+        returned_folders=folders_in_webscraper_folder,
+    )
+    # --------------------------------------------------
+
+    # --------------------------------------------------
+    # DELETE DUPLICATE CSVs WITHIN SITEMAP FOLDERS
+    # print(list_of_sitemap_folders)
+
+    delete_duplicate_folders_or_csv_files_in_specified_dictionary_of_folders_and_their_returned_folders_or_csv_files(
+        folders_and_their_files_list_dict=list_of_sitemap_folders,
+        is_focus_on_scraped_CSVs=True,
+        is_delete_non_csv=True,
+    )
+
+    # --------------------------------------------------
+
 
 
 def detect_and_optional_download_and_process_csv_files_within_sitemap_folders():
@@ -866,13 +877,13 @@ folders_in_webscraper_folder = search_file(
 )
 
 # 1
-# delete_duplicate_sitemap_folders_other_unnecessary_files_within_webscraper_folders()
+delete_duplicate_sitemap_folders_other_unnecessary_files_within_webscraper_folders()
 
 # 2
 # delete_duplicate_csv_and_other_unnecessary_files_within_sitemap_folders()
 
 # 3
-detect_and_optional_download_and_process_csv_files_within_sitemap_folders()
+# detect_and_optional_download_and_process_csv_files_within_sitemap_folders()
 
 
 
