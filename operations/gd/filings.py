@@ -432,6 +432,12 @@ def find_duplicates_among_return_folders_or_files_and_delete_unnecesary_files(
         current_file_or_folder_count = file[1]
         current_file_or_folder_creation_date = datetime
 
+        # print()
+        # print(f'current_file_folder_name: {current_file_folder_name}')
+        # print(f'current_file_or_folder_id: {current_file_or_folder_id}')
+        # print()
+
+
         # print(f'current_file_folder_name: {current_file_folder_name}')
 
 
@@ -465,6 +471,8 @@ def find_duplicates_among_return_folders_or_files_and_delete_unnecesary_files(
                     'file_creation_date': current_file_or_folder_creation_date,
                     'file_type': current_file_or_folder_type
                 })
+
+
 
 
             # print(f"list_of_duplicate_csv_files_within_current_folder: {list_of_duplicate_csv_files_within_current_folder}")
@@ -571,7 +579,7 @@ def find_duplicates_among_return_folders_or_files_and_delete_unnecesary_files(
                 # print(current_file_or_folder_value)
                 # print(file_index)
 
-                file_index += 1
+            file_index += 1
 
         # if file within each (sitemap) folder is not a csv file, delete it
         if is_focus_on_scraped_CSVs == True and is_delete_non_csv == True and current_file_or_folder_type != 'text/csv':
@@ -603,6 +611,8 @@ def find_duplicates_among_return_folders_or_files_and_delete_unnecesary_files(
             # print(
             #     f"'file_id': {file_id}, file_name': {file_name}, file_count': {file_count}"
             # )
+
+
 
 
 
@@ -793,9 +803,10 @@ def delete_duplicate_folders_or_csv_files_in_specified_dictionary_of_folders_and
                     try:
 
                         # print(f'most_recent_duplicates_creation_date: {most_recent_duplicates_creation_date}')
+                        print(f'duplicate_files_file_id: {duplicate_files_file_id}')
                         print('This file is not the most_recent_file')
-                        service = Create_Service(client_secret_file, api_name, api_version, scopes)
-                        delete_duplicate_file = service.files().delete(fileId=duplicate_files_file_id).execute()
+                        # service = Create_Service(client_secret_file, api_name, api_version, scopes)
+                        # delete_duplicate_file = service.files().delete(fileId=duplicate_files_file_id).execute()
 
                         # print(f'DELETED FILE INFO: {delete_duplicate_file}')
 
@@ -885,42 +896,3 @@ delete_duplicate_sitemap_folders_other_unnecessary_files_within_webscraper_folde
 
 # 3
 # detect_and_optional_download_and_process_csv_files_within_sitemap_folders()
-
-
-
-
-
-
-
-
-
-
-# print(f'files_in_webscraper_folder: {files_in_webscraper_folder}')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# file_response = service.files().list().execute()
-# files_dict = file_response['files']
-#
-# for file in files_dict:
-#     print(file['name'])
-
-
