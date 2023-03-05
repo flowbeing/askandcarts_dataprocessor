@@ -141,9 +141,9 @@ def filter_fnp_ae_scraped_data(
                 if (product_in_focus_currency == 'SGD'):
                     product_in_focus_currency = 'S$'
                 elif (product_in_focus_currency == 'AED'):
-                    product_in_focus_currency = 'AED'
+                    product_in_focus_currency = 'AED '
                 elif (product_in_focus_currency == 'USD'):
-                    product_in_focus_currency = '$ '
+                    product_in_focus_currency = '$'
                 # elif (product_in_focus_currency == 'GBP'):
                 #     product_in_focus_currency = '£'
                 else:
@@ -151,6 +151,8 @@ def filter_fnp_ae_scraped_data(
 
                 # defining and setting current product's price
                 product_in_focus_price = product_in_focus_currency + f'{product_in_focus_current_price_float:,.2f}'  # !!
+
+
                 current_price[countLinkNumber] = product_in_focus_price
 
             except:
@@ -189,7 +191,7 @@ def filter_fnp_ae_scraped_data(
     print(f'num of items after_initial_drop_na: {len_after_initial_drop_na}')
     print(f"num of items removed from fnp_ae's scrapped data: {num_items_removed_from_list}")
 
-    cleaned_up_scraped_data_fnp_ae.to_csv(f'{all_filtered_data_folder}{file_name}_FILTERED', index=False)
+    cleaned_up_scraped_data_fnp_ae.to_csv(f'{all_filtered_data_folder}{file_name[:-4]}_FILTERED.csv', index=False)
 
 
     return len(cleaned_up_scraped_data_fnp_ae.index)

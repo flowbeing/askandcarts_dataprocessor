@@ -1,5 +1,6 @@
 import datetime
 import json
+import time
 
 import ast
 import codecs
@@ -47,6 +48,7 @@ def convert_minimum_profit(
 
     minimum_profit_target_conversion_dict = json.loads(minimum_profit_target_conversion_json)
 
+    print()
     print(minimum_profit_target_conversion_dict)
 
     time_last_update = datetime.datetime.strptime(
@@ -71,6 +73,7 @@ def convert_minimum_profit(
 
     print(f'time_diff_last_update: {time_from_last_update}')
     print(f'twenty_four_hours: {twenty_four_hours_minus_a_micro_second}')
+    print()
 
     # print(twenty_four_hours_as_seconds  - time_from_last_update_as_seconds)
 
@@ -95,6 +98,7 @@ def convert_minimum_profit(
             'status_code': status_code,
             'result': result
         }
+
 
     # if the last exchange rate info retrieval was performed a day ago, update it..
     if time_from_last_update > twenty_four_hours_minus_a_micro_second:
@@ -146,8 +150,8 @@ def convert_minimum_profit(
 
         minimum_profit_target_conversion_dict_as_json = json.dumps(minimum_profit_target_conversion_dict)
 
-        print()
-        print(minimum_profit_target_usd_to_sgd_result_dict)
+         # print()
+        # print(minimum_profit_target_usd_to_sgd_result_dict)
         # print(minimum_profit_target_usd_to_aed_result_dict)
 
         # write update to file
@@ -159,27 +163,23 @@ def convert_minimum_profit(
 
             minimum_profit_target_usd_file.close()
 
+        # time.sleep(5) # time allowance for retrieval and updating of exchange amounts and rate.
 
-    print(minimum_profit_target_conversion_dict)
 
+    # print(minimum_profit_target_conversion_dict)
 
     return_value = {}
 
-    if is_usd_to_sgd:
+    if is_usd_to_sgd and is_get_eur_to_sgd_exchange_rate:
+        return_value['minimum_profit_target_usd_to_sgd'] = \
+            minimum_profit_target_conversion_dict['minimum_profit_target_usd_to_sgd']
+        return_value['eur_to_sgd_exchange_rate'] = \
+            minimum_profit_target_conversion_dict['eur_to_sgd_exchange_rate']
+    elif is_usd_to_sgd:
         return_value['minimum_profit_target_usd_to_sgd'] = \
             minimum_profit_target_conversion_dict['minimum_profit_target_usd_to_sgd']
     elif is_usd_to_aed:
         return_value['minimum_profit_target_usd_to_aed'] = \
             minimum_profit_target_conversion_dict['minimum_profit_target_usd_to_aed']
-    elif is_get_eur_to_sgd_exchange_rate:
-        return_value['minimum_profit_target_usd_to_sgd'] = \
-            minimum_profit_target_conversion_dict['minimum_profit_target_usd_to_sgd']
-        return_value['eur_to_sgd_exchange_rate'] = \
-            minimum_profit_target_conversion_dict['eur_to_sgd_exchange_rate']
 
     return return_value
-
-
-convert_minimum_profit(
-    is_usd_to_sgd=True
-)

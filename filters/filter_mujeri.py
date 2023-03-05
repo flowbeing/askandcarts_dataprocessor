@@ -203,7 +203,7 @@ def filter_mujeri_scraped_data(
     print(f'num of items after_initial_drop_na: {len_after_initial_drop_na}')
     print(f"num of items removed from mujeri's scrapped data: {num_items_removed_from_list}")
 
-    cleaned_up_scraped_data_mujeri.to_csv(f'{all_filtered_data_folder}{file_name}_FILTERED', index=False)
+    cleaned_up_scraped_data_mujeri.to_csv(f'{all_filtered_data_folder}{file_name[:-4]}_FILTERED.csv', index=False)
 
     return len(cleaned_up_scraped_data_mujeri.index)
 
