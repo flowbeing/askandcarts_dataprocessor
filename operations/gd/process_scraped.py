@@ -1,6 +1,7 @@
 import time
 import traceback
-import currency_converter as c
+
+from operations.other_operations.convert_minimum_profit import convert_minimum_profit
 
 from settings.commissions import *
 from filters.filter_amazon import *
@@ -45,6 +46,22 @@ def process_scraped_site(
     list_of_non_amazon_variants = list(commission_per_site.keys())[3:]
 
     current_csv_file_data_points_count = 0
+
+    minimum_profit = 10000  # 10,000 to allow for easy spotting of errors
+
+    if 'USA' in scraped_sitemap_csv_file_name or 'US' in scraped_sitemap_csv_file_name:
+        minimum_profit = 150
+    # because jimmy_choo returns singapore prices as eur
+    elif 'SINGAPORE' in scraped_sitemap_csv_file_name and 'JIMMY_CHOO' in scraped_sitemap_csv_file_name:
+        minimum_profit = convert_minimum_profit(
+            is_usd_to_sgd=True,
+            is_get_eur_to_sgd_exchange_rate=True
+        )
+    elif 'SINGAPORE' in scraped_sitemap_csv_file_name:
+        minimum_profit = convert_minimum_profit(
+            is_usd_to_sgd=True
+        )
+
 
 
     print()
