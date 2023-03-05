@@ -17,6 +17,12 @@ rimowa_scraped_data_folder = '/Users/admin/OneDrive/docs/affiliate/scraped_data/
 theluxurycloset_scraped_data_folder = '/Users/admin/OneDrive/docs/affiliate/scraped_data/the_luxury_closet/'
 watches_com_scraped_data_folder = '/Users/admin/OneDrive/docs/affiliate/scraped_data/watches_com/'
 
+# FOLDERS -> FILTERED DATA
+all_filtered_data_folder = '/Users/admin/OneDrive/docs/affiliate/filtered_data/'
+
+# FOLDERS -> OTHER SETTINGS DATA
+other_settings_data_folder = '/Users/admin/OneDrive/docs/affiliate/other_settings_data/'
+
 
 # FOLDER AND FILENAMES -> UPDATE SITEMAPS
 update_sitemaps_folder = '/Users/admin/OneDrive/docs/affiliate/sitemaps/update_sitemaps/'

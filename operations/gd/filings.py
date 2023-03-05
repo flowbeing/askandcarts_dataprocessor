@@ -199,6 +199,8 @@ def detect_and_optional_download_and_process_files_within_returned_folders(
     filter_operation_error_count = 1
     csv_file_count = 1
 
+    all_scraped_csv_files_data_points_count = 0
+
     for folder_info in returned_folders:
         current_folder_filetype = folder_info['mimeType']
         if current_folder_filetype == 'application/vnd.google-apps.folder':
@@ -297,10 +299,16 @@ def detect_and_optional_download_and_process_files_within_returned_folders(
 
                         # PERFORM FILTER OPERATION ON CURRENT SITEMAP'S (SCRAPED SITE'S) CSV FILE
                         try:
-                            process_scraped_site(
+                            current_csv_file_data_points_count = process_scraped_site(
                                 scraped_sitemap_csv_file_name=csv_filename,
                                 scraped_sitemap_csv_file_address=csv_file_write_path
                             )
+
+                            all_scraped_csv_files_data_points_count += current_csv_file_data_points_count
+
+                            print(f'-> Number of data point: {current_csv_file_data_points_count} <-')
+                            print()
+
                         except:
 
                             filter_error_log_file_path = f"{all_scraped_data_folder}filter_errors_log.txt"
@@ -334,19 +342,21 @@ def detect_and_optional_download_and_process_files_within_returned_folders(
                             pass
 
 
-
-
-
             except HttpError as error:
                 print(F'An error occurred: {error}')
                 file = None
 
 
-
             files_within_each_folder[current_folder_name] = files_within_current_sitemap_folder
+
+
         else:
             raise Exception(f'A file within {folder_name} is not a folder: \n'
                             f'{folder_info["name"]}')
+
+    print()
+    print(f'-> Total number of data point: {all_scraped_csv_files_data_points_count} <-')
+    print()
 
     return files_within_each_folder
 

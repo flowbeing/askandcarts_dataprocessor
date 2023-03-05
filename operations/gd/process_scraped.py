@@ -1,5 +1,6 @@
 import time
 import traceback
+import currency_converter as c
 
 from settings.commissions import *
 from filters.filter_amazon import *
@@ -33,6 +34,7 @@ filter_functions_per_site = {
 
 # future -> rimowa, rado, nanushka
 
+
 def process_scraped_site(
         scraped_sitemap_csv_file_name,
         scraped_sitemap_csv_file_address
@@ -41,6 +43,9 @@ def process_scraped_site(
     list_of_amazon_variants = list(commission_per_site.keys())[0:3]
     list_of_amazon_countries_syntax = ['_UAE_', '_SINGAPORE_', ['_USA_', '_US_']]
     list_of_non_amazon_variants = list(commission_per_site.keys())[3:]
+
+    current_csv_file_data_points_count = 0
+
 
     print()
     # Get the commission for the current product per its relevant amazon variant
@@ -80,13 +85,16 @@ def process_scraped_site(
 
                             amazon_variant_filter_function = filter_functions_per_site[amazon_variant]
 
-                            amazon_filter_data = amazon_variant_filter_function(
+                            amazon_filter_data_points_count = amazon_variant_filter_function(
+                                file_name = scraped_sitemap_csv_file_name,
                                 file_address=scraped_sitemap_csv_file_address,
                                 minimum_profit_target=150,
                                 commission_per_sale=current_products_commission_as_per_amazon_variant,
                                 minimum_ratedBy=3,
                                 ref_link=''
                             )
+
+                            current_csv_file_data_points_count = amazon_filter_data_points_count
 
                             # print(f'{amazon_filter_data}')
 
@@ -122,12 +130,15 @@ def process_scraped_site(
                     # print(f'non_amazon_variant_filter_function: {non_amazon_variant_filter_function}')
 
 
-                    non_amazon_filter_data = non_amazon_variant_filter_function(
+                    non_amazon_filter_data_points_count = non_amazon_variant_filter_function(
+                        file_name=scraped_sitemap_csv_file_name,
                         file_address=scraped_sitemap_csv_file_address,
                         minimum_profit_target=150,
                         commission_per_sale=non_amazon_variants_commission,
                         ref_link=''
                     )
+
+                    current_csv_file_data_points_count = non_amazon_filter_data_points_count
 
                     # print(f'{non_amazon_filter_data}')
 
@@ -142,6 +153,8 @@ def process_scraped_site(
                     raise Exception(f'There was an error while trying to filter {scraped_sitemap_csv_file_name}')
 
                 break
+
+    return current_csv_file_data_points_count
 
 
 duplicates_within_folders = {

@@ -1,11 +1,12 @@
 import pandas as pd
 from settings.pd_settings import *
 
-from settings.default_folder_and_filename_settings import all_scraped_data_folder
+from settings.default_folder_and_filename_settings import all_scraped_data_folder, all_filtered_data_folder
 
 '''productLink, image, name, brandname, description, currentprice'''
 
 def filter_livwatches_scraped_data(
+        file_name,
         file_address,
         minimum_profit_target,
         commission_per_sale,
@@ -213,7 +214,9 @@ def filter_livwatches_scraped_data(
     print(f'num of items after_initial_drop_na: {len_after_initial_drop_na}')
     print(f"num of items removed from livwatches's scrapped data: {num_items_removed_from_list}")
 
-    return cleaned_up_scraped_data_livwatches
+    cleaned_up_scraped_data_livwatches.to_csv(f'{all_filtered_data_folder}{file_name}_FILTERED', index=False)
+
+    return len(cleaned_up_scraped_data_livwatches.index)
 
 # try:
 #     filter_livwatches_scraped_data(

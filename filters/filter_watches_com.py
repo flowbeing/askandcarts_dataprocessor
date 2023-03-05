@@ -1,9 +1,12 @@
 import pandas as pd
 from settings.pd_settings import *
 
+from settings.default_folder_and_filename_settings import all_scraped_data_folder, all_filtered_data_folder
+
 '''productLink, image, name, brandname, description, currentprice'''
 
 def filter_watches_com_scraped_data(
+        file_name,
         file_address,
         minimum_profit_target,
         commission_per_sale,
@@ -32,6 +35,8 @@ def filter_watches_com_scraped_data(
     except:
         raise Exception('There was an error while trying to create essential data sheet')
 
+    len_before_filtering = len(watches_com_scrapped_data.index)
+
     # DROPPING ALL EMPTY DATA
     watches_com_scrapped_data.dropna(inplace=True)
     watches_com_scrapped_data.reset_index(drop=True, inplace=True)
@@ -40,9 +45,6 @@ def filter_watches_com_scraped_data(
 
 
     # print(watches_com_scrapped_data.head(70))
-
-    len_before_filtering = len(watches_com_scrapped_data.index)
-
     # DROPPING ALL PRODUCTS THAT DO NOT HAVE a product link, product image, product name or current price
     # watches_com_scrapped_data = watches_com_scrapped_data.dropna()
     # watches_com_scrapped_data.reset_index(drop=True, inplace=True)
@@ -198,7 +200,9 @@ def filter_watches_com_scraped_data(
     print(f'num of items after_initial_drop_na: {len_after_initial_drop_na}')
     print(f"num of items removed from watches_com's scrapped data: {num_items_removed_from_list}")
 
-    return cleaned_up_scraped_data_watches_com
+    cleaned_up_scraped_data_watches_com.to_csv(f'{all_filtered_data_folder}{file_name}_FILTERED', index=False)
+
+    return len(cleaned_up_scraped_data_watches_com.index)
 
 # try:
 #     filter_watches_com_scraped_data(
