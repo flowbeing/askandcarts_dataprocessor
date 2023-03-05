@@ -13,6 +13,7 @@ def filter_jimmychoo_scraped_data(
         file_name,
         file_address,
         minimum_profit_target,
+        eur_to_sgd_exchange_rate,
         commission_per_sale,
         ref_link = ''
 ):
@@ -132,7 +133,21 @@ def filter_jimmychoo_scraped_data(
             current_price[countLinkNumber] = product_in_focus_currency_symbol + product_in_focus_current_price
 
             product_in_focus_current_price = product_in_focus_current_price.replace(',', '')
-            product_in_focus_current_price_float = float(product_in_focus_current_price)
+
+            # product_in_focus_current_price_float = 0
+
+            #  if 'SINGAPORE' is in the file's name, convert the currency from eur to sgd, and replace the currency
+            # symbol with S$
+            if 'SINGAPORE' in file_name:
+
+                product_in_focus_current_price_float = float(product_in_focus_current_price) * eur_to_sgd_exchange_rate
+                product_in_focus_current_price = f'{product_in_focus_current_price_float:,.2f}'
+                current_price[countLinkNumber] = 'S$' + product_in_focus_current_price
+
+            else:
+
+                product_in_focus_current_price_float = float(product_in_focus_current_price)
+
 
             # defining product's name
             product_in_focus_product_name = product_name[countLinkNumber]

@@ -47,22 +47,32 @@ def process_scraped_site(
 
     current_csv_file_data_points_count = 0
 
+    # OBTAINING MINIMUM PROFIT'S VALUE IN USD
     minimum_profit = 10000  # 10,000 to allow for easy spotting of errors
+    eur_to_sgd_exchange_rate = 0
 
     if 'USA' in scraped_sitemap_csv_file_name or 'US' in scraped_sitemap_csv_file_name:
         minimum_profit = 150
-    # because jimmy_choo returns singapore prices as eur
+    # because jimmy_choo returns singapore prices as eur. Hence the need to convert those prices to sgd
     elif 'SINGAPORE' in scraped_sitemap_csv_file_name and 'JIMMY_CHOO' in scraped_sitemap_csv_file_name:
-        minimum_profit = convert_minimum_profit(
+        conversion = convert_minimum_profit(
             is_usd_to_sgd=True,
             is_get_eur_to_sgd_exchange_rate=True
         )
+        minimum_profit = conversion['minimum_profit_target_usd_to_sgd']
+        eur_to_sgd_exchange_rate = conversion['eur_to_sgd_exchange_rate']
+
     elif 'SINGAPORE' in scraped_sitemap_csv_file_name:
-        minimum_profit = convert_minimum_profit(
+        conversion = convert_minimum_profit(
             is_usd_to_sgd=True
         )
+        minimum_profit = conversion['minimum_profit_target_usd_to_sgd']
 
-
+    elif 'UAE' in scraped_sitemap_csv_file_name:
+        conversion = convert_minimum_profit(
+            is_usd_to_aed=True
+        )
+        minimum_profit = conversion['minimum_profit_target_usd_to_aed']
 
     print()
     # Get the commission for the current product per its relevant amazon variant
@@ -105,7 +115,7 @@ def process_scraped_site(
                             amazon_filter_data_points_count = amazon_variant_filter_function(
                                 file_name = scraped_sitemap_csv_file_name,
                                 file_address=scraped_sitemap_csv_file_address,
-                                minimum_profit_target=150,
+                                minimum_profit_target=minimum_profit,
                                 commission_per_sale=current_products_commission_as_per_amazon_variant,
                                 minimum_ratedBy=3,
                                 ref_link=''
@@ -146,14 +156,26 @@ def process_scraped_site(
                     non_amazon_variant_filter_function = filter_functions_per_site[non_amazon_variant]
                     # print(f'non_amazon_variant_filter_function: {non_amazon_variant_filter_function}')
 
+                    non_amazon_filter_data_points_count = 0
 
-                    non_amazon_filter_data_points_count = non_amazon_variant_filter_function(
-                        file_name=scraped_sitemap_csv_file_name,
-                        file_address=scraped_sitemap_csv_file_address,
-                        minimum_profit_target=150,
-                        commission_per_sale=non_amazon_variants_commission,
-                        ref_link=''
-                    )
+                    if 'JIMMY_CHOO' in scraped_sitemap_csv_file_name:
+                        non_amazon_filter_data_points_count = non_amazon_variant_filter_function(
+                            file_name=scraped_sitemap_csv_file_name,
+                            file_address=scraped_sitemap_csv_file_address,
+                            minimum_profit_target=minimum_profit,
+                            eur_to_sgd_exchange_rate = eur_to_sgd_exchange_rate,
+                            commission_per_sale=non_amazon_variants_commission,
+                            ref_link=''
+                        )
+
+                    else:
+                        non_amazon_filter_data_points_count = non_amazon_variant_filter_function(
+                            file_name=scraped_sitemap_csv_file_name,
+                            file_address=scraped_sitemap_csv_file_address,
+                            minimum_profit_target=minimum_profit,
+                            commission_per_sale=non_amazon_variants_commission,
+                            ref_link=''
+                        )
 
                     current_csv_file_data_points_count = non_amazon_filter_data_points_count
 
