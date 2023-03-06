@@ -25,7 +25,7 @@ def filter_watches_com_scraped_data(
     watches_com_scrapped_data = pd.read_csv(file_address)
 
     watches_com_scrapped_data_columns = watches_com_scrapped_data.columns
-    print(f'watches_com_scrapped_data_columns: {watches_com_scrapped_data_columns}')
+    # print(f'watches_com_scrapped_data_columns: {watches_com_scrapped_data_columns}')
 
     # ESSENTIAL DATA -> UNFILTERED
     try:
@@ -127,7 +127,7 @@ def filter_watches_com_scraped_data(
                 product_in_focus_image_link = product_in_focus_image_link.replace(' ', '')
                 product_in_focus_image_link = product_in_focus_image_link.split(",")
                 product_in_focus_image_link.remove('')
-                print(f'product_in_focus_image_link: {product_in_focus_image_link}')
+                # print(f'product_in_focus_image_link: {product_in_focus_image_link}')
 
                 product_in_focus_image_link = product_in_focus_image_link[-1]  # highest quality
                 product_in_focus_image_link = 'https:' + product_in_focus_image_link

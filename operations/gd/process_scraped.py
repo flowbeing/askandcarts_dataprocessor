@@ -48,25 +48,33 @@ def process_scraped_site(
     current_csv_file_data_points_count = 0
 
     # OBTAINING MINIMUM PROFIT'S VALUE IN USD
+    standard_minimum_profit_usd = 150
+
     minimum_profit = 10000  # 10,000 to allow for easy spotting of errors
-    eur_to_sgd_exchange_rate = 0
+    eur_to_sgd_exchange_rate = 'Not defined'
+    usd_to_sgd_exchange_rate = ''
+    usd_to_aed_exchange_rate = 'Not defined'
     currency_symbol = ''
 
     if 'USA' in scraped_sitemap_csv_file_name or 'US' in scraped_sitemap_csv_file_name:
-        minimum_profit = 150
+        minimum_profit = standard_minimum_profit_usd
         currency_symbol = '$'
 
     # Because jimmy_choo returns singapore prices as eur. Hence, the need to convert those prices to sgd
     elif 'SINGAPORE' in scraped_sitemap_csv_file_name and 'JIMMY_CHOO' in scraped_sitemap_csv_file_name:
         try:
             print('here')
-            conversion = convert_minimum_profit(
+            minimum_profit_usd_to_sgd = convert_minimum_profit(
                 is_usd_to_sgd=True,
                 is_get_eur_to_sgd_exchange_rate=True
             )
-            minimum_profit = conversion['minimum_profit_target_usd_to_sgd']
-            eur_to_sgd_exchange_rate = conversion['eur_to_sgd_exchange_rate']
+
+            minimum_profit_usd_to_sgd = minimum_profit_usd_to_sgd['minimum_profit_target_usd_to_sgd']
+            eur_to_sgd_exchange_rate = minimum_profit_usd_to_sgd['eur_to_sgd_exchange_rate']
+            usd_to_sgd_exchange_rate = standard_minimum_profit_usd / minimum_profit_usd_to_sgd
+
             currency_symbol = 'S$'
+
         except:
             raise Exception('There was an error while:\n '
                             'a. converting the minimum profit from USD to SGD\n'
@@ -75,11 +83,16 @@ def process_scraped_site(
     elif 'SINGAPORE' in scraped_sitemap_csv_file_name:
 
         try:
-            conversion = convert_minimum_profit(
+            minimum_profit_usd_to_sgd = convert_minimum_profit(
                 is_usd_to_sgd=True
             )
-            minimum_profit = conversion['minimum_profit_target_usd_to_sgd']
+
+            minimum_profit_usd_to_sgd = minimum_profit_usd_to_sgd['minimum_profit_target_usd_to_sgd']
+
+            usd_to_sgd_exchange_rate = standard_minimum_profit_usd / minimum_profit_usd_to_sgd
+
             currency_symbol = 'S$'
+
         except:
             raise Exception('There was an error while:\n '
                             'a. converting the minimum profit from USD to SGD')
@@ -87,11 +100,16 @@ def process_scraped_site(
 
     elif 'UAE' in scraped_sitemap_csv_file_name:
         try:
-            conversion = convert_minimum_profit(
+            minimum_profit_usd_to_aed = convert_minimum_profit(
                 is_usd_to_aed=True
             )
-            minimum_profit = conversion['minimum_profit_target_usd_to_aed']
+
+            minimum_profit_target_usd_to_aed = minimum_profit_usd_to_aed['minimum_profit_target_usd_to_aed']
+
+            usd_to_aed_exchange_rate = standard_minimum_profit_usd / minimum_profit_target_usd_to_aed
+
             currency_symbol = 'AED '
+
         except:
             raise Exception('There was an error while:\n '
                             'a. converting the minimum profit from USD to AED')
@@ -101,6 +119,8 @@ def process_scraped_site(
     print()
     print(f'minimum_profit: {currency_symbol}{minimum_profit}')
     print(f'eur_to_sgd_exchange_rate: {eur_to_sgd_exchange_rate}')
+    print(f'usd_to_sgd_exchange_rate: {usd_to_sgd_exchange_rate}')
+    print(f'usd_to_aed_exchange_rate: {usd_to_aed_exchange_rate}')
 
     print()
     # Get the commission for the current product per its relevant amazon variant

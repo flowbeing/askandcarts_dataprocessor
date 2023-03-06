@@ -85,9 +85,11 @@ def filter_fwrd_scraped_data(
             else:
                 product_in_focus_current_price = product_in_focus_discount_price
 
+            current_price[countLinkNumber] = product_in_focus_current_price
+
             product_in_focus_current_price = product_in_focus_current_price.split(' ')
             product_in_focus_current_price = product_in_focus_current_price[-1] # The last element usually is the price
-            current_price[countLinkNumber] = product_in_focus_current_price
+
 
             # print(f'product_in_focus_current_price: {product_in_focus_current_price}')
 
