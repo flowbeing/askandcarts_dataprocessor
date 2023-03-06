@@ -212,34 +212,78 @@ def process_scraped_site(
 
                     non_amazon_filter_data_points_count = 0
 
-                    if 'JIMMY_CHOO' in scraped_sitemap_csv_file_name:
-                        non_amazon_filter_data_points_count = filter_jimmychoo_scraped_data(
-                            file_name=scraped_sitemap_csv_file_name,
-                            file_address=scraped_sitemap_csv_file_address,
-                            minimum_profit_target=minimum_profit,
-                            eur_to_sgd_exchange_rate = eur_to_sgd_exchange_rate,
-                            commission_per_sale=non_amazon_variants_commission,
-                            ref_link=''
-                        )
+                    # filter JIMMY_CHOO Singapore's products and convert every price from EUR to SGD while doing it..
+                    # Due to JIMMY_CHOO Singapore's
+                    if 'JIMMY_CHOO' in scraped_sitemap_csv_file_name and 'SINGAPORE' in scraped_sitemap_csv_file_name:
+
+                        while non_amazon_filter_data_points_count == 0:
+
+                            non_amazon_filter_data_points_count = filter_jimmychoo_scraped_data(
+                                file_name=scraped_sitemap_csv_file_name,
+                                file_address=scraped_sitemap_csv_file_address,
+                                minimum_profit_target=minimum_profit,
+                                eur_to_sgd_exchange_rate=eur_to_sgd_exchange_rate,
+                                commission_per_sale=non_amazon_variants_commission,
+                                ref_link=''
+                            )
+
+                            minimum_profit -= 1  # expected to be in SGD
+
+                            profit_baseline = 100 * usd_to_sgd_exchange_rate  # 100 dollars to SGD
+
+                            if minimum_profit <= profit_baseline:
+                                break
 
                     elif 'THE_LUXURY_CLOSET' in scraped_sitemap_csv_file_name and 'SINGAPORE' in scraped_sitemap_csv_file_name:
-                        non_amazon_filter_data_points_count = filter_theluxurycloset_scraped_data(
-                            file_name=scraped_sitemap_csv_file_name,
-                            file_address=scraped_sitemap_csv_file_address,
-                            minimum_profit_target=minimum_profit,
-                            usd_to_sgd_exchange_rate = usd_to_sgd_exchange_rate,
-                            commission_per_sale=non_amazon_variants_commission,
-                            ref_link=''
-                        )
+
+                        while non_amazon_filter_data_points_count == 0:
+
+                            non_amazon_filter_data_points_count = filter_theluxurycloset_scraped_data(
+                                file_name=scraped_sitemap_csv_file_name,
+                                file_address=scraped_sitemap_csv_file_address,
+                                minimum_profit_target=minimum_profit,
+                                usd_to_sgd_exchange_rate = usd_to_sgd_exchange_rate,
+                                commission_per_sale=non_amazon_variants_commission,
+                                ref_link=''
+                            )
+
+                            minimum_profit -= 1  # expected to be in SGD
+
+                            profit_baseline = 100 * usd_to_sgd_exchange_rate  # 100 dollars to SGD
+
+                            if minimum_profit <= profit_baseline:
+                                break
 
                     else:
-                        non_amazon_filter_data_points_count = non_amazon_variant_filter_function(
-                            file_name=scraped_sitemap_csv_file_name,
-                            file_address=scraped_sitemap_csv_file_address,
-                            minimum_profit_target=minimum_profit,
-                            commission_per_sale=non_amazon_variants_commission,
-                            ref_link=''
-                        )
+
+                        while non_amazon_filter_data_points_count == 0:
+
+                            non_amazon_filter_data_points_count = non_amazon_variant_filter_function(
+                                file_name=scraped_sitemap_csv_file_name,
+                                file_address=scraped_sitemap_csv_file_address,
+                                minimum_profit_target=minimum_profit,
+                                commission_per_sale=non_amazon_variants_commission,
+                                ref_link=''
+                            )
+
+                            minimum_profit -= 1  # expected to be in different currencies (USD , SGD, AED)
+
+                            profit_baseline = 0
+
+                            # defining profit baseline
+                            if 'UAE' in scraped_sitemap_csv_file_name:
+                                profit_baseline = 100 * usd_to_aed_exchange_rate  # 100 dollars to AED
+                            elif 'SINGAPORE' in scraped_sitemap_csv_file_name:
+                                profit_baseline = 100 * usd_to_sgd_exchange_rate  # 100 dollars to SGD
+                            else:
+                                profit_baseline = standard_minimum_profit_usd
+
+                            print(f'minimum_profit_here: {minimum_profit}')
+                            print(f'profit_baseline: {profit_baseline}')
+
+
+                            if minimum_profit <= profit_baseline:
+                                break
 
                     current_csv_file_data_points_count = non_amazon_filter_data_points_count
 
