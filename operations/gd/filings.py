@@ -200,6 +200,7 @@ def detect_and_optional_download_and_process_files_within_returned_folders(
     csv_file_count = 1
 
     all_scraped_csv_files_data_points_count = 0
+    empty_csv_files_after_filtering_count = 0
 
     for folder_info in returned_folders:
         current_folder_filetype = folder_info['mimeType']
@@ -299,12 +300,17 @@ def detect_and_optional_download_and_process_files_within_returned_folders(
 
                         # PERFORM FILTER OPERATION ON CURRENT SITEMAP'S (SCRAPED SITE'S) CSV FILE
                         try:
-                            current_csv_file_data_points_count = process_scraped_site(
+                            filter_csv_file = process_scraped_site(
                                 scraped_sitemap_csv_file_name=csv_filename,
                                 scraped_sitemap_csv_file_address=csv_file_write_path
                             )
 
+                            current_csv_file_data_points_count = filter_csv_file[0]
                             all_scraped_csv_files_data_points_count += current_csv_file_data_points_count
+
+                            is_file_empty_after_filtering = filter_csv_file[1]
+                            if is_file_empty_after_filtering == True:
+                                empty_csv_files_after_filtering_count += 1
 
                             print(f'-> Number of data point: {current_csv_file_data_points_count} <-')
                             print()
@@ -356,6 +362,7 @@ def detect_and_optional_download_and_process_files_within_returned_folders(
 
     print()
     print(f'-> Total number of data point: {all_scraped_csv_files_data_points_count} <-')
+    print(f'-> Total number of empty csv files: {empty_csv_files_after_filtering_count} <-')
     print()
 
     return files_within_each_folder

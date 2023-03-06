@@ -47,6 +47,7 @@ def process_scraped_site(
     print(f'list_of_non_amazon_variants: {list_of_non_amazon_variants}')
 
     current_csv_file_data_points_count = 0
+    is_file_empty_after_filtering = False
 
     # OBTAINING MINIMUM PROFIT'S VALUE IN USD
     standard_minimum_profit_usd = 150
@@ -164,20 +165,47 @@ def process_scraped_site(
 
                         try:
 
-                            amazon_variant_filter_function = filter_functions_per_site[amazon_variant]
+                            amazon_filter_data_points_count = 0
 
-                            amazon_filter_data_points_count = amazon_variant_filter_function(
-                                file_name = scraped_sitemap_csv_file_name,
-                                file_address=scraped_sitemap_csv_file_address,
-                                minimum_profit_target=minimum_profit,
-                                commission_per_sale=current_products_commission_as_per_amazon_variant,
-                                minimum_ratedBy=3,
-                                ref_link=''
-                            )
+                            while amazon_filter_data_points_count == 0:
+
+                                amazon_variant_filter_function = filter_functions_per_site[amazon_variant]
+
+                                amazon_filter_data_points_count = amazon_variant_filter_function(
+                                    file_name = scraped_sitemap_csv_file_name,
+                                    file_address=scraped_sitemap_csv_file_address,
+                                    minimum_profit_target=minimum_profit,
+                                    commission_per_sale=current_products_commission_as_per_amazon_variant,
+                                    minimum_ratedBy=3,
+                                    ref_link=''
+                                )
+
+                                minimum_profit -= 1  # expected to be in different currencies (USD , SGD, AED)
+
+                                profit_baseline = 0
+
+                                # defining profit baseline
+                                if 'UAE' in scraped_sitemap_csv_file_name:
+                                    profit_baseline = 100 * usd_to_aed_exchange_rate  # 100 dollars to AED
+                                elif 'SINGAPORE' in scraped_sitemap_csv_file_name:
+                                    profit_baseline = 100 * usd_to_sgd_exchange_rate  # 100 dollars to SGD
+                                else:
+                                    profit_baseline = standard_minimum_profit_usd
+
+                                print(f'minimum_profit_here: {minimum_profit}')
+                                print(f'profit_baseline: {profit_baseline}')
+
+                                if minimum_profit <= profit_baseline:
+                                    break
+
+                            if amazon_filter_data_points_count == 0:
+                                is_file_empty_after_filtering = True
 
                             current_csv_file_data_points_count = amazon_filter_data_points_count
 
-                            # print(f'{amazon_filter_data}')
+                                # print(f'{amazon_filter_data}')
+
+
 
 
                         except:
@@ -234,6 +262,10 @@ def process_scraped_site(
                             if minimum_profit <= profit_baseline:
                                 break
 
+                        if non_amazon_filter_data_points_count == 0:
+                            is_file_empty_after_filtering = True
+
+
                     elif 'THE_LUXURY_CLOSET' in scraped_sitemap_csv_file_name and 'SINGAPORE' in scraped_sitemap_csv_file_name:
 
                         while non_amazon_filter_data_points_count == 0:
@@ -253,6 +285,9 @@ def process_scraped_site(
 
                             if minimum_profit <= profit_baseline:
                                 break
+
+                        if non_amazon_filter_data_points_count == 0:
+                            is_file_empty_after_filtering = True
 
                     else:
 
@@ -285,6 +320,9 @@ def process_scraped_site(
                             if minimum_profit <= profit_baseline:
                                 break
 
+                        if non_amazon_filter_data_points_count == 0:
+                            is_file_empty_after_filtering = True
+
                     current_csv_file_data_points_count = non_amazon_filter_data_points_count
 
                     # print(f'{non_amazon_filter_data}')
@@ -301,7 +339,7 @@ def process_scraped_site(
 
                 break
 
-    return current_csv_file_data_points_count
+    return [current_csv_file_data_points_count, is_file_empty_after_filtering]
 
 
 duplicates_within_folders = {
