@@ -44,6 +44,7 @@ def process_scraped_site(
     list_of_amazon_variants = list(commission_per_site.keys())[0:3]
     list_of_amazon_countries_syntax = ['_UAE_', '_SINGAPORE_', ['_USA_', '_US_']]
     list_of_non_amazon_variants = list(commission_per_site.keys())[3:]
+    print(f'list_of_non_amazon_variants: {list_of_non_amazon_variants}')
 
     current_csv_file_data_points_count = 0
 
@@ -52,26 +53,29 @@ def process_scraped_site(
 
     minimum_profit = 10000  # 10,000 to allow for easy spotting of errors
     eur_to_sgd_exchange_rate = 'Not defined'
-    usd_to_sgd_exchange_rate = ''
+    usd_to_sgd_exchange_rate = 'Not defined'
     usd_to_aed_exchange_rate = 'Not defined'
+
     currency_symbol = ''
 
-    if 'USA' in scraped_sitemap_csv_file_name or 'US' in scraped_sitemap_csv_file_name:
+    if '_USA_' in scraped_sitemap_csv_file_name or '_US_' in scraped_sitemap_csv_file_name:
         minimum_profit = standard_minimum_profit_usd
         currency_symbol = '$'
 
     # Because jimmy_choo returns singapore prices as eur. Hence, the need to convert those prices to sgd
-    elif 'SINGAPORE' in scraped_sitemap_csv_file_name and 'JIMMY_CHOO' in scraped_sitemap_csv_file_name:
+    elif '_SINGAPORE_' in scraped_sitemap_csv_file_name and 'JIMMY_CHOO' in scraped_sitemap_csv_file_name:
         try:
             print('here')
-            minimum_profit_usd_to_sgd = convert_minimum_profit(
+            minimum_profit_usd_to_sgd_dict = convert_minimum_profit(
                 is_usd_to_sgd=True,
                 is_get_eur_to_sgd_exchange_rate=True
             )
 
-            minimum_profit_usd_to_sgd = minimum_profit_usd_to_sgd['minimum_profit_target_usd_to_sgd']
-            eur_to_sgd_exchange_rate = minimum_profit_usd_to_sgd['eur_to_sgd_exchange_rate']
-            usd_to_sgd_exchange_rate = standard_minimum_profit_usd / minimum_profit_usd_to_sgd
+            value_minimum_profit_usd_to_sgd = minimum_profit_usd_to_sgd_dict['minimum_profit_target_usd_to_sgd']
+            minimum_profit = value_minimum_profit_usd_to_sgd
+
+            eur_to_sgd_exchange_rate = minimum_profit_usd_to_sgd_dict['eur_to_sgd_exchange_rate']
+            usd_to_sgd_exchange_rate = value_minimum_profit_usd_to_sgd / standard_minimum_profit_usd
 
             currency_symbol = 'S$'
 
@@ -80,16 +84,17 @@ def process_scraped_site(
                             'a. converting the minimum profit from USD to SGD\n'
                             'b. retrieving the exchange rate EUR/SGD')
 
-    elif 'SINGAPORE' in scraped_sitemap_csv_file_name:
+    elif '_SINGAPORE_' in scraped_sitemap_csv_file_name:
 
         try:
-            minimum_profit_usd_to_sgd = convert_minimum_profit(
+            minimum_profit_usd_to_sgd_dict = convert_minimum_profit(
                 is_usd_to_sgd=True
             )
 
-            minimum_profit_usd_to_sgd = minimum_profit_usd_to_sgd['minimum_profit_target_usd_to_sgd']
+            value_minimum_profit_usd_to_sgd = minimum_profit_usd_to_sgd_dict['minimum_profit_target_usd_to_sgd']
+            minimum_profit = value_minimum_profit_usd_to_sgd
 
-            usd_to_sgd_exchange_rate = standard_minimum_profit_usd / minimum_profit_usd_to_sgd
+            usd_to_sgd_exchange_rate = value_minimum_profit_usd_to_sgd / standard_minimum_profit_usd
 
             currency_symbol = 'S$'
 
@@ -98,15 +103,16 @@ def process_scraped_site(
                             'a. converting the minimum profit from USD to SGD')
 
 
-    elif 'UAE' in scraped_sitemap_csv_file_name:
+    elif '_UAE_' in scraped_sitemap_csv_file_name:
         try:
             minimum_profit_usd_to_aed = convert_minimum_profit(
                 is_usd_to_aed=True
             )
 
-            minimum_profit_target_usd_to_aed = minimum_profit_usd_to_aed['minimum_profit_target_usd_to_aed']
+            value_minimum_profit_usd_to_aed = minimum_profit_usd_to_aed['minimum_profit_target_usd_to_aed']
+            minimum_profit = value_minimum_profit_usd_to_aed
 
-            usd_to_aed_exchange_rate = standard_minimum_profit_usd / minimum_profit_target_usd_to_aed
+            usd_to_aed_exchange_rate = value_minimum_profit_usd_to_aed / standard_minimum_profit_usd
 
             currency_symbol = 'AED '
 
@@ -117,7 +123,7 @@ def process_scraped_site(
     # time.sleep(5)
 
     print()
-    print(f'minimum_profit: {currency_symbol}{minimum_profit}')
+    print(f'minimum_revenue_per_sale: {currency_symbol}{minimum_profit}')
     print(f'eur_to_sgd_exchange_rate: {eur_to_sgd_exchange_rate}')
     print(f'usd_to_sgd_exchange_rate: {usd_to_sgd_exchange_rate}')
     print(f'usd_to_aed_exchange_rate: {usd_to_aed_exchange_rate}')
@@ -207,11 +213,21 @@ def process_scraped_site(
                     non_amazon_filter_data_points_count = 0
 
                     if 'JIMMY_CHOO' in scraped_sitemap_csv_file_name:
-                        non_amazon_filter_data_points_count = non_amazon_variant_filter_function(
+                        non_amazon_filter_data_points_count = filter_jimmychoo_scraped_data(
                             file_name=scraped_sitemap_csv_file_name,
                             file_address=scraped_sitemap_csv_file_address,
                             minimum_profit_target=minimum_profit,
                             eur_to_sgd_exchange_rate = eur_to_sgd_exchange_rate,
+                            commission_per_sale=non_amazon_variants_commission,
+                            ref_link=''
+                        )
+
+                    elif 'THE_LUXURY_CLOSET' in scraped_sitemap_csv_file_name and 'SINGAPORE' in scraped_sitemap_csv_file_name:
+                        non_amazon_filter_data_points_count = filter_theluxurycloset_scraped_data(
+                            file_name=scraped_sitemap_csv_file_name,
+                            file_address=scraped_sitemap_csv_file_address,
+                            minimum_profit_target=minimum_profit,
+                            usd_to_sgd_exchange_rate = usd_to_sgd_exchange_rate,
                             commission_per_sale=non_amazon_variants_commission,
                             ref_link=''
                         )

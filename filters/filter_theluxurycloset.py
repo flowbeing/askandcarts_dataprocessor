@@ -12,6 +12,7 @@ def filter_theluxurycloset_scraped_data(
         file_address,
         minimum_profit_target,
         commission_per_sale,
+        usd_to_sgd_exchange_rate=0,
         ref_link = ''
 ):
 
@@ -148,9 +149,21 @@ def filter_theluxurycloset_scraped_data(
             # print(f'product_in_focus_currency_symbol: {product_in_focus_currency_symbol}')
             # print(f'product_in_focus_current_price: {product_in_focus_current_price}')
 
+
+            # adding spacing to pricing if 'AED' is not the current currency symbol i.e if the country is not UAE
             if 'AED' not in product_in_focus_currency_symbol:
+
+                # if 'SINGAPORE' is in the file's name, the product's price would have been gathered in 'USD' due to the
+                # luxury closet's website configuration, hence the need to convert it to SGD
+                if 'SINGAPORE' in file_name:
+                    product_in_focus_current_price = product_in_focus_current_price.replace(',', '')
+                    product_in_focus_current_price = \
+                        f'{(float(product_in_focus_current_price) * usd_to_sgd_exchange_rate):,.2f}'
+                    product_in_focus_currency_symbol = 'S$'
+
                 Price[countLinkNumber] = f'{product_in_focus_currency_symbol}{product_in_focus_current_price}'
-            else:
+
+            elif 'AED' in product_in_focus_currency_symbol:
                 Price[countLinkNumber] = f'{product_in_focus_currency_symbol} {product_in_focus_current_price}'
 
             product_in_focus_current_price = product_in_focus_current_price.replace(',', '')
