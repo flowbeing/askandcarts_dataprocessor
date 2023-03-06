@@ -122,9 +122,18 @@ def filter_watches_com_scraped_data(
                 product_link[countLinkNumber] = product_in_focus_product_link
 
                 # defining and setting product's image link
-                index_of_https = imageLink.index('https')
-                index_of_dot_jpg = imageLink.index('.jpg')
-                product_in_focus_image_link = imageLink[index_of_https: index_of_dot_jpg + 4]
+                product_in_focus_image_link = image_link[countLinkNumber]
+                product_in_focus_image_link = product_in_focus_image_link.replace('\n', '')
+                product_in_focus_image_link = product_in_focus_image_link.replace(' ', '')
+                product_in_focus_image_link = product_in_focus_image_link.split(",")
+                product_in_focus_image_link.remove('')
+                print(f'product_in_focus_image_link: {product_in_focus_image_link}')
+
+                product_in_focus_image_link = product_in_focus_image_link[-1]  # highest quality
+                product_in_focus_image_link = 'https:' + product_in_focus_image_link
+                # index_of_https = imageLink.index('https')
+                # index_of_dot_jpg = imageLink.index('.jpg')
+                # product_in_focus_image_link = imageLink[index_of_https: index_of_dot_jpg + 4]
                 # product_in_focus_image_link = product_in_focus_image_link.split('https://')
                 # product_in_focus_image_link = 'https://' + product_in_focus_image_link[-1]
                 image_link[countLinkNumber] = product_in_focus_image_link
