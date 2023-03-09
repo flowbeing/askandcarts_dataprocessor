@@ -1,4 +1,5 @@
 import time
+import traceback
 
 import pandas as pd
 import json
@@ -8,6 +9,9 @@ from settings.q.other_settings import api_key_wx
 from settings.productCategory import productCategories
 from settings.site_names import site_names
 
+from settings.q.default_folder_and_filename_settings import all_scraped_data_folder
+from settings.q.default_folder_and_filename_settings import all_filtered_data_folder
+from settings.q.default_folder_and_filename_settings import all_log_files_folder
 
 def extract_elements_per_row_from_dataframe(
         file_name,
@@ -55,7 +59,7 @@ def extract_elements_per_row_from_dataframe(
         current_row_gender_list = [gender for gender in list_of_genders if gender in file_name]
         # print(f'current_row_gender_list: {current_row_gender_list}')
 
-        current_row_gender_list = \
+        current_row_gender = \
             'UNISEX' if len(current_row_gender_list) > 1 else current_row_gender_list[0].replace('_', '')
 
         # current row's price
@@ -86,7 +90,7 @@ def extract_elements_per_row_from_dataframe(
         print(f'current_row_title: {current_row_title}')
         print(f'current_row_brandname: {current_row_brandname}')
         print(f'current_row_product_category: {current_row_product_category}')
-        print(f'current_row_gender_list: {current_row_gender_list}')
+        print(f'current_row_gender_list: {current_row_gender}')
         print(f'current_row_price: {current_row_price}')
         print(f'current_row_product_link: {current_row_product_link}')
         print(f'current_row_image_link: {current_row_image_link}')
@@ -95,12 +99,25 @@ def extract_elements_per_row_from_dataframe(
         print(f'current_rows_relevant_collection: {current_rows_relevant_collection}')
 
 
-        # try:
-        #     populate_site_db(
-        #         collection_name=current_row_country_name
-        #     )
-        #
-        # time.sleep(3.33) # accounting for api limit of 200 request per minute
+        try:
+
+            populate_site_db(
+                collection_name=current_row_country_name,
+                title=current_row_title,
+                brand_name=current_row_brandname,
+                product_category=current_row_product_category,
+                gender=current_row_gender,
+                price=current_row_price,
+                product_link=current_row_product_link,
+                image_src=current_row_image_link,
+                site_name=current_row_site_name
+            )
+
+        except:
+            traceback.print_exc()
+
+
+        time.sleep(3.33) # accounting for api limit of 200 request per minute
 
 
 
@@ -165,3 +182,12 @@ def populate_site_db(
 # error_details = error_details['code']
 #
 # print(f'error: {error_details}')
+
+wx_upload_error_dict = {}
+wx_upload_error_dict_to_json = json.dumps(wx_upload_error_dict)
+
+
+# traceback.print_exc()
+
+with open(f'{all_log_files_folder}data_to_wx_upload_error.txt', 'w') as wx_upload_error:
+    wx_upload_error.write(wx_upload_error_dict_to_json)

@@ -20,8 +20,11 @@ watches_com_scraped_data_folder = '/Users/admin/OneDrive/docs/affiliate/scraped_
 # FOLDERS -> FILTERED DATA
 all_filtered_data_folder = '/Users/admin/OneDrive/docs/affiliate/filtered_data/'
 
-# FOLDERS -> OTHER SETTINGS DATA
+# FOLDERS -> LOG FILES
 other_settings_data_folder = '/Users/admin/OneDrive/docs/affiliate/other_settings_data/'
+
+# FOLDERS -> FILTERED DATA
+all_log_files_folder = '/Users/admin/OneDrive/docs/affiliate/logs/'
 
 
 # FOLDER AND FILENAMES -> UPDATE SITEMAPS
