@@ -1,6 +1,10 @@
 from settings.q.pd_settings import *
 
-from settings.q.default_folder_and_filename_settings import all_filtered_data_folder
+from operations.wx.bcknd import extract_elements_per_row_from_dataframe
+
+from settings.q.default_folder_and_filename_settings import all_filtered_data_folder, all_scraped_data_folder #
+
+from settings.q.commissions import commission_per_site
 
 '''productLink, image, name, brandname, description, currentprice'''
 
@@ -195,19 +199,26 @@ def filter_amazon_scraped_data(
 
     cleaned_up_scraped_data_amazon.to_csv(f'{all_filtered_data_folder}{file_name[:-4]}_FILTERED.csv', index=False)
 
+    extract_elements_per_row_from_dataframe(
+        file_name=file_name,
+        dataframe=cleaned_up_scraped_data_amazon
+    )
+
     return len(cleaned_up_scraped_data_amazon.index)
 
 
-# try:
-#     print(
-#         filter_amazon_scraped_data(
-#             file_address=f'{all_scraped_data_folder}fourty_one_UAE_SHOES_AMAZON_MEN.csv',
-#             minimum_profit_target=120,
-#             commission_per_sale=commission_per_site['AMAZON_SG']['WATCHES'],
-#             minimum_ratedBy=3,
-#             ref_link=''
-#         )
-#     )
-#
-# except:
-#     raise Exception('There was an error while trying to filters amazon scrapped data')
+try:
+    file_name = 'fourty_eight_UAE_TRAVEL_BAGS_AMAZON_MEN_AND_WOMEN'
+
+    print(
+        filter_amazon_scraped_data(
+            file_name=file_name,
+            file_address=f'{all_scraped_data_folder}{file_name}.csv',
+            minimum_profit_target=120,
+            commission_per_sale=commission_per_site['AMAZON_SG']['WATCHES'],
+            minimum_ratedBy=3,
+            ref_link=''
+        )
+    )
+except:
+    raise Exception('There was an error while trying to filters amazon scrapped data')
