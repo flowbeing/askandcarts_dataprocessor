@@ -1,9 +1,12 @@
+import time
+
 import pandas as pd
 import json
 import requests
 
 from settings.q.other_settings import api_key_wx
 from settings.productCategory import productCategories
+from settings.site_names import site_names
 
 
 def extract_elements_per_row_from_dataframe(
@@ -19,8 +22,8 @@ def extract_elements_per_row_from_dataframe(
     print()
     print(list_of_columns)
 
-    list_of_countries = ['_UAE_', '_SINGAPORE_', '_US_', '_USA_']
-    list_of_genders = ['_MEN_', '_WOMEN_']
+    list_of_countries = ['_UAE_', '_SINGAPORE_', '_USA_', '_US_']
+    list_of_genders = ['_MEN', '_WOMEN']
 
     for index in range(num_of_rows_in_dataframe):
 
@@ -47,7 +50,10 @@ def extract_elements_per_row_from_dataframe(
 
         # current row's applicable gender
         current_row_gender_list = [gender for gender in list_of_genders if gender in file_name]
-        current_row_gender_list = 'UNISEX' if len(current_row_gender_list) > 1 else current_row_gender_list[0]
+        # print(f'current_row_gender_list: {current_row_gender_list}')
+
+        current_row_gender_list = \
+            'UNISEX' if len(current_row_gender_list) > 1 else current_row_gender_list[0].replace('_', '')
 
         # current row's price
         current_row_price = current_row_data['Price']
@@ -55,8 +61,21 @@ def extract_elements_per_row_from_dataframe(
         # current row's product link
         current_row_product_link = current_row_data['productLink']
 
-        # current row's product link
+        # current row's image link
+        current_row_image_link = current_row_data['Image Src']
 
+        # current row's site name
+        current_row_site_name = [site_name for site_name in site_names if site_name in file_name][0]
+
+        # obtaining collection name that's associated with the current row's data
+        # current row's country name
+        current_row_country_name = \
+            [country for country in list_of_countries if country in file_name]
+
+        current_row_country_name = \
+            'USA' if '_US_' in file_name or '_USA_' in file_name else current_row_country_name[0].replace('_', '')
+
+        current_rows_relevant_collection = f'{current_row_country_name.lower()}Products'
 
 
 
@@ -68,9 +87,18 @@ def extract_elements_per_row_from_dataframe(
         print(f'current_row_gender_list: {current_row_gender_list}')
         print(f'current_row_price: {current_row_price}')
         print(f'current_row_product_link: {current_row_product_link}')
+        print(f'current_row_image_link: {current_row_image_link}')
+        print(f'current_row_site_name: {current_row_site_name}')
+        print(f'current_row_country_name: {current_row_country_name}')
+        print(f'current_rows_relevant_collection: {current_rows_relevant_collection}')
 
 
-
+        # try:
+        #     populate_site_db(
+        #         collection_name=current_row_country_name
+        #     )
+        #
+        # time.sleep(3.33) # accounting for api limit of 200 request per minute
 
 
 
