@@ -27,6 +27,9 @@ def extract_elements_per_row_from_dataframe(
 
     for index in range(num_of_rows_in_dataframe):
 
+        print()
+        print(f'current index: {index}')
+
         current_row_data = dataframe.loc[index]
 
         # current row's title
@@ -80,7 +83,6 @@ def extract_elements_per_row_from_dataframe(
 
 
 
-        print()
         print(f'current_row_title: {current_row_title}')
         print(f'current_row_brandname: {current_row_brandname}')
         print(f'current_row_product_category: {current_row_product_category}')
