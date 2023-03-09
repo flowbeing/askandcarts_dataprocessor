@@ -3,7 +3,8 @@ import time
 import requests
 import json
 import ii_convert_locally_saved_sitemaps_to_dictionary as clsstd
-from settings import other_settings as os, default_folder_and_filename_settings as dffns
+from settings import m as os
+from settings.q import default_folder_and_filename_settings as dffns
 
 
 # BATCH UPDATE SITEMAPS

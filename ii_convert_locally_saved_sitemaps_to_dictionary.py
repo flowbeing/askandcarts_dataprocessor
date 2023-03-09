@@ -1,7 +1,7 @@
 import os
 import json
 
-from settings import default_folder_and_filename_settings as dffns
+from settings.q import default_folder_and_filename_settings as dffns
 
 
 # CONVERT SITEMAPS' JSON WITHIN JSON FILE TO DICTIONARY

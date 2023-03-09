@@ -2,7 +2,8 @@ import requests
 import json
 import os
 from datetime import datetime
-from settings import other_settings as os, default_folder_and_filename_settings as dffns
+from settings import m as os
+from settings.q import default_folder_and_filename_settings as dffns
 
 url = f"https://api.webscraper.io/api/v1/sitemaps?api_token={os.api_key_ws}"
 

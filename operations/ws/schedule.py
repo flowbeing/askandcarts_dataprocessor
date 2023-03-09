@@ -1,5 +1,5 @@
 import requests
-from settings import other_settings as os
+from settings import m as os
 import ii_convert_locally_saved_sitemaps_to_dictionary as clsstd
 
 import time

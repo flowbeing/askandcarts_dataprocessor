@@ -1,7 +1,6 @@
-import pandas as pd
-from settings.pd_settings import *
+from settings.q.pd_settings import *
 
-from settings.default_folder_and_filename_settings import all_scraped_data_folder, all_filtered_data_folder
+from settings.q.default_folder_and_filename_settings import all_filtered_data_folder
 
 
 '''productLink, image, name, brandname, description, currentprice'''

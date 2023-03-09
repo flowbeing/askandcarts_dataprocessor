@@ -3,7 +3,7 @@ import traceback
 
 from operations.other_operations.convert_minimum_profit import convert_minimum_profit
 
-from settings.commissions import *
+from settings.q.commissions import *
 from filters.filter_amazon import *
 from filters.filter_anthropologie import *
 from filters.filter_ashford import *

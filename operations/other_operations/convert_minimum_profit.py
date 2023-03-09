@@ -1,13 +1,9 @@
 import datetime
 import json
-import time
-
-import ast
-import codecs
 
 import requests
-from settings.default_folder_and_filename_settings import other_settings_data_folder
-from settings.other_settings import api_key_fxr
+from settings.q.default_folder_and_filename_settings import other_settings_data_folder
+from settings.q.other_settings import api_key_fxr
 
 
 def convert_minimum_profit(

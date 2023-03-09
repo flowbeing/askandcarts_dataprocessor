@@ -1,7 +1,7 @@
 import json
 import requests
 
-from settings import other_settings as os
+from settings import m as os
 
 import time
 

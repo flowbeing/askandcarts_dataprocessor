@@ -3,25 +3,20 @@ from __future__ import print_function
 
 import io
 import os
-import csv
 import codecs
-import sys
-import re
 import pickle
 import datetime
-import time
-import traceback
 from collections import namedtuple
 from googleapiclient.errors import HttpError
-from google_auth_oauthlib.flow import Flow, InstalledAppFlow
+from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
+from googleapiclient.http import MediaIoBaseDownload
 from google.auth.transport.requests import Request
 
 from process_scraped import *
 
-from settings.default_folder_and_filename_settings import all_scraped_data_folder, ws_filename
-import settings.other_settings as othersettings
+from settings.q.default_folder_and_filename_settings import all_scraped_data_folder, ws_filename
+import settings.q.other_settings as othersettings
 
 
 def Create_Service(client_secret_file, api_name, api_version, *scopes, prefix=''):
