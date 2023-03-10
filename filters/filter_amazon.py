@@ -14,7 +14,8 @@ def filter_amazon_scraped_data(
         minimum_profit_target,
         commission_per_sale,
         minimum_ratedBy = 2,
-        ref_link = ''
+        ref_link = '',
+        is_wx_upload=False
 ):
 
     if type(file_address) != str and \
@@ -199,26 +200,29 @@ def filter_amazon_scraped_data(
 
     cleaned_up_scraped_data_amazon.to_csv(f'{all_filtered_data_folder}{file_name[:-4]}_FILTERED.csv', index=False)
 
-    extract_elements_per_row_from_dataframe(
-        file_name=file_name[:-4], # to remove '.csv'
-        dataframe=cleaned_up_scraped_data_amazon
-    )
+    # wx upload if cleaned dataframe is not empty and wx upload parameter has been set to true
+    if len_after_filtering > 0 and is_wx_upload == True:
+
+        extract_elements_per_row_from_dataframe(
+            file_name=file_name[:-4], # to remove '.csv'
+            dataframe=cleaned_up_scraped_data_amazon
+        )
 
     return len(cleaned_up_scraped_data_amazon.index)
 
 
-try:
-    file_name = 'eleven_SINGAPORE_WATCHES_AMAZON_WOMEN.csv'
-
-    print(
-        filter_amazon_scraped_data(
-            file_name=file_name,
-            file_address=f'{all_scraped_data_folder}{file_name}',
-            minimum_profit_target=120,
-            commission_per_sale=commission_per_site['AMAZON_SG']['WATCHES'],
-            minimum_ratedBy=3,
-            ref_link=''
-        )
-    )
-except:
-    raise Exception('There was an error while trying to filters amazon scrapped data')
+# try:
+#     file_name = 'eleven_SINGAPORE_WATCHES_AMAZON_WOMEN.csv'
+#
+#     print(
+#         filter_amazon_scraped_data(
+#             file_name=file_name,
+#             file_address=f'{all_scraped_data_folder}{file_name}',
+#             minimum_profit_target=120,
+#             commission_per_sale=commission_per_site['AMAZON_SG']['WATCHES'],
+#             minimum_ratedBy=3,
+#             ref_link=''
+#         )
+#     )
+# except:
+#     raise Exception('There was an error while trying to filters amazon scrapped data')

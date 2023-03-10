@@ -1,5 +1,7 @@
 from settings.q.pd_settings import *
 
+from operations.wx.bcknd import extract_elements_per_row_from_dataframe
+
 from settings.q.default_folder_and_filename_settings import all_filtered_data_folder
 
 
@@ -10,7 +12,8 @@ def filter_fwrd_scraped_data(
         file_address,
         minimum_profit_target,
         commission_per_sale,
-        ref_link = ''
+        ref_link = '',
+        is_wx_upload=False
 ):
 
     if type(file_address) != str and \
@@ -83,6 +86,8 @@ def filter_fwrd_scraped_data(
 
             else:
                 product_in_focus_current_price = product_in_focus_discount_price
+
+            # print(f'product_in_focus_current_price: {product_in_focus_current_price}')
 
             current_price[countLinkNumber] = product_in_focus_current_price
 
@@ -178,8 +183,8 @@ def filter_fwrd_scraped_data(
 
     print(cleaned_up_scraped_data_fwrd)
 
-    cleaned_up_scraped_data_fwrd['Price'] = [float(i.split(" ")[-1][1:].replace(",", "")) for i in
-                                           cleaned_up_scraped_data_fwrd['Price']]
+    # cleaned_up_scraped_data_fwrd['Price'] = [float(i.split(" ")[-1][1:].replace(",", "")) for i in
+    #                                        cleaned_up_scraped_data_fwrd['Price']]
 
     print()
 
@@ -203,6 +208,14 @@ def filter_fwrd_scraped_data(
     print(f"num of items removed from fwrd's scrapped data: {num_items_removed_from_list}")
 
     cleaned_up_scraped_data_fwrd.to_csv(f'{all_filtered_data_folder}{file_name[:-4]}_FILTERED.csv', index=False)
+
+    # wx upload if cleaned dataframe is not empty and wx upload parameter has been set to true
+    if len_after_filtering > 0 and is_wx_upload == True:
+
+        extract_elements_per_row_from_dataframe(
+            file_name=file_name[:-4], # to remove '.csv'
+            dataframe=cleaned_up_scraped_data_fwrd
+        )
 
     return len(cleaned_up_scraped_data_fwrd.index)
 

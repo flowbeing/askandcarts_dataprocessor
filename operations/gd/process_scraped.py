@@ -38,7 +38,8 @@ filter_functions_per_site = {
 
 def process_scraped_site(
         scraped_sitemap_csv_file_name,
-        scraped_sitemap_csv_file_address
+        scraped_sitemap_csv_file_address,
+        is_wx_upload=False
 ):
 
     list_of_amazon_variants = list(commission_per_site.keys())[0:3]
@@ -177,7 +178,8 @@ def process_scraped_site(
                                     minimum_profit_target=minimum_profit,
                                     commission_per_sale=current_products_commission_as_per_amazon_variant,
                                     minimum_ratedBy=3,
-                                    ref_link=''
+                                    ref_link='',
+                                    is_wx_upload=is_wx_upload
                                 )
 
                                 minimum_profit -= 1  # expected to be in different currencies (USD , SGD, AED)
@@ -252,7 +254,8 @@ def process_scraped_site(
                                 minimum_profit_target=minimum_profit,
                                 eur_to_sgd_exchange_rate=eur_to_sgd_exchange_rate,
                                 commission_per_sale=non_amazon_variants_commission,
-                                ref_link=''
+                                ref_link='',
+                                is_wx_upload=is_wx_upload
                             )
 
                             minimum_profit -= 1  # expected to be in SGD
@@ -276,7 +279,8 @@ def process_scraped_site(
                                 minimum_profit_target=minimum_profit,
                                 usd_to_sgd_exchange_rate = usd_to_sgd_exchange_rate,
                                 commission_per_sale=non_amazon_variants_commission,
-                                ref_link=''
+                                ref_link='',
+                                is_wx_upload=is_wx_upload
                             )
 
                             minimum_profit -= 1  # expected to be in SGD
@@ -298,7 +302,8 @@ def process_scraped_site(
                                 file_address=scraped_sitemap_csv_file_address,
                                 minimum_profit_target=minimum_profit,
                                 commission_per_sale=non_amazon_variants_commission,
-                                ref_link=''
+                                ref_link='',
+                                is_wx_upload=is_wx_upload
                             )
 
                             minimum_profit -= 1  # expected to be in different currencies (USD , SGD, AED)
@@ -342,22 +347,22 @@ def process_scraped_site(
     return [current_csv_file_data_points_count, is_file_empty_after_filtering]
 
 
-duplicates_within_folders = {
-}
-
-folder_name_value = duplicates_within_folders.get('folder_name', None)
-
-if folder_name_value == None:
-    folder_name_value = duplicates_within_folders['folder'] = {}
-else:
-    folder_name_value  = duplicates_within_folders['folder']
-
-duplicates_value = folder_name_value.get('duplicates_value', None)
-
-if duplicates_value == None:
-    duplicate_value = folder_name_value['duplicates_value'] = []
-else:
-    duplicates_value = folder_name_value['duplicates_value']
-
-print(duplicates_within_folders)
+# duplicates_within_folders = {
+# }
+#
+# folder_name_value = duplicates_within_folders.get('folder_name', None)
+#
+# if folder_name_value == None:
+#     folder_name_value = duplicates_within_folders['folder'] = {}
+# else:
+#     folder_name_value  = duplicates_within_folders['folder']
+#
+# duplicates_value = folder_name_value.get('duplicates_value', None)
+#
+# if duplicates_value == None:
+#     duplicate_value = folder_name_value['duplicates_value'] = []
+# else:
+#     duplicates_value = folder_name_value['duplicates_value']
+#
+# print(duplicates_within_folders)
 

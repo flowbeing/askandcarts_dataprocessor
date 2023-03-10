@@ -1,5 +1,7 @@
 from settings.q.pd_settings import *
 
+from operations.wx.bcknd import extract_elements_per_row_from_dataframe
+
 from settings.q.default_folder_and_filename_settings import all_filtered_data_folder
 
 
@@ -10,7 +12,8 @@ def filter_fnp_ae_scraped_data(
         file_address,
         minimum_profit_target,
         commission_per_sale,
-        ref_link = ''
+        ref_link = '',
+        is_wx_upload=False
 ):
 
     if type(file_address) != str and \
@@ -189,6 +192,13 @@ def filter_fnp_ae_scraped_data(
 
     cleaned_up_scraped_data_fnp_ae.to_csv(f'{all_filtered_data_folder}{file_name[:-4]}_FILTERED.csv', index=False)
 
+    # wx upload if cleaned dataframe is not empty and wx upload parameter has been set to true
+    if len_after_filtering > 0 and is_wx_upload == True:
+
+        extract_elements_per_row_from_dataframe(
+            file_name=file_name[:-4], # to remove '.csv'
+            dataframe=cleaned_up_scraped_data_fnp_ae
+        )
 
     return len(cleaned_up_scraped_data_fnp_ae.index)
 

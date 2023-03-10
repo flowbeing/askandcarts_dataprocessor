@@ -1,5 +1,7 @@
 from settings.q.pd_settings import *
 
+from operations.wx.bcknd import extract_elements_per_row_from_dataframe
+
 from settings.q.default_folder_and_filename_settings import all_filtered_data_folder
 
 
@@ -11,7 +13,8 @@ def filter_jimmychoo_scraped_data(
         minimum_profit_target,
         eur_to_sgd_exchange_rate,
         commission_per_sale,
-        ref_link = ''
+        ref_link = '',
+        is_wx_upload=False
 ):
 
     if type(file_address) != str and \
@@ -255,6 +258,14 @@ def filter_jimmychoo_scraped_data(
     print(f"num of items removed from jimmychoo's scrapped data: {num_items_removed_from_list}")
 
     cleaned_up_scraped_data_jimmychoo.to_csv(f'{all_filtered_data_folder}{file_name[:-4]}_FILTERED.csv', index=False)
+
+    # wx upload if cleaned dataframe is not empty and wx upload parameter has been set to true
+    if len_after_filtering > 0 and is_wx_upload == True:
+
+        extract_elements_per_row_from_dataframe(
+            file_name=file_name[:-4], # to remove '.csv'
+            dataframe=cleaned_up_scraped_data_jimmychoo
+        )
 
     return len(cleaned_up_scraped_data_jimmychoo.index)
 

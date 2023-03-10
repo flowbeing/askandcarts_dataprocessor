@@ -185,7 +185,8 @@ def detect_and_optional_download_and_process_files_within_returned_folders(
         folder_name,
         returned_folders,
         is_download_sitemaps_csv_file = False,
-        is_process_scraped_site_csv = False
+        is_process_scraped_site_csv = False,
+        is_wx_upload=False
 ):
     print()
     print(f'DETECTING FILES THAT EXIST WITHIN FOLDERS THAT EXIST WITHIN {folder_name} FOLDER')
@@ -298,7 +299,8 @@ def detect_and_optional_download_and_process_files_within_returned_folders(
                         try:
                             filter_csv_file = process_scraped_site(
                                 scraped_sitemap_csv_file_name=csv_filename,
-                                scraped_sitemap_csv_file_address=csv_file_write_path
+                                scraped_sitemap_csv_file_address=csv_file_write_path,
+                                is_wx_upload=is_wx_upload
                             )
 
                             current_csv_file_data_points_count = filter_csv_file[0]
@@ -365,11 +367,11 @@ def detect_and_optional_download_and_process_files_within_returned_folders(
     # log filtered CSVs stats..
     with open(f'{all_filtered_data_folder}filter_operation_stats.txt', 'w') as filtered_CSVs_stats:
         filtered_CSVs_stats.write(f'FILTERED CSVs stats\n')
-        filtered_CSVs_stats.write(f'---------------------')
+        filtered_CSVs_stats.write(f'---------------------\n')
         filtered_CSVs_stats.write(f'Number of csv files that were not filtered: {filter_operation_error_count}\n\n')
 
         filtered_CSVs_stats.write(f'FILTERED CSVs stats\n')
-        filtered_CSVs_stats.write(f'---------------------')
+        filtered_CSVs_stats.write(f'---------------------\n')
         filtered_CSVs_stats.write(
             f'Total number of data points after filter operation: {all_scraped_csv_files_data_points_count}\n'
         )
@@ -908,8 +910,11 @@ def detect_and_optional_download_and_process_csv_files_within_sitemap_folders():
         folder_name=ws_filename,
         returned_folders=folders_in_webscraper_folder,
         is_download_sitemaps_csv_file=False,
-        is_process_scraped_site_csv=True
+        is_process_scraped_site_csv=True,
+        is_wx_upload=True
     )
+
+
 
 
 

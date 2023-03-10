@@ -10,6 +10,6 @@ site_names = {
     'NANUSHKA',
     'RADO',
     'RIMOWA',
-    'THELUXURYCLOSET',
+    'THE_LUXURY_CLOSET',
     'WATCHES_COM'
 }
