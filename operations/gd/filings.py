@@ -192,7 +192,7 @@ def detect_and_optional_download_and_process_files_within_returned_folders(
     print('---------------------------------------------------------------------------------')
     files_within_each_folder = {}
 
-    filter_operation_error_count = 1
+    filter_operation_error_count = 0
     csv_file_count = 1
 
     all_scraped_csv_files_data_points_count = 0
@@ -317,7 +317,7 @@ def detect_and_optional_download_and_process_files_within_returned_folders(
                             filter_error_log_file = open(filter_error_log_file_path, 'a')
 
                             # clear filter error log file if errors are being re-written
-                            if filter_operation_error_count == 1:
+                            if filter_operation_error_count == 0:
                                 with open(filter_error_log_file_path, 'w') as filter_error_log_file_:
                                     filter_error_log_file_.truncate(0)
 
@@ -326,6 +326,7 @@ def detect_and_optional_download_and_process_files_within_returned_folders(
                                         f'--------------\n'
                                     )
 
+                                    filter_operation_error_count = 1
                                     filter_error_log_file_.close()
 
                             # append each error
@@ -360,6 +361,22 @@ def detect_and_optional_download_and_process_files_within_returned_folders(
     print(f'-> Total number of data point: {all_scraped_csv_files_data_points_count} <-')
     print(f'-> Total number of empty csv files: {empty_csv_files_after_filtering_count} <-')
     print()
+
+    # log filtered CSVs stats..
+    with open(f'{all_filtered_data_folder}filter_operation_stats.txt', 'w') as filtered_CSVs_stats:
+        filtered_CSVs_stats.write(f'FILTERED CSVs stats\n')
+        filtered_CSVs_stats.write(f'---------------------')
+        filtered_CSVs_stats.write(f'Number of csv files that were not filtered: {filter_operation_error_count}\n\n')
+
+        filtered_CSVs_stats.write(f'FILTERED CSVs stats\n')
+        filtered_CSVs_stats.write(f'---------------------')
+        filtered_CSVs_stats.write(
+            f'Total number of data points after filter operation: {all_scraped_csv_files_data_points_count}\n'
+        )
+        filtered_CSVs_stats.write(
+            f'Total number of filtered but empty csv files: {empty_csv_files_after_filtering_count}'
+        )
+        filtered_CSVs_stats.close()
 
     return files_within_each_folder
 
