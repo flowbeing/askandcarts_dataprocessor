@@ -143,7 +143,7 @@ def extract_elements_per_row_from_dataframe(
             traceback.print_exc()
 
 
-        time.sleep(0.3) # accounting for api limit of 200 request per minute
+        time.sleep(0.4) # accounting for api limit of 200 request per minute
 
 
 
