@@ -200,7 +200,7 @@ def filter_amazon_scraped_data(
     cleaned_up_scraped_data_amazon.to_csv(f'{all_filtered_data_folder}{file_name[:-4]}_FILTERED.csv', index=False)
 
     extract_elements_per_row_from_dataframe(
-        file_name=file_name,
+        file_name=file_name[:-4], # to remove '.csv'
         dataframe=cleaned_up_scraped_data_amazon
     )
 
@@ -208,12 +208,12 @@ def filter_amazon_scraped_data(
 
 
 try:
-    file_name = 'seventy_four_USA_TRAVEL_BAGS_AMAZON_MEN_AND_WOMEN'
+    file_name = 'seventy_four_USA_TRAVEL_BAGS_AMAZON_MEN_AND_WOMEN.csv'
 
     print(
         filter_amazon_scraped_data(
             file_name=file_name,
-            file_address=f'{all_scraped_data_folder}{file_name}.csv',
+            file_address=f'{all_scraped_data_folder}{file_name}',
             minimum_profit_target=120,
             commission_per_sale=commission_per_site['AMAZON_SG']['WATCHES'],
             minimum_ratedBy=3,

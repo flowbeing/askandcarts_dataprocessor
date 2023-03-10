@@ -15,7 +15,8 @@ from google.auth.transport.requests import Request
 
 from process_scraped import *
 
-from settings.q.default_folder_and_filename_settings import all_scraped_data_folder, all_log_files_folder, ws_filename
+from settings.q.default_folder_and_filename_settings \
+    import all_scraped_data_folder, all_log_files_folder, filter_error_log_filename, ws_filename
 import settings.q.other_settings as othersettings
 
 
@@ -312,7 +313,7 @@ def detect_and_optional_download_and_process_files_within_returned_folders(
 
                         except:
 
-                            filter_error_log_file_path = f"{all_log_files_folder}filter_errors_log.txt"
+                            filter_error_log_file_path = f"{all_log_files_folder}{filter_error_log_filename}"
                             filter_error_log_file = open(filter_error_log_file_path, 'a')
 
                             # clear filter error log file if errors are being re-written

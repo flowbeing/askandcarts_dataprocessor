@@ -9,9 +9,8 @@ from settings.q.other_settings import api_key_wx
 from settings.productCategory import productCategories
 from settings.site_names import site_names
 
-from settings.q.default_folder_and_filename_settings import all_scraped_data_folder
-from settings.q.default_folder_and_filename_settings import all_filtered_data_folder
-from settings.q.default_folder_and_filename_settings import all_log_files_folder
+from settings.q.default_folder_and_filename_settings \
+    import all_scraped_data_folder, all_filtered_data_folder,all_log_files_folder, wx_upload_error_log_filename
 
 def extract_elements_per_row_from_dataframe(
         file_name,
@@ -32,7 +31,7 @@ def extract_elements_per_row_from_dataframe(
     for index in range(num_of_rows_in_dataframe):
 
         print()
-        print(f'current index: {index}')
+        print(f"current row's index: {index}")
 
         current_row_data = dataframe.loc[index]
 
@@ -40,7 +39,7 @@ def extract_elements_per_row_from_dataframe(
         current_row_title =  current_row_data['Title']
 
         # current row's brandname if brand name's has been included in the data set
-        current_row_brandname = current_row_data['brandName'] if 'brandName' in list_of_columns else pd.isnull
+        current_row_brandname = current_row_data['brandName'] if 'brandName' in list_of_columns else ''
 
         # obtaining product category and if product category contains 'BAG', remove the category that irrelevant as per
         # the file name..
@@ -87,22 +86,23 @@ def extract_elements_per_row_from_dataframe(
 
 
 
-        print(f'current_row_title: {current_row_title}')
-        print(f'current_row_brandname: {current_row_brandname}')
-        print(f'current_row_product_category: {current_row_product_category}')
-        print(f'current_row_gender_list: {current_row_gender}')
-        print(f'current_row_price: {current_row_price}')
-        print(f'current_row_product_link: {current_row_product_link}')
-        print(f'current_row_image_link: {current_row_image_link}')
-        print(f'current_row_site_name: {current_row_site_name}')
-        print(f'current_row_country_name: {current_row_country_name}')
-        print(f'current_rows_relevant_collection: {current_rows_relevant_collection}')
+        print(f'current_row_title: {current_row_title}, {type(current_row_title)}')
+        print(f'current_row_brandname: {current_row_brandname}, {type(current_row_brandname)}')
+        print(f'current_row_product_category: {current_row_product_category}, {type(current_row_product_category)}')
+        print(f'current_row_gender_list: {current_row_gender}, {type(current_row_gender)}')
+        print(f'current_row_price: {current_row_price}, {type(current_row_price)}')
+        print(f'current_row_product_link: {current_row_product_link}, {type(current_row_product_link)}')
+        print(f'current_row_image_link: {current_row_image_link}, {type(current_row_image_link)}')
+        print(f'current_row_site_name: {current_row_site_name}, {type(current_row_site_name)}')
+        print(f'current_row_country_name: {current_row_country_name}, {type(current_row_country_name)}')
+        print(f'current_rows_relevant_collection: {current_rows_relevant_collection}, {type(current_rows_relevant_collection)}')
 
 
+        # UPLOAD ROW DATA TO IT'S RELEVANT WIX DATABASE..
         try:
 
-            populate_site_db(
-                collection_name=current_row_country_name,
+            upload_data_operation_status_code = populate_site_db(
+                collection_name=current_rows_relevant_collection,
                 title=current_row_title,
                 brand_name=current_row_brandname,
                 product_category=current_row_product_category,
@@ -112,6 +112,29 @@ def extract_elements_per_row_from_dataframe(
                 image_src=current_row_image_link,
                 site_name=current_row_site_name
             )
+
+            if upload_data_operation_status_code != 200:
+                with open(f'{all_log_files_folder}{wx_upload_error_log_filename}', 'r+') as wix_upload_error_file_one:
+                    wix_upload_errors_dict_as_json = wix_upload_error_file_one.read()
+                    print(f"wix_upload_errors_dict_as_json: {wix_upload_errors_dict_as_json}")
+
+                    wix_upload_errors_dict = json.loads(wix_upload_errors_dict_as_json)
+                    print(f'wix_upload_errors_dict: {wix_upload_errors_dict}, {type(wix_upload_errors_dict)}')
+
+                    # add the current row's number to its relevant file within the error log file..
+                    if file_name not in wix_upload_errors_dict:
+                        wix_upload_errors_dict[file_name] = [index]
+                    else:
+                        current_files_list_of_upload_error_row_numbers = wix_upload_errors_dict[file_name]
+                        if index not in current_files_list_of_upload_error_row_numbers:
+                            wix_upload_errors_dict[file_name].append(index)
+
+                    with open(f'{all_log_files_folder}{wx_upload_error_log_filename}', 'w') as wix_upload_error_file_two:
+                        wix_upload_errors_dict_to_json = json.dumps(wix_upload_errors_dict)
+                        wix_upload_error_file_two.write(wix_upload_errors_dict_to_json)
+                        wix_upload_error_file_two.close()
+
+                    wix_upload_error_file_one.close()
 
         except:
             traceback.print_exc()
@@ -163,7 +186,7 @@ def populate_site_db(
 
     )
 
-    print(f'req.status_code: {req.status_code}')
+    print(f'req.status_code: {req.status_code}, {type(req.status_code)}')
     print(f'req.content: {req.content}')
     print(f'req.text: {req.text}')
     print(req.reason)
@@ -177,17 +200,33 @@ def populate_site_db(
 
     print('---------------------------------------------------------------------------------')
 
+    return req.status_code
+
+# populate_site_db(
+#     collection_name='singaporeProducts',
+#     title='tTitle',
+#     brand_name='tBrand',
+#     product_category='tCategory',
+#     gender='tGender',
+#     price='tPrice',
+#     product_link='tProductLink',
+#     image_src='tImageSrc',
+#     site_name='tSiteName'
+# )
+
 # error_details = return_header['x-wix-code-user-error-details']
 # error_details = json.loads(error_details)
 # error_details = error_details['code']
 #
 # print(f'error: {error_details}')
 
-wx_upload_error_dict = {}
-wx_upload_error_dict_to_json = json.dumps(wx_upload_error_dict)
 
-
-# traceback.print_exc()
-
-with open(f'{all_log_files_folder}data_to_wx_upload_error.txt', 'w') as wx_upload_error:
-    wx_upload_error.write(wx_upload_error_dict_to_json)
+# CREATE BASE WIX UPLOAD ERROR LOG FILE
+# wx_upload_error_dict = {}
+# wx_upload_error_dict_to_json = json.dumps(wx_upload_error_dict)
+#
+#
+# # traceback.print_exc()
+#
+# with open(f'{all_log_files_folder}data_to_wx_upload_error_log.txt', 'w') as wx_upload_error:
+#     wx_upload_error.write(wx_upload_error_dict_to_json)

@@ -23,8 +23,11 @@ all_filtered_data_folder = '/Users/admin/OneDrive/docs/affiliate/filtered_data/'
 # FOLDERS -> LOG FILES
 other_settings_data_folder = '/Users/admin/OneDrive/docs/affiliate/other_settings_data/'
 
-# FOLDERS -> FILTERED DATA
+# FOLDERS AND FILENAMES -> ERROR LOG
 all_log_files_folder = '/Users/admin/OneDrive/docs/affiliate/logs/'
+
+wx_upload_error_log_filename = 'data_to_wx_upload_error_log.json'
+filter_error_log_filename = 'filter_errors_log.txt'
 
 
 # FOLDER AND FILENAMES -> UPDATE SITEMAPS
