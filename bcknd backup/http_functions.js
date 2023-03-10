@@ -72,10 +72,9 @@ export async function get_addRowToCollection(request) {
   }
 
   var insertRow = JSON.parse(headers.body);
-  // insertRow = typeof(insertRow);
-  // insertRow = JSON.stringify(insertRow);
   const collectionName = insertRow.collectionName;
   const rowDataToInsert = insertRow.rowData;
+  const currentRowsProductLink = rowDataToInsert.productLink;
 
 
   // t toInsert = {
@@ -98,7 +97,11 @@ export async function get_addRowToCollection(request) {
     let response = {
       body: {
         "collectionName": collectionName,
-        "rowDataToInsert": typeof(rowDataToInsert),
+        // "rowDataToInsert": typeof(rowDataToInsert),
+        'rowAlreadyExists': false,
+        'productLink': rowDataToInsert.productLink,
+        'rowAddedToDB': false
+        // 'result': {}
         },
       headers: {
           "Content-Type": "application/json"
@@ -110,14 +113,41 @@ export async function get_addRowToCollection(request) {
       "suppressHooks": true
     };
 
-    return wixData.insert(collectionName, rowDataToInsert, options)
-      .then((itemValue) => {
+    return wixData.query(collectionName).eq("productLink", currentRowsProductLink).find(options)
+      .then((results) => {
 
-        let item = itemValue;
-        response.body.item = itemValue;
+        if(results.items.length > 0) {
 
-        return ok(response);
+          response.body.rowAlreadyExists = true;
 
+          return ok(response);
+
+        // response.body.dataAlreadyExists = false;
+
+        // console.log(results.items[0]); //see firstItem below
+        }
+        else{
+
+          return wixData.insert(collectionName, rowDataToInsert, options)
+          .then((itemValue) => {
+
+            let item = itemValue;
+            // response.body.item = itemValue;
+
+            response.body.rowAddedToDB = true;
+
+            return ok(response);
+
+          });
+          // return ok(response);
+
+        }
+
+        // return ok(response);
+      // else {
+      // // handle case where no matching items found
+      //
+      // }
       });
 
   }
