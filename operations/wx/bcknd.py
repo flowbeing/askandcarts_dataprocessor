@@ -117,8 +117,8 @@ def extract_elements_per_row_from_dataframe(
             )
 
             if upload_data_operation_status_code != 200:
-                with open(f'{all_log_files_folder}{wx_upload_error_log_filename}', 'r+') as wix_upload_error_file_one:
-                    wix_upload_errors_dict_as_json = wix_upload_error_file_one.read()
+                with open(f'{all_log_files_folder}{wx_upload_error_log_filename}', 'r+') as wx_upload_error_log_file_i:
+                    wix_upload_errors_dict_as_json = wx_upload_error_log_file_i.read()
                     print(f"wix_upload_errors_dict_as_json: {wix_upload_errors_dict_as_json}")
 
                     wix_upload_errors_dict = json.loads(wix_upload_errors_dict_as_json)
@@ -132,12 +132,12 @@ def extract_elements_per_row_from_dataframe(
                         if index not in current_files_list_of_upload_error_row_numbers:
                             wix_upload_errors_dict[file_name].append(index)
 
-                    with open(f'{all_log_files_folder}{wx_upload_error_log_filename}', 'w') as wix_upload_error_file_two:
+                    with open(f'{all_log_files_folder}{wx_upload_error_log_filename}', 'w') as wx_upload_error_log_file_ii:
                         wix_upload_errors_dict_to_json = json.dumps(wix_upload_errors_dict)
-                        wix_upload_error_file_two.write(wix_upload_errors_dict_to_json)
-                        wix_upload_error_file_two.close()
+                        wx_upload_error_log_file_ii.write(wix_upload_errors_dict_to_json)
+                        wx_upload_error_log_file_ii.close()
 
-                    wix_upload_error_file_one.close()
+                    wx_upload_error_log_file_i.close()
 
         except:
             traceback.print_exc()
@@ -165,16 +165,19 @@ def upload_skipped_csv_rows(
     list_of_countries = ['_UAE_', '_SINGAPORE_', '_USA_', '_US_']
     list_of_genders = ['_MEN', '_WOMEN']
 
+
     for file_name in skipped_csv_rows_dict:
 
 
         current_csv_file_path = f'{all_filtered_data_folder}{file_name}_FILTERED.csv'
-        current_CSVs_ignored_rows_during_wx_upload = skipped_csv_rows_dict[file_name]
+        current_CSVs_ignored_rows_during_wx_upload_list = skipped_csv_rows_dict[file_name]
 
         current_csv_as_dataframe = pd.read_csv(current_csv_file_path)
         list_of_columns = current_csv_as_dataframe.columns
 
-        for index in current_CSVs_ignored_rows_during_wx_upload:
+        current_csv_files_list_of_successfully_reuploaded_rows = []
+
+        for index in current_CSVs_ignored_rows_during_wx_upload_list:
 
             print()
             print(f"current row's index: {index}")
@@ -257,36 +260,37 @@ def upload_skipped_csv_rows(
                     country=current_row_country_name
                 )
 
-                if upload_data_operation_status_code != 200:
-                    with open(f'{all_log_files_folder}{wx_upload_error_log_filename}',
-                              'r+') as wix_upload_error_file_one:
-                        wix_upload_errors_dict_as_json = wix_upload_error_file_one.read()
-                        print(f"wix_upload_errors_dict_as_json: {wix_upload_errors_dict_as_json}")
+                # with open(f'{all_log_files_folder}{wx_upload_error_log_filename}',
+                #           'r+') as wx_upload_error_log_file_i:
+                #     wix_upload_errors_dict_as_json = wx_upload_error_log_file_i.read()
+                #     print(f"wix_upload_errors_dict_as_json: {wix_upload_errors_dict_as_json}")
+# 
+                #     wix_upload_errors_dict = json.loads(wix_upload_errors_dict_as_json)
+                #     print(f'wix_upload_errors_dict: {wix_upload_errors_dict}, {type(wix_upload_errors_dict)}')
+            
 
-                        wix_upload_errors_dict = json.loads(wix_upload_errors_dict_as_json)
-                        print(f'wix_upload_errors_dict: {wix_upload_errors_dict}, {type(wix_upload_errors_dict)}')
+                if upload_data_operation_status_code == 200:
 
-                        # add the current row's number to its relevant file within the error log file..
-                        if file_name not in wix_upload_errors_dict:
-                            wix_upload_errors_dict[file_name] = [index]
-                        else:
-                            current_files_list_of_upload_error_row_numbers = wix_upload_errors_dict[file_name]
-                            if index not in current_files_list_of_upload_error_row_numbers:
-                                wix_upload_errors_dict[file_name].append(index)
+                    current_csv_files_list_of_successfully_reuploaded_rows.append(index)
 
-                        with open(f'{all_log_files_folder}{wx_upload_error_log_filename}',
-                                  'w') as wix_upload_error_file_two:
-                            wix_upload_errors_dict_to_json = json.dumps(wix_upload_errors_dict)
-                            wix_upload_error_file_two.write(wix_upload_errors_dict_to_json)
-                            wix_upload_error_file_two.close()
-
-                        wix_upload_error_file_one.close()
-
+                    
             except:
                 traceback.print_exc()
 
             time.sleep(3.33)  # accounting for api limit of 200 request per minute
 
+
+        # remove all successfully uploaded rows from skipped csv rows dict
+        for index in current_csv_files_list_of_successfully_reuploaded_rows:
+
+            current_CSVs_ignored_rows_during_wx_upload_list.remove(index)
+
+
+    # update wx_upload_error_log_file
+    with open(f'{all_log_files_folder}{wx_upload_error_log_filename}', 'w') as wx_upload_error_log_file:
+        wix_upload_errors_dict_to_json = json.dumps(skipped_csv_rows_dict)
+        wx_upload_error_log_file.write(wix_upload_errors_dict_to_json)
+        wx_upload_error_log_file.close()
 
 
 
