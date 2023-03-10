@@ -341,7 +341,7 @@ def populate_site_db(
     )
 
     print(f'req.status_code: {req.status_code}, {type(req.status_code)}')
-    print(f'req.content: {req.content}')
+    # print(f'req.content: {req.content}')
     print(f'req.text: {req.text}')
     print(req.reason)
 
@@ -370,7 +370,7 @@ def populate_site_db(
 # )
 
 
-upload_skipped_csv_rows()
+# upload_skipped_csv_rows()
 
 
 
