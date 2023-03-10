@@ -208,7 +208,7 @@ def filter_amazon_scraped_data(
 
 
 try:
-    file_name = 'seventy_four_USA_TRAVEL_BAGS_AMAZON_MEN_AND_WOMEN.csv'
+    file_name = 'fourty_four_UAE_EARRINGS_AMAZON_WOMEN.csv'
 
     print(
         filter_amazon_scraped_data(

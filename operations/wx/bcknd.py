@@ -110,7 +110,8 @@ def extract_elements_per_row_from_dataframe(
                 price=current_row_price,
                 product_link=current_row_product_link,
                 image_src=current_row_image_link,
-                site_name=current_row_site_name
+                site_name=current_row_site_name,
+                country=current_row_country_name
             )
 
             if upload_data_operation_status_code != 200:
@@ -153,7 +154,8 @@ def populate_site_db(
         price,
         product_link,
         image_src,
-        site_name
+        site_name,
+        country
 ):
     print('---------------------------------------------------------------------------------')
 
@@ -169,7 +171,8 @@ def populate_site_db(
             'price': price,
             'productLink': product_link,
             'imageSrc': image_src,
-            'siteName': site_name #
+            'siteName': site_name, #
+            'country': country
         }
     }
 
