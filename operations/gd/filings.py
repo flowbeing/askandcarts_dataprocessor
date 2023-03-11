@@ -324,7 +324,7 @@ def detect_and_optional_download_and_process_files_within_returned_folders(
                                     filter_error_log_file_.truncate(0)
 
                                     filter_error_log_file_.write(
-                                        f'FILTER ERRORS\n'
+                                        f'FILTER OR WX UPLOAD ERRORS\n'
                                         f'--------------\n'
                                     )
 
@@ -368,7 +368,8 @@ def detect_and_optional_download_and_process_files_within_returned_folders(
     with open(f'{all_filtered_data_folder}filter_operation_stats.txt', 'w') as filtered_CSVs_stats:
         filtered_CSVs_stats.write(f'FILTERED CSVs stats\n')
         filtered_CSVs_stats.write(f'---------------------\n')
-        filtered_CSVs_stats.write(f'Number of csv files that were not filtered: {filter_operation_error_count}\n\n')
+        filtered_CSVs_stats.write(f'Number of csv files that were either not filtered or had a wx upload error: '
+                                  f'{filter_operation_error_count}\n\n')
 
         filtered_CSVs_stats.write(f'FILTERED CSVs stats\n')
         filtered_CSVs_stats.write(f'---------------------\n')

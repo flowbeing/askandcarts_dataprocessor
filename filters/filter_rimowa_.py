@@ -12,6 +12,7 @@ def filter_rimowa_scraped_data(
         minimum_profit_target,
         commission_per_sale,
         list_of_brandNames_or_categories_to_exclude = None,
+        starting_index=0,
         ref_link = '',
         is_wx_upload=False
 ):
@@ -52,6 +53,9 @@ def filter_rimowa_scraped_data(
     # rimowa_scrapped_data = rimowa_scrapped_data.dropna()
     # rimowa_scrapped_data.reset_index(drop=True, inplace=True)
 
+    # accounting for starting points especially after initial na drop (if any)
+    rimowa_scrapped_data = rimowa_scrapped_data[starting_index:]
+
     # CLEANING UP
     print()
     product_link = rimowa_scrapped_data['productLink-href']
@@ -67,9 +71,10 @@ def filter_rimowa_scraped_data(
     # 2. IF A ('SUPPOSED') LINK IN THE PRODUCT LINK OR PRODUCT IMAGE COLUMN IS NOT A STRING, RAISE AN EXCEPTION
     #    DO THE SAME IF THE PRODUCT'S NAME IS NOT A STRING.
 
-    countLinkNumber = 0
+    countLinkNumber = starting_index
 
-    def check_if_item_to_exclude_is_in_string(column_string_item):
+    # To check if the current product's brand name is one that's meant to be excluded..
+    def is_item_to_exclude_in_string(column_string_item):
 
 
         if list_of_brandNames_or_categories_to_exclude != None:
@@ -113,7 +118,7 @@ def filter_rimowa_scraped_data(
 
 
         if product_in_focus_current_price_float < least_product_price_to_display or \
-                check_if_item_to_exclude_is_in_string(product_in_focus_brand_name):
+                is_item_to_exclude_in_string(product_in_focus_brand_name):
             product_link.pop(countLinkNumber)
             image_link.pop(countLinkNumber)
             product_name.pop(countLinkNumber)

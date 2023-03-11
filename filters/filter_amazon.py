@@ -14,6 +14,7 @@ def filter_amazon_scraped_data(
         minimum_profit_target,
         commission_per_sale,
         minimum_ratedBy = 2,
+        starting_index=0,
         ref_link = '',
         is_wx_upload=False
 ):
@@ -50,6 +51,9 @@ def filter_amazon_scraped_data(
 
     len_after_initial_drop_na = len(amazon_scrapped_data.index)
 
+    # accounting for starting points especially after initial na drop (if any)
+    amazon_scrapped_data = amazon_scrapped_data[starting_index:]
+
     # CLEANING UP 'productLink' and 'productImage' after removing products whose price have not been presented
     print()
     product_link = amazon_scrapped_data['productLink-href']
@@ -68,7 +72,7 @@ def filter_amazon_scraped_data(
     #   a. REMOVING EVERY CHARACTER FROM '/ref' in the 'productLink-href' column
     #   b. MAKING ONLY ONE LINK AVAILABLE WITHIN THE 'productImage' column
 
-    countLinkNumber = 0
+    countLinkNumber = starting_index
 
 
     for productLink, imageLink in zip(product_link, image_link):
@@ -104,6 +108,7 @@ def filter_amazon_scraped_data(
             # print(product_in_focus_rated_by)
 
             # print(f'product_in_focus_current_price" {product_in_focus_current_price}')
+
         except:
             raise Exception('There was an error while: \n '
                             'a. converting current price string to float, \n'
@@ -211,18 +216,18 @@ def filter_amazon_scraped_data(
     return len(cleaned_up_scraped_data_amazon.index)
 
 
-# try:
-#     file_name = 'eleven_SINGAPORE_WATCHES_AMAZON_WOMEN.csv'
-#
-#     print(
-#         filter_amazon_scraped_data(
-#             file_name=file_name,
-#             file_address=f'{all_scraped_data_folder}{file_name}',
-#             minimum_profit_target=120,
-#             commission_per_sale=commission_per_site['AMAZON_SG']['WATCHES'],
-#             minimum_ratedBy=3,
-#             ref_link=''
-#         )
-#     )
-# except:
-#     raise Exception('There was an error while trying to filters amazon scrapped data')
+try:
+    file_name = 'eleven_SINGAPORE_WATCHES_AMAZON_WOMEN.csv'
+    print(
+        filter_amazon_scraped_data(
+            file_name=file_name,
+            file_address=f'{all_scraped_data_folder}{file_name}',
+            minimum_profit_target=120,
+            commission_per_sale=commission_per_site['AMAZON_SG']['WATCHES'],
+            minimum_ratedBy=3,
+            ref_link=''
+        )
+    )
+
+except:
+    raise Exception('There was an error while trying to filters amazon scrapped data')

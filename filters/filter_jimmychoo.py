@@ -13,6 +13,7 @@ def filter_jimmychoo_scraped_data(
         minimum_profit_target,
         eur_to_sgd_exchange_rate,
         commission_per_sale,
+        starting_index=0,
         ref_link = '',
         is_wx_upload=False
 ):
@@ -64,12 +65,15 @@ def filter_jimmychoo_scraped_data(
     # print(product_link)
 
 
+    # accounting for starting points especially after initial na drop (if any)
+    jimmychoo_scrapped_data = jimmychoo_scrapped_data[starting_index:]
+
     # 1. FILTER OUT A PRODUCT IF IT'S PRICE IS LESSER THAN THE LEAST PRICE TO DISPLAY OR IF THE NUMBER OF PEOPLE WHO
     #    HAVE RATED THE PRODUCT IS LESSER THAN THE MINIMUM 'ratedBy'
     # 2. IF A ('SUPPOSED') LINK IN THE PRODUCT LINK OR PRODUCT IMAGE COLUMN IS NOT A STRING, RAISE AN EXCEPTION
     #    DO THE SAME IF THE PRODUCT'S NAME IS NOT A STRING.
 
-    countLinkNumber = 0
+    countLinkNumber = starting_index
 
     # print(jimmychoo_scrapped_data.head())
 

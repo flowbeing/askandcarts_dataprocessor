@@ -1,5 +1,5 @@
 productCategories = {
-    "WATCHES",
+    "WATCH",
     "HANDBAG",
     "SHOE",
     "BELT",
@@ -14,5 +14,5 @@ productCategories = {
     "RING",
     "BAG",
     "SHOE",
-    "ACCESSORIES"
+    "ACCESSORY"
 }

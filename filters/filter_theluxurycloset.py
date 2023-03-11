@@ -13,6 +13,7 @@ def filter_theluxurycloset_scraped_data(
         minimum_profit_target,
         commission_per_sale,
         usd_to_sgd_exchange_rate=0,
+        starting_index=0,
         ref_link = '',
         is_wx_upload=False
 ):
@@ -56,6 +57,9 @@ def filter_theluxurycloset_scraped_data(
     # theluxurycloset_scrapped_data = theluxurycloset_scrapped_data.dropna()
     # theluxurycloset_scrapped_data.reset_index(drop=True, inplace=True)
 
+    # accounting for starting points especially after initial na drop (if any)
+    theluxurycloset_scrapped_data = theluxurycloset_scrapped_data[starting_index:]
+
     # CLEANING UP
     print()
     product_link = theluxurycloset_scrapped_data['productLink-href']
@@ -76,7 +80,7 @@ def filter_theluxurycloset_scraped_data(
     # 2. IF A ('SUPPOSED') LINK IN THE PRODUCT LINK OR PRODUCT IMAGE COLUMN IS NOT A STRING, RAISE AN EXCEPTION
     #    DO THE SAME IF THE PRODUCT'S NAME IS NOT A STRING.
 
-    countLinkNumber = 0
+    countLinkNumber = starting_index
 
 
     for productLink, imageLink in zip(product_link, image_link):
