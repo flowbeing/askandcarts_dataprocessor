@@ -52,7 +52,7 @@ def extract_elements_per_row_from_dataframe(
             current_row_product_category_list.remove(i)
             for i in current_row_product_category_list
             for ii in current_row_product_category_list
-            if i in ii and ii != i
+            if i in ii and ii != i # this line eliminates 'BAG' where 'TRAVEL BAG' is the current product category..
          ]
         current_row_product_category = current_row_product_category_list[0].replace('_', ' ')
 

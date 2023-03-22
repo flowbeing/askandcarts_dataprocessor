@@ -2,12 +2,12 @@ import requests
 import json
 import os
 from datetime import datetime
-from settings import m as os
+from settings.q.other_settings import api_key_ws
 from settings.q import default_folder_and_filename_settings as dffns
 
-url = f"https://api.webscraper.io/api/v1/sitemaps?api_token={os.api_key_ws}"
+url = f"https://api.webscraper.io/api/v1/sitemaps?api_token={api_key_ws}"
 
-url2 = f"https://api.webscraper.io/api/v1/sitemap/{881164}?api_token={os.api_key_ws}"
+url2 = f"https://api.webscraper.io/api/v1/sitemap/{881164}?api_token={api_key_ws}"
 
 # GET ALL SITEMAPS
 
@@ -59,7 +59,7 @@ def batch_sitemap_request(
         file_name = dffns.all_sitemaps_save_filename
 ):
 
-    response_count = 0
+    response_count = 1
 
     all_sitemaps_dict = {}
 
@@ -81,7 +81,7 @@ def batch_sitemap_request(
                 print(f"sitemap's id: {sitemap_id}")
 
                 # EACH SITEMAP'S URL
-                each_sitemaps_url = f"https://api.webscraper.io/api/v1/sitemap/{sitemap_id}?api_token={os.api_key_ws}"
+                each_sitemaps_url = f"https://api.webscraper.io/api/v1/sitemap/{sitemap_id}?api_token={api_key_ws}"
 
                 each_sitemaps_data = extract_sitemap_details_automatically_from_url(each_sitemaps_url)
                 each_sitemaps_sitemap_config = each_sitemaps_data['sitemap']
