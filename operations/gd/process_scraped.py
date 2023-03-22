@@ -269,29 +269,29 @@ def process_scraped_site(
                             is_file_empty_after_filtering = True
 
 
-                    elif 'THE_LUXURY_CLOSET' in scraped_sitemap_csv_file_name and 'SINGAPORE' in scraped_sitemap_csv_file_name:
-
-                        while non_amazon_filter_data_points_count == 0:
-
-                            non_amazon_filter_data_points_count = filter_theluxurycloset_scraped_data(
-                                file_name=scraped_sitemap_csv_file_name,
-                                file_address=scraped_sitemap_csv_file_address,
-                                minimum_profit_target=minimum_profit,
-                                usd_to_sgd_exchange_rate = usd_to_sgd_exchange_rate,
-                                commission_per_sale=non_amazon_variants_commission,
-                                ref_link='',
-                                is_wx_upload=is_wx_upload
-                            )
-
-                            minimum_profit -= 1  # expected to be in SGD
-
-                            profit_baseline = 100 * usd_to_sgd_exchange_rate  # 100 dollars to SGD
-
-                            if minimum_profit <= profit_baseline:
-                                break
-
-                        if non_amazon_filter_data_points_count == 0:
-                            is_file_empty_after_filtering = True
+                    # elif 'THE_LUXURY_CLOSET' in scraped_sitemap_csv_file_name and 'SINGAPORE' in scraped_sitemap_csv_file_name:
+                    #
+                    #     while non_amazon_filter_data_points_count == 0:
+                    #
+                    #         non_amazon_filter_data_points_count = filter_theluxurycloset_scraped_data(
+                    #             file_name=scraped_sitemap_csv_file_name,
+                    #             file_address=scraped_sitemap_csv_file_address,
+                    #             minimum_profit_target=minimum_profit,
+                    #             usd_to_sgd_exchange_rate = usd_to_sgd_exchange_rate,
+                    #             commission_per_sale=non_amazon_variants_commission,
+                    #             ref_link='',
+                    #             is_wx_upload=is_wx_upload
+                    #         )
+                    #
+                    #         minimum_profit -= 1  # expected to be in SGD
+                    #
+                    #         profit_baseline = 100 * usd_to_sgd_exchange_rate  # 100 dollars to SGD
+                    #
+                    #         if minimum_profit <= profit_baseline:
+                    #             break
+                    #
+                    #     if non_amazon_filter_data_points_count == 0:
+                    #         is_file_empty_after_filtering = True
 
                     else:
 

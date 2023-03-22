@@ -2,6 +2,7 @@ from __future__ import print_function
 
 
 import io
+import json
 import os
 import codecs
 import pickle
@@ -16,7 +17,8 @@ from google.auth.transport.requests import Request
 from process_scraped import *
 
 from settings.q.default_folder_and_filename_settings \
-    import all_scraped_data_folder, all_log_files_folder, filter_error_log_filename, ws_filename
+    import all_scraped_data_folder, all_log_files_folder, other_settings_data_folder, \
+    filter_error_log_filename, filename_last_serviced_sitemap_folder_dict_as_json, ws_filename
 import settings.q.other_settings as othersettings
 
 
@@ -186,8 +188,40 @@ def detect_and_optional_download_and_process_files_within_returned_folders(
         returned_folders,
         is_download_sitemaps_csv_file = False,
         is_process_scraped_site_csv = False,
-        is_wx_upload=False
+        is_continue_from_previous_stop_csv=False,
+        is_wx_upload=False,
 ):
+
+    # If there's been an abrupt stoppage while previosly downloading, processing (& uploading csv files), continue from
+    # previous folder if is_continue_from_previous_stop_csv has been set to true..
+    if is_continue_from_previous_stop_csv == True:
+
+        with open(f'{other_settings_data_folder}{filename_last_serviced_sitemap_folder_dict_as_json}.json', 'r') \
+                as last_serviced_sitemap_folder_file:
+
+            last_serviced_sitemap_folder_json = last_serviced_sitemap_folder_file.read()
+
+            # if last_serviced_sitemap_folder_file is not empty, configure returned folders argument to start from the
+            # last serviced sitemap folder json
+            if len(last_serviced_sitemap_folder_json) != 0:
+                last_serviced_sitemap_folder_json_as_dict = json.loads(last_serviced_sitemap_folder_json)
+
+                last_serviced_sitemap_folder_info = last_serviced_sitemap_folder_json_as_dict['last_serviced_folder_info']
+
+                print()
+                print(f'last_serviced_sitemap_folder_info: {last_serviced_sitemap_folder_info}')
+
+                index_of_last_serviced_sitemap_folder = returned_folders.index(last_serviced_sitemap_folder_info)
+                print(f'calculated index_of_last_serviced_sitemap_folder: {index_of_last_serviced_sitemap_folder}')
+                print(f'original returned_folders: {returned_folders}')
+
+
+                returned_folders = returned_folders[index_of_last_serviced_sitemap_folder:]
+
+            last_serviced_sitemap_folder_file.close()
+
+    print(f'original returned_folders: {returned_folders}')
+
     print()
     print(f'DETECTING FILES THAT EXIST WITHIN FOLDERS THAT EXIST WITHIN {folder_name} FOLDER')
     print('---------------------------------------------------------------------------------')
@@ -200,11 +234,28 @@ def detect_and_optional_download_and_process_files_within_returned_folders(
     empty_csv_files_after_filtering_count = 0
 
     for folder_info in returned_folders:
+
+
         current_folder_filetype = folder_info['mimeType']
         if current_folder_filetype == 'application/vnd.google-apps.folder':
 
             current_folder_id = folder_info['id']
             current_folder_name = folder_info['name']
+
+            # Registering the current folder as last serviced sitemap folder in case there's an abrupt stoppage
+
+            with open(f'{other_settings_data_folder}{filename_last_serviced_sitemap_folder_dict_as_json}.json', 'w') \
+                    as last_serviced_sitemap_folder_file:
+
+                last_serviced_sitemap_folder_info_dict = {
+                    'last_serviced_folder_info': folder_info
+                }
+
+                last_serviced_sitemap_folder_info_dict_as_json = json.dumps(last_serviced_sitemap_folder_info_dict)
+
+                last_serviced_sitemap_folder_file.write(last_serviced_sitemap_folder_info_dict_as_json)
+
+                last_serviced_sitemap_folder_file.close()
 
 
             # print(f'current_folder_name: {current_folder_name}')
@@ -538,7 +589,7 @@ def find_duplicates_among_return_folders_or_files_and_delete_unnecesary_files(
 
                 # print(file_index)
                 # print(f'{current_file_folder_name}: {current_file_or_folder_value}')
-                
+
                 if current_file_or_folder_value == None:
                     current_file_or_folder_value = dict_of_duplicated_sitemap_folders[current_file_folder_name] = {}
                 else:
@@ -566,7 +617,7 @@ def find_duplicates_among_return_folders_or_files_and_delete_unnecesary_files(
 
                 # print(f'{current_file_folder_name}: {current_file_or_folder_value}')
 
-                
+
 
                 # defining a variable that'll hold the creation time of the most recent instance of a folder
                 # that's been duplicated, if it's not already been defined
@@ -574,7 +625,7 @@ def find_duplicates_among_return_folders_or_files_and_delete_unnecesary_files(
                     'most_recent_duplicates_creation_date',
                     None
                 )
-                
+
                 if current_folders_most_recent_instance_creation_date == None:
                     current_folders_most_recent_instance_creation_date = \
                         dict_of_duplicated_sitemap_folders[current_file_folder_name]\
@@ -912,10 +963,9 @@ def detect_and_optional_download_and_process_csv_files_within_sitemap_folders():
         returned_folders=folders_in_webscraper_folder,
         is_download_sitemaps_csv_file=False,
         is_process_scraped_site_csv=True,
-        is_wx_upload=True
+        is_wx_upload=True,
+        is_continue_from_previous_stop_csv=True
     )
-
-
 
 
 

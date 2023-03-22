@@ -20,8 +20,10 @@ watches_com_scraped_data_folder = '/Users/admin/OneDrive/docs/affiliate/scraped_
 # FOLDERS -> FILTERED DATA
 all_filtered_data_folder = '/Users/admin/OneDrive/docs/affiliate/filtered_data/'
 
-# FOLDERS -> LOG FILES
+# FOLDERS AND FILENAMES-> OTHER SETTINGS
 other_settings_data_folder = '/Users/admin/OneDrive/docs/affiliate/other_settings_data/'
+
+filename_last_serviced_sitemap_folder_dict_as_json = 'last_serviced_sitemap_folder_data'
 
 # FOLDERS AND FILENAMES -> ERROR LOG
 all_log_files_folder = '/Users/admin/OneDrive/docs/affiliate/logs/'

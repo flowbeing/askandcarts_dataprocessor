@@ -103,41 +103,123 @@ def extract_elements_per_row_from_dataframe(
         # UPLOAD ROW DATA TO IT'S RELEVANT WIX DATABASE..
         try:
 
-            upload_data_operation_status_code = populate_site_db(
-                collection_name=current_rows_relevant_collection,
-                title=current_row_title,
-                brand_name=current_row_brandname,
-                product_category=current_row_product_category,
-                gender=current_row_gender,
-                price=current_row_price,
-                product_link=current_row_product_link,
-                image_src=current_row_image_link,
-                site_name=current_row_site_name,
-                country=current_row_country_name
-            )
+            watches_com_fwrd_jimmy_choo_relative_extra_collections_name = ['uaeProducts', 'usaProducts']
+            watches_com_fwrd_jimmy_choo_relative_extra_countries_name = ['UAE', 'USA']
 
-            if upload_data_operation_status_code != 200:
-                with open(f'{all_log_files_folder}{wx_upload_error_log_filename}', 'r+') as wx_upload_error_log_file_i:
-                    wix_upload_errors_dict_as_json = wx_upload_error_log_file_i.read()
-                    print(f"wix_upload_errors_dict_as_json: {wix_upload_errors_dict_as_json}")
+            number_of_times_to_upload_products_to_databases = 0
 
-                    wix_upload_errors_dict = json.loads(wix_upload_errors_dict_as_json)
-                    print(f'wix_upload_errors_dict: {wix_upload_errors_dict}, {type(wix_upload_errors_dict)}')
+            # accounting for the fact that the following websites tend to 3 countries of which only one country's data
+            # has been collected
+            if 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name:
+                number_of_times_to_upload_products_to_databases = 2
 
-                    # add the current row's number to its relevant file within the error log file..
-                    if file_name not in wix_upload_errors_dict:
-                        wix_upload_errors_dict[file_name] = [index]
-                    else:
-                        current_files_list_of_upload_error_row_numbers = wix_upload_errors_dict[file_name]
-                        if index not in current_files_list_of_upload_error_row_numbers:
-                            wix_upload_errors_dict[file_name].append(index)
+            else:
+                number_of_times_to_upload_products_to_databases = 1
 
-                    with open(f'{all_log_files_folder}{wx_upload_error_log_filename}', 'w') as wx_upload_error_log_file_ii:
-                        wix_upload_errors_dict_to_json = json.dumps(wix_upload_errors_dict)
-                        wx_upload_error_log_file_ii.write(wix_upload_errors_dict_to_json)
-                        wx_upload_error_log_file_ii.close()
 
-                    wx_upload_error_log_file_i.close()
+
+
+            for i in range(number_of_times_to_upload_products_to_databases):
+
+                if current_row_gender == 'UNISEX':
+
+                    gender_to_apply = ['MEN', 'WOMEN']
+
+                    for index in range(2):
+
+                        upload_data_operation_status_code = populate_site_db(
+                            collection_name= watches_com_fwrd_jimmy_choo_relative_extra_collections_name[i]
+                            if 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
+                            else current_rows_relevant_collection, #
+
+                            title=current_row_title,
+                            brand_name=current_row_brandname,
+                            product_category=current_row_product_category,
+                            gender=gender_to_apply[index],
+                            price=current_row_price,
+                            product_link=current_row_product_link,
+                            image_src=current_row_image_link,
+                            site_name=current_row_site_name,
+
+                            country= watches_com_fwrd_jimmy_choo_relative_extra_countries_name[i]
+                            if 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
+                            else current_row_country_name #
+                        )
+
+                        if upload_data_operation_status_code != 200:
+                            with open(f'{all_log_files_folder}{wx_upload_error_log_filename}',
+                                      'r+') as wx_upload_error_log_file_i:
+                                wix_upload_errors_dict_as_json = wx_upload_error_log_file_i.read()
+                                print(f"wix_upload_errors_dict_as_json: {wix_upload_errors_dict_as_json}")
+
+                                wix_upload_errors_dict = json.loads(wix_upload_errors_dict_as_json)
+                                print(
+                                    f'wix_upload_errors_dict: {wix_upload_errors_dict}, {type(wix_upload_errors_dict)}')
+
+                                # add the current row's number to its relevant file within the error log file..
+                                if file_name not in wix_upload_errors_dict:
+                                    wix_upload_errors_dict[file_name] = [index]
+                                else:
+                                    current_files_list_of_upload_error_row_numbers = wix_upload_errors_dict[file_name]
+                                    if index not in current_files_list_of_upload_error_row_numbers:
+                                        wix_upload_errors_dict[file_name].append(index)
+
+                                with open(f'{all_log_files_folder}{wx_upload_error_log_filename}',
+                                          'w') as wx_upload_error_log_file_ii:
+                                    wix_upload_errors_dict_to_json = json.dumps(wix_upload_errors_dict)
+                                    wx_upload_error_log_file_ii.write(wix_upload_errors_dict_to_json)
+                                    wx_upload_error_log_file_ii.close()
+
+                                wx_upload_error_log_file_i.close()
+
+                else:
+
+                    upload_data_operation_status_code = populate_site_db(
+                        collection_name=watches_com_fwrd_jimmy_choo_relative_extra_collections_name[i]
+                        if 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
+                        else current_rows_relevant_collection,  #
+
+                        title=current_row_title,
+                        brand_name=current_row_brandname,
+                        product_category=current_row_product_category,
+                        gender= current_row_gender,
+                        price=current_row_price,
+                        product_link=current_row_product_link,
+                        image_src=current_row_image_link,
+                        site_name=current_row_site_name,
+
+                        country=watches_com_fwrd_jimmy_choo_relative_extra_countries_name[i]
+                        if 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
+                        else current_row_country_name  #
+                    )
+
+                    if upload_data_operation_status_code != 200:
+                        with open(f'{all_log_files_folder}{wx_upload_error_log_filename}',
+                                  'r+') as wx_upload_error_log_file_i:
+                            wix_upload_errors_dict_as_json = wx_upload_error_log_file_i.read()
+                            print(f"wix_upload_errors_dict_as_json: {wix_upload_errors_dict_as_json}")
+
+                            wix_upload_errors_dict = json.loads(wix_upload_errors_dict_as_json)
+                            print(f'wix_upload_errors_dict: {wix_upload_errors_dict}, {type(wix_upload_errors_dict)}')
+
+                            # add the current row's number to its relevant file within the error log file..
+                            if file_name not in wix_upload_errors_dict:
+                                wix_upload_errors_dict[file_name] = [index]
+                            else:
+                                current_files_list_of_upload_error_row_numbers = wix_upload_errors_dict[file_name]
+                                if index not in current_files_list_of_upload_error_row_numbers:
+                                    wix_upload_errors_dict[file_name].append(index)
+
+                            with open(f'{all_log_files_folder}{wx_upload_error_log_filename}',
+                                      'w') as wx_upload_error_log_file_ii:
+                                wix_upload_errors_dict_to_json = json.dumps(wix_upload_errors_dict)
+                                wx_upload_error_log_file_ii.write(wix_upload_errors_dict_to_json)
+                                wx_upload_error_log_file_ii.close()
+
+                            wx_upload_error_log_file_i.close()
+
+
+
 
         except:
             traceback.print_exc()
@@ -247,43 +329,84 @@ def upload_skipped_csv_rows(
             # UPLOAD ROW DATA TO IT'S RELEVANT WIX DATABASE..
             try:
 
-                upload_data_operation_status_code = populate_site_db(
-                    collection_name=current_rows_relevant_collection,
-                    title=current_row_title,
-                    brand_name=current_row_brandname,
-                    product_category=current_row_product_category,
-                    gender=current_row_gender,
-                    price=current_row_price,
-                    product_link=current_row_product_link,
-                    image_src=current_row_image_link,
-                    site_name=current_row_site_name,
-                    country=current_row_country_name
-                )
+                watches_com_fwrd_jimmy_choo_relative_extra_collections_name = ['uaeProducts', 'usaProducts']
+                watches_com_fwrd_jimmy_choo_relative_extra_countries_name = ['UAE', 'USA']
 
-                # with open(f'{all_log_files_folder}{wx_upload_error_log_filename}',
-                #           'r+') as wx_upload_error_log_file_i:
-                #     wix_upload_errors_dict_as_json = wx_upload_error_log_file_i.read()
-                #     print(f"wix_upload_errors_dict_as_json: {wix_upload_errors_dict_as_json}")
-# 
-                #     wix_upload_errors_dict = json.loads(wix_upload_errors_dict_as_json)
-                #     print(f'wix_upload_errors_dict: {wix_upload_errors_dict}, {type(wix_upload_errors_dict)}')
-            
+                number_of_times_to_upload_products_to_databases = 0
 
-                if upload_data_operation_status_code == 200:
+                # accounting for the fact that the following websites tend to 3 countries of which only one country's data
+                # has been collected
+                if 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name:
+                    number_of_times_to_upload_products_to_databases = 2
 
-                    current_csv_files_list_of_successfully_reuploaded_rows.append(index)
+                else:
+                    number_of_times_to_upload_products_to_databases = 1
+
+                for i in range(number_of_times_to_upload_products_to_databases):
+
+                    if current_row_gender == 'UNISEX':
+
+                        gender_to_apply = ['MEN', 'WOMEN']
+
+                        for index in range(2):
+
+                            upload_data_operation_status_code = populate_site_db(
+                                collection_name=watches_com_fwrd_jimmy_choo_relative_extra_collections_name[i]
+                                if 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
+                                else current_rows_relevant_collection,  #
+
+                                title=current_row_title,
+                                brand_name=current_row_brandname,
+                                product_category=current_row_product_category,
+                                gender=gender_to_apply[index],
+                                price=current_row_price,
+                                product_link=current_row_product_link,
+                                image_src=current_row_image_link,
+                                site_name=current_row_site_name,
+
+                                country=watches_com_fwrd_jimmy_choo_relative_extra_countries_name[i]
+                                if 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
+                                else current_row_country_name  #
+                            )
+
+                            if upload_data_operation_status_code == 200:
+                                current_csv_files_list_of_successfully_reuploaded_rows.append(index)
+
+                    else:
+
+                        upload_data_operation_status_code = populate_site_db(
+                            collection_name=watches_com_fwrd_jimmy_choo_relative_extra_collections_name[i]
+                            if 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
+                            else current_rows_relevant_collection,  #
+
+                            title=current_row_title,
+                            brand_name=current_row_brandname,
+                            product_category=current_row_product_category,
+                            gender=current_row_gender,
+                            price=current_row_price,
+                            product_link=current_row_product_link,
+                            image_src=current_row_image_link,
+                            site_name=current_row_site_name,
+
+                            country=watches_com_fwrd_jimmy_choo_relative_extra_countries_name[i]
+                            if 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
+                            else current_row_country_name  #
+                        )
+
+                        if upload_data_operation_status_code == 200:
+                            current_csv_files_list_of_successfully_reuploaded_rows.append(index)
 
                     
             except:
                 traceback.print_exc()
 
-            time.sleep(3.33)  # accounting for api limit of 200 request per minute
+            time.sleep(0.4)  # accounting for api limit of 200 request per minute
 
 
         # remove all successfully uploaded rows from skipped csv rows dict
-        for index in current_csv_files_list_of_successfully_reuploaded_rows:
+        for row_index in current_csv_files_list_of_successfully_reuploaded_rows:
 
-            current_CSVs_ignored_rows_during_wx_upload_list.remove(index)
+            current_CSVs_ignored_rows_during_wx_upload_list.remove(row_index)
 
 
     # update wx_upload_error_log_file
