@@ -964,7 +964,7 @@ def detect_and_optional_download_and_process_csv_files_within_sitemap_folders():
         is_download_sitemaps_csv_file=False,
         is_process_scraped_site_csv=True,
         is_wx_upload=True,
-        is_continue_from_previous_stop_csv=True
+        is_continue_from_previous_stop_csv=False
     )
 
 

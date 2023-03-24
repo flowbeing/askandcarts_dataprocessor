@@ -36,6 +36,7 @@ https://www.wix.com/velo/reference/wix-http-functions
 import { ok, badRequest, notFound, serverError } from 'wix-http-functions';
 import wixSecretsBackend from 'wix-secrets-backend';
 import wixData from 'wix-data';
+import wixPayBackend from 'wix-pay-backend';
 
 // This function compares the authorization key provided in the
 // request headers with the secret key stored in the Secrets Manager.
@@ -75,6 +76,7 @@ export async function get_addRowToCollection(request) {
   const collectionName = insertRow.collectionName;
   const rowDataToInsert = insertRow.rowData;
   const currentRowsProductLink = rowDataToInsert.productLink;
+  let currentRowsProductPrice = rowDataToInsert.price;
 
 
   // t toInsert = {
@@ -92,80 +94,348 @@ export async function get_addRowToCollection(request) {
 
   // wixData.insert(collectionName, rowDataToInsert)
 
-  try{
+    try{
 
-    let response = {
-      body: {
-        "collectionName": collectionName,
-        // "rowDataToInsert": typeof(rowDataToInsert),
-        'rowAlreadyExists': false,
-        'productLink': rowDataToInsert.productLink,
-        'rowAddedToDB': false
-        // 'result': {}
-        },
-      headers: {
-          "Content-Type": "application/json"
-        }
-    };
+      let response = {
+        body: {
+          "collectionName": collectionName,
+          // "rowDataToInsert": typeof(rowDataToInsert),
+          'rowAlreadyExists': false,
+          'productPriceOriginal': JSON.parse(JSON.stringify(rowDataToInsert.price)),
+          'productPriceConverted': '',
+          'productLink': rowDataToInsert.productLink,
 
-    let options = {
-      "suppressAuth": true,
-      "suppressHooks": true
-    };
+          'rowAddedToDB': false
+          // 'result': {}
+          },
+        headers: {
+            "Content-Type": "application/json"
+          }
+      };
 
-    return wixData.query(collectionName).eq("productLink", currentRowsProductLink).find(options)
-      .then((results) => {
+      let options = {
+        "suppressAuth": true,
+        "suppressHooks": true
+      };
 
-        if(results.items.length > 0) {
+      return convertProductPrice(currentRowsProductPrice, collectionName).then((newPriceValue) => {
 
-          response.body.rowAlreadyExists = true;
+        // currentRowsProductPrice = newPriceValue;
 
-          return ok(response);
+        response.body.productPriceConverted = newPriceValue;
+        rowDataToInsert.price = newPriceValue;
 
-        // response.body.dataAlreadyExists = false;
+        return wixData.query(collectionName).eq("productLink", currentRowsProductLink).find(options)
+        .then((results) => {
 
-        // console.log(results.items[0]); //see firstItem below
-        }
-        else{
+          if(results.items.length > 0) {
 
-          return wixData.insert(collectionName, rowDataToInsert, options)
-          .then((itemValue) => {
-
-            let item = itemValue;
-            // response.body.item = itemValue;
-
-            response.body.rowAddedToDB = true;
+            response.body.rowAlreadyExists = true;
 
             return ok(response);
 
-          });
+          // response.body.dataAlreadyExists = false;
+
+          // console.log(results.items[0]); //see firstItem below
+          }
+          else{
+
+            return wixData.insert(collectionName, rowDataToInsert, options)
+            .then((itemValue) => {
+
+              let item = itemValue;
+              // response.body.item = itemValue;
+
+              response.body.rowAddedToDB = true;
+
+              return ok(response);
+
+            });
+            // return ok(response);
+
+          }
+
           // return ok(response);
+        // else {
+        // // handle case where no matching items found
+        //
+        // }
+        });
 
-        }
-
-        // return ok(response);
-      // else {
-      // // handle case where no matching items found
-      //
-      // }
       });
 
+    }
+    catch (error){
+
+      let response = {
+        body: {
+          "error": error,
+          },
+          headers: {
+            "Content-Type": "application/json"
+          }
+      };
+
+      return error(response);
+    }
+
+
+
+
+}
+
+async function convertProductPrice(
+	priceString,
+  collectionName){
+
+	let priceFloat = 0;
+	let listPriceNumbers = [];
+
+	let convertedPrice = '';
+
+  let applicablePriceValue = '';
+
+	// obtaining price as a number
+	for (let i in priceString){
+		let isCharNumber = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'].filter((numberOrDot) => numberOrDot == priceString[i]).length > 0;
+
+		if (isCharNumber){
+			listPriceNumbers.push(priceString[i]);
+		}
+
+	}
+
+	priceFloat = Number(listPriceNumbers.join(""));
+
+	// console.log('priceFloat: ' + priceFloat);
+
+	if (collectionName == 'singaporeProducts') {
+		console.log('here');
+
+		if (priceString.startsWith('SGD$') || priceString.startsWith('SGD')){
+
+			let currency = 'S$';
+			let amount = priceFloat.toFixed(2);
+			convertedPrice = currency + amount;
+
+		}
+		else if ((priceString.startsWith('USD$') || priceString.startsWith('USD')) || (priceString.startsWith('$'))){
+			let currency = 'S$';
+			let amount = 0;
+
+			await priceConverterFunction(priceFloat, 'USD', 'SGD').then((value) => {
+				amount = value;
+				convertedPrice = currency + String(amount.toFixed(2));
+				// console.log(convertedPrice);
+			});
+		}
+		else if ((priceString.startsWith('AED')) || (priceString.startsWith('د.إ'))){
+			let currency = 'S$';
+			let amount = 0;
+
+			await priceConverterFunction(priceFloat, 'AED', 'SGD').then((value) => {
+				amount = value;
+				convertedPrice = currency + String(amount.toFixed(2));
+				// console.log(convertedPrice);
+			});
+		}
+		else if ((priceString.startsWith('EUR')) || (priceString.startsWith('€'))){
+			let currency = 'S$';
+			let amount = 0;
+
+			await priceConverterFunction(priceFloat, 'EUR', 'SGD').then((value) => {
+				amount = value;
+				convertedPrice = currency + String(amount.toFixed(2));
+				// console.log(convertedPrice);
+			});
+		}
+		else if ((priceString.startsWith('GBP')) || (priceString.startsWith('£'))){
+			let currency = 'S$';
+			let amount = 0;
+
+			await priceConverterFunction(priceFloat, 'GBP', 'SGD').then((value) => {
+				amount = value;
+				convertedPrice = currency + String(amount.toFixed(2));
+				// console.log(convertedPrice);
+			});
+		}
+		else if ((priceString.startsWith('CAD')) || (priceString.startsWith('C$')) || (priceString.startsWith('CAD$'))){
+			let currency = 'S$';
+			let amount = 0;
+
+			await priceConverterFunction(priceFloat, 'CAD', 'SGD').then((value) => {
+				amount = value;
+				convertedPrice = currency + String(amount.toFixed(2));
+				// console.log(convertedPrice);
+			});
+		}
+
+	}
+	else if (collectionName == 'uaeProducts') {
+		console.log('here');
+
+		if ((priceString.startsWith('د.إ'))){
+			let currency = 'AED ';
+			let amount = priceFloat;
+			convertedPrice = currency + String(amount.toFixed(2));
+		}
+		else if (priceString.startsWith('USD$') || priceString.startsWith('USD') || priceString.startsWith('$')){
+
+			let currency = 'AED ';
+			let amount = 0;
+
+			await priceConverterFunction(priceFloat, 'USD', 'AED').then((value) => {
+				amount = value;
+				convertedPrice = currency + String(amount.toFixed(2));
+				// console.log(convertedPrice);
+			});
+
+		}
+		else if (priceString.startsWith('SGD$') || priceString.startsWith('SGD') || priceString.startsWith('SGD$')){
+
+			let currency = 'AED ';
+			let amount = 0;
+
+			await priceConverterFunction(priceFloat, 'SGD', 'AED').then((value) => {
+				amount = value;
+				convertedPrice = currency + String(amount.toFixed(2));
+				// console.log(convertedPrice);
+			});
+
+		}
+		else if ((priceString.startsWith('EUR')) || (priceString.startsWith('€'))){
+			let currency = 'AED ';
+			let amount = 0;
+
+			await priceConverterFunction(priceFloat, 'EUR', 'AED').then((value) => {
+				amount = value;
+				convertedPrice = currency + String(amount.toFixed(2));
+				// console.log(convertedPrice);
+			});
+		}
+		else if ((priceString.startsWith('GBP')) || (priceString.startsWith('£'))){
+			let currency = 'AED ';
+			let amount = 0;
+
+			await priceConverterFunction(priceFloat, 'GBP', 'AED').then((value) => {
+				amount = value;
+				convertedPrice = currency + String(amount.toFixed(2));
+				// console.log(convertedPrice);
+			});
+		}
+		else if (priceString.startsWith('CAD') || priceString.startsWith('C$') || priceString.startsWith('CAD$')){
+			let currency = 'AED ';
+			let amount = 0;
+
+			await priceConverterFunction(priceFloat, 'CAD', 'AED').then((value) => {
+				amount = value;
+				convertedPrice = currency + String(amount.toFixed(2));
+				// console.log(convertedPrice);
+			});
+		}
+
+	}
+	else if (collectionName == 'usaProducts') {
+		console.log('here');
+
+		if (priceString.startsWith('USD') || priceString.startsWith('USD$') || priceString.startsWith('US$')){
+			let currency = '$';
+			let amount = priceFloat;
+			convertedPrice = currency + String(amount.toFixed(2));
+		}
+		else if ((priceString.startsWith('AED')) || (priceString.startsWith('د.إ'))){
+
+			let currency = '$';
+			let amount = 0;
+
+			await priceConverterFunction(priceFloat, 'AED', 'USD').then((value) => {
+				amount = value;
+				convertedPrice = currency + String(amount.toFixed(2));
+				// console.log(convertedPrice);
+			});
+
+		}
+		else if (priceString.startsWith('SGD$') || priceString.startsWith('SGD') || priceString.startsWith('SGD$')){
+
+			let currency = '$';
+			let amount = 0;
+
+			await priceConverterFunction(priceFloat, 'SGD', 'USD').then((value) => {
+				amount = value;
+				convertedPrice = currency + String(amount.toFixed(2));
+				// console.log(convertedPrice);
+			});
+
+		}
+		else if ((priceString.startsWith('EUR')) || (priceString.startsWith('€'))){
+			let currency = '$';
+			let amount = 0;
+
+			await priceConverterFunction(priceFloat, 'EUR', 'USD').then((value) => {
+				amount = value;
+				convertedPrice = currency + String(amount.toFixed(2));
+				// console.log(convertedPrice);
+			});
+		}
+		else if ((priceString.startsWith('GBP')) || (priceString.startsWith('£'))){
+			let currency = '$';
+			let amount = 0;
+
+			await priceConverterFunction(priceFloat, 'GBP', 'USD').then((value) => {
+				amount = value;
+				convertedPrice = currency + String(amount.toFixed(2));
+				// console.log(convertedPrice);
+			});
+		}
+		else if (priceString.startsWith('CAD') || priceString.startsWith('C$') || priceString.startsWith('CAD$')){
+			let currency = '$';
+			let amount = 0;
+
+			await priceConverterFunction(priceFloat, 'CAD', 'USD').then((value) => {
+				amount = value;
+				convertedPrice = currency + String(amount.toFixed(2));
+				// console.log(convertedPrice);
+			});
+		}
+
+	}
+
+	console.log('convertedPrice: ' + convertedPrice);
+
+  if (convertedPrice == ''){
+    applicablePriceValue = String(Number(priceString.toFixed(2)));
   }
-  catch (error){
-
-    let response = {
-      body: {
-        "error": error,
-        },
-        headers: {
-          "Content-Type": "application/json"
-        }
-    };
-
-    return error(response);
+  else{
+    applicablePriceValue = convertedPrice;
   }
 
+	return applicablePriceValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	// else if (usersCountryCode == 'AE'){
+	// 	dbCollectionToFocusOn = 'uaeProducts';
+	// 	timeOut = 2500;
+	// }
+	// else if (usersCountryCode == 'US'){
+	// 	dbCollectionToFocusOn = 'usaProducts';
+	// }
+}
 
 
+
+async function priceConverterFunction(price, fromCurrency, toCurrency) {
+
+	let returnValue = 0;
+
+	const conversionOptions =	{
+			  "amounts": [price],
+			  "from": fromCurrency,
+			  "to": toCurrency
+			};
+
+	await wixPayBackend.currencies.currencyConverter.convertAmounts(conversionOptions)
+  		.then((convertedAmounts) => {
+  			returnValue = convertedAmounts.amounts[0];
+  		});
+
+	return returnValue;
 
 }

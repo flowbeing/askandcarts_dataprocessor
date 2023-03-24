@@ -4,12 +4,37 @@ import wixData from 'wix-data';
 import wixLocation from 'wix-location';
 import {fetch} from 'wix-fetch';
 import wixWindow from 'wix-window';
+import {currencies} from 'wix-pay';
+
+// user's country
+let usersCountryCode = '';
+
+// list of all currencies
+// let allCurrenciesDict = {}
+//
+// currencies.getAllCurrencies()
+//   .then((listOfAllCurrencies) => {
+//
+// 	  for (let currencyIndex in listOfAllCurrencies){
+//
+// 		  console.log(listOfAllCurrencies[currencyIndex].code, listOfAllCurrencies[currencyIndex].symbol)
+//
+//
+// 	  }
+//
+//     // const firstCurrencyCode = listOfAllCurrencies[0].code;
+//     // const firstCurrencyCSymbol = listOfAllCurrencies[0].symbol;
+//
+//   });
 
 let dbQueryAllResponseItems = [];
 /// VARIABLES TO DEFINE FEATURED PRODUCTS
 
 // MEN AND WOMEN
 let furnituresMenAndWomen = []; // Furnitures
+
+// Main gallery's copy
+let mainGalleryCopy = [];
 
 // WOMEN
 let recommendedForWomen = [];
@@ -86,13 +111,16 @@ async function resolveGalleryItems(){
 			/// defining collection in focus by user country
 			if (ipLoc.countryCode == 'SG') {
 				dbCollectionToFocusOn = 'singaporeProducts';
+				usersCountryCode = 'SG';
 			}
 			else if (ipLoc.countryCode == 'AE'){
 				dbCollectionToFocusOn = 'uaeProducts';
-				timeOut = 2500;
+				usersCountryCode = 'AE';
+				// timeOut = 2500;
 			}
 			else if (ipLoc.countryCode == 'US'){
 				dbCollectionToFocusOn = 'usaProducts';
+				usersCountryCode = 'US';
 			}
 
 
@@ -276,10 +304,24 @@ $w.onReady(function () {
 		let womensFeatureableProducts = totalProductsPerCategoryPerGender.WOMEN;
 		let mensFeatureableProducts = totalProductsPerCategoryPerGender.MEN;
 
-		console.log('');
-		console.log(womensFeatureableProducts);
-		console.log(mensFeatureableProducts);
+		// list of shoes and bags that are available for women
+		let womensFeaturableShoesList = womensFeatureableProducts['SHOE'];
+		let womensFeaturableBagsList = womensFeatureableProducts['HANDBAG'];
 
+		let womensFeaturableShoesListCopy = JSON.parse(JSON.stringify(womensFeatureableProducts['SHOE']));// womensFeatureableProducts['SHOE'];
+		let womensFeaturableBagsListCopy = JSON.parse(JSON.stringify(womensFeatureableProducts['HANDBAG'])); // womensFeatureableProducts['HANDBAG'];
+
+		// console.log('type check');
+		// for (let x in womensFeaturableShoesList){
+		// 	console.log(JSON.stringify(womensFeaturableShoesList[x].productLink == womensFeaturableShoesListCopy[x].productLink));
+		// }
+		// console.log(womensFeaturableBagsList == womensFeaturableBagsListCopy);
+
+		console.log('');
+		console.log('womensFeatureableProducts: ' + womensFeatureableProducts);
+		console.log('mensFeatureableProducts: ' + mensFeatureableProducts);
+
+		/// product categories that's currently available per gender selection
 		let availableProductCategoriesForMen = availableProductsCategoryForEachGender['MEN'];
 		let availableProductCategoriesForWomen = availableProductsCategoryForEachGender['WOMEN'];
 
@@ -300,10 +342,17 @@ $w.onReady(function () {
 
 		}
 
+
+		let currentProductItemsIndexWithinListOfAllProducts = 1;
+
+
+
 		/// obtain recommendedForWomensGallery's content while ensuring 10 women's products have been added..
 		// if (dbQueryAllResponseItems.length >= recommendedForWomenContentTargetCount){
 
-			while (recommendedForWomen.length < recommendedForWomenContentTargetCount) {
+			// while (recommendedForWomen.length < recommendedForWomenContentTargetCount) {
+
+			while (currentProductItemsIndexWithinListOfAllProducts < dbQueryAllResponseItems.length) {
 
 				for (let gender in totalProductsPerCategoryPerGender){
 
@@ -355,9 +404,20 @@ $w.onReady(function () {
 	  												"title": currentProductTitle,
 	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  												'description': currentProduct.price,
-	  												'link': '',
+	  												'link': currentProduct.productCategory,
 	  												'slug': String(indexOfCurrentProduct)
-												})
+												});
+
+												if (productCategory == 'NECKLACE' && giftForHer.length < 20){
+													giftForHer.push({
+														"type": "image",
+	  													"title": currentProductTitle,
+	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	  													'description': currentProduct.price,
+	  													'link': currentProduct.productCategory,
+	  													'slug': String(indexOfCurrentProduct)
+													});
+												}
 											}
 											else if (productCategory == 'HANDBAG' || productCategory == 'BRACELET' || productCategory == 'WATCH' || productCategory == 'WATCHES'){
 												handbagsAndMoreWomen.push({
@@ -365,9 +425,21 @@ $w.onReady(function () {
 	  												"title": currentProductTitle,
 	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  												'description': currentProduct.price,
-	  												'link': '',
+	  												'link': currentProduct.productCategory,
 	  												'slug': String(indexOfCurrentProduct)
-												})
+												});
+
+												if (productCategory == 'BRACELET' && giftForHer.length < 20){
+													giftForHer.push({
+														"type": "image",
+	  													"title": currentProductTitle,
+	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	  													'description': currentProduct.price,
+	  													'link': currentProduct.productCategory,
+	  													'slug': String(indexOfCurrentProduct)
+													});
+												}
+
 											}
 											else if (productCategory == 'FURNITURE'){
 												furnituresMenAndWomen.push({
@@ -375,7 +447,7 @@ $w.onReady(function () {
 	  												"title": currentProductTitle,
 	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  												'description': currentProduct.price,
-	  												'link': '',
+	  												'link': currentProduct.productCategory,
 	  												'slug': String(indexOfCurrentProduct)
 												})
 											}
@@ -385,7 +457,7 @@ $w.onReady(function () {
 	  												"title": currentProductTitle,
 	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  												'description': currentProduct.price,
-	  												'link': '',
+	  												'link': currentProduct.productCategory,
 	  												'slug': String(indexOfCurrentProduct)
 												})
 											}
@@ -395,9 +467,20 @@ $w.onReady(function () {
 	  												"title": currentProductTitle,
 	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  												'description': currentProduct.price,
-	  												'link': '',
+	  												'link': currentProduct.productCategory,
 	  												'slug': String(indexOfCurrentProduct)
-												})
+												});
+
+												if (giftForHer.length < 20){
+													giftForHer.push({
+														"type": "image",
+	  													"title": currentProductTitle,
+	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	  													'description': currentProduct.price,
+	  													'link': currentProduct.productCategory,
+	  													'slug': String(indexOfCurrentProduct)
+													});
+												}
 											}
 											else if (productCategory == 'TRAVEL BAG' || productCategory == 'BAG'){
 												travelBagsAndOtherBagsWomen.push({
@@ -405,7 +488,7 @@ $w.onReady(function () {
 	  												"title": currentProductTitle,
 	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  												'description': currentProduct.price,
-	  												'link': '',
+	  												'link': currentProduct.productCategory,
 	  												'slug': String(indexOfCurrentProduct)
 												})
 											}
@@ -415,7 +498,7 @@ $w.onReady(function () {
 	  												"title": currentProductTitle,
 	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  												'description': currentProduct.price,
-	  												'link': '',
+	  												'link': currentProduct.productCategory,
 	  												'slug': String(indexOfCurrentProduct)
 												})
 											}
@@ -431,7 +514,7 @@ $w.onReady(function () {
 											// let isDisplayFlowersAndMensRings = isItemsInList(availableProductCategoriesForMen, ['FLOWER', 'RING']);
 											// let isDisplayMensTravelBagsAndOtherBags = isItemsInList(availableProductCategoriesForMen, ['TRAVEL BAG', 'BAG']);
 											// let isDisplayOtherAccessoriesForMen = isItemsInList(availableProductCategoriesForMen, ['ACCESSORIES']);
-											// let isDisplayGiftsForHer = isItemsInList(availableProductCategoriesForWomen, ['FLOWER', 'RING', 'WATCH', 'WATCHES', ]);
+											// let isDisplayGiftsForHer = isItemsInList(availableProductCategoriesForWomen, ['FLOWER', 'RING', 'NECKLACE', ]);
 
 
 											if (productCategory == 'SHOE' || productCategory == 'WATCH' || productCategory == 'WATCHES'){
@@ -440,19 +523,30 @@ $w.onReady(function () {
 	  												"title": currentProductTitle,
 	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  												'description': currentProduct.price,
-	  												'link': '',
+	  												'link': currentProduct.productCategory,
 	  												'slug': String(indexOfCurrentProduct)
-												})
+												});
+
+												if (productCategory == 'WATCH' || productCategory == 'WATCHES' && giftsForHim.length < 20){
+													giftsForHim.push({
+														"type": "image",
+	  													"title": currentProductTitle,
+	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	  													'description': currentProduct.price,
+	  													'link': currentProduct.productCategory,
+	  													'slug': String(indexOfCurrentProduct)
+													});
+												}
 											}
-											else if (productCategory == 'NECKLACE' || productCategory == 'WATCH' || productCategory == 'WATCHES'){
+											else if (productCategory == 'NECKLACE' || productCategory == 'BRACELET'){
 												necklacesAndBracletsMen.push({
 													"type": "image",
 	  												"title": currentProductTitle,
 	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  												'description': currentProduct.price,
-	  												'link': '',
+	  												'link': currentProduct.productCategory,
 	  												'slug': String(indexOfCurrentProduct)
-												})
+												});
 											}
 											else if (productCategory == 'FURNITURE'){
 												if (isItemsInList(furnituresMenAndWomen, [
@@ -461,7 +555,7 @@ $w.onReady(function () {
 	  													"title": currentProductTitle,
 	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  													'description': currentProduct.price,
-	  													'link': '',
+	  													'link': currentProduct.productCategory,
 	  													'slug': String(indexOfCurrentProduct)
 													}]) == false){
 
@@ -470,9 +564,9 @@ $w.onReady(function () {
 	  													"title": currentProductTitle,
 	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  													'description': currentProduct.price,
-	  													'link': '',
+	  													'link': currentProduct.productCategory,
 	  													'slug': String(indexOfCurrentProduct)
-													})
+													});
 
 												}
 
@@ -483,19 +577,31 @@ $w.onReady(function () {
 	  												"title": currentProductTitle,
 	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  												'description': currentProduct.price,
-	  												'link': '',
+	  												'link': currentProduct.productCategory,
 	  												'slug': String(indexOfCurrentProduct)
 												})
 											}
 											else if (productCategory == 'FLOWER' || productCategory == 'RING'){
-												clothesAndPerfumesMen.push({
+
+												flowersAndRingsMen.push({
 													"type": "image",
 	  												"title": currentProductTitle,
 	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  												'description': currentProduct.price,
-	  												'link': '',
+	  												'link': currentProduct.productCategory,
 	  												'slug': String(indexOfCurrentProduct)
-												})
+												});
+
+												if (giftsForHim.length < 20){
+													giftsForHim.push({
+														"type": "image",
+	  													"title": currentProductTitle,
+	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	  													'description': currentProduct.price,
+	  													'link': currentProduct.productCategory,
+	  													'slug': String(indexOfCurrentProduct)
+													});
+												}
 											}
 											else if (productCategory == 'TRAVEL BAG' || productCategory == 'BAG'){
 												travelBagsAndOtherBagsMen.push({
@@ -503,7 +609,7 @@ $w.onReady(function () {
 	  												"title": currentProductTitle,
 	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  												'description': currentProduct.price,
-	  												'link': '',
+	  												'link': currentProduct.productCategory,
 	  												'slug': String(indexOfCurrentProduct)
 												})
 											}
@@ -513,12 +619,13 @@ $w.onReady(function () {
 	  												"title": currentProductTitle,
 	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  												'description': currentProduct.price,
-	  												'link': '',
+	  												'link': currentProduct.productCategory,
 	  												'slug': String(indexOfCurrentProduct)
 												})
 											}
 
 										}
+
 
 										// populating recommendedForWomen's list i.e list of products that are meant for women
 										if (currentProduct.gender == 'WOMEN' && currentProduct.productCategory != 'CLOTHING' && recommendedForWomen.length < 10){
@@ -530,9 +637,30 @@ $w.onReady(function () {
 	  											"title": currentProductTitle,
 	 		  									"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  											'description': currentProduct.price,
-	  											'link': '',
+	  											'link': currentProduct.productCategory,
 	  											'slug': String(indexOfCurrentProduct)
 											});
+
+											/// track bags and / or shoes has been added to recommendedForWomenGallery..
+											if ((currentProduct.gender == 'WOMEN' && currentProduct.productCategory == 'HANDBAG') ||
+											(currentProduct.gender == 'WOMEN' && currentProduct.productCategory == 'SHOE')){
+												ladiesShoesAndBagsIncludedTracker.push(currentProduct.productCategory);
+
+												if (currentProduct.productCategory == 'SHOE'){
+													// womensFeaturableShoesList.pop(currentProduct);
+													// console.log('');
+													// console.log('removed from copy: ' + womensFeaturableShoesListCopy[0].title + ', ' + womensFeaturableShoesListCopy[0].gender);
+													womensFeaturableShoesListCopy.splice(0, 1);
+													// console.log('womensFeaturableShoesList after item removal: ' + womensFeaturableShoesList.length);
+												}
+												else if (currentProduct.productCategory == 'HANDBAG'){
+													// womensFeaturableBagsList.pop(currentProduct);
+													// console.log('');
+													// console.log('removed from copy: ' + womensFeaturableBagsListCopy[0].title + ', ' + womensFeaturableBagsListCopy[0].gender);
+													womensFeaturableBagsListCopy.splice(0, 1);
+													// console.log('womensFeaturableBagsList after item removal: ' + womensFeaturableBagsList.length);
+												}
+											}
 
 
 
@@ -541,15 +669,18 @@ $w.onReady(function () {
 										// removing current product from totalProductsPerCategoryPerGender dict to prevent it from being added and
 										// displayed more than once on recommendedForWomen's gallery..
 										// totalProductsPerCategoryPerGender[gender][productCategory].pop(0);
+										// console.log('removed from main: ' + currentProduct.title + ', ' + currentProduct.gender);
+										// console.log('');
 										totalProductsPerCategoryPerGender[gender][productCategory].splice(0, 1); // remove the item to prevent it from being added again later
 
 										// gallery1AlreadyIncludedAsPerTheirRelativeGenderTrackerList.push(gender);
 
-										/// track bags and / or shoes has been added to recommendedForWomenGallery..
-									if ((currentProduct.gender == 'WOMEN' && currentProduct.productCategory == 'HANDBAG' && recommendedForWomen.length < 10) ||
-									(currentProduct.gender == 'WOMEN' && currentProduct.productCategory == 'SHOE' && recommendedForWomen.length < 10)){
-										ladiesShoesAndBagsIncludedTracker.push(currentProduct.productCategory);
-									}
+
+
+
+									// console.log(currentProductItemsIndexWithinListOfAllProducts);
+
+									// console.log(currentProduct.imageSrc);
 
 										// if ((gender == 'WOMEN' && gallery1WomensProductsCount == 8) || (gender == 'MEN' && gallery1MensProductsCount == 2)){
 										// 	break;
@@ -558,6 +689,9 @@ $w.onReady(function () {
 
 
 								}
+
+								currentProductItemsIndexWithinListOfAllProducts += 1;
+								// console.log(currentProductItemsIndexWithinListOfAllProducts);
 
 									// if ((gender == 'WOMEN' && gallery1WomensProductsCount == 8) || (gender == 'MEN' && gallery1MensProductsCount == 2)){
 									// 	break;
@@ -590,14 +724,21 @@ $w.onReady(function () {
 
 
 			}
+		// console.log('');
+		// console.log('womensFeaturableBagsList after item removal: ' + womensFeaturableBagsList.length);
+		// console.log('here');
+		// console.log('womensFeaturableShoesList after item removal: ' + womensFeaturableShoesList.length);
+		// console.log('ladiesShoesAndBagsIncludedTracker: ' + ladiesShoesAndBagsIncludedTracker);
 
 
 
 
 
 
-		console.log('');
-		console.log('gallery1AlreadyIncludedAsPerTheirRelativeGenderTrackerList: ' + gallery1AlreadyIncludedAsPerTheirRelativeGenderTrackerList);
+
+
+		// console.log('');
+		// console.log('gallery1AlreadyIncludedAsPerTheirRelativeGenderTrackerList: ' + gallery1AlreadyIncludedAsPerTheirRelativeGenderTrackerList);
 
 
 
@@ -609,8 +750,10 @@ $w.onReady(function () {
 				console.log(recommendedForWomen[index]);
 				console.log('typeof(index): ' + typeof(index));
 		}
-		console.log('');
-		console.log(womensFeatureableProducts['BRACELET']['0']);
+		// console.log('');
+		// console.log(womensFeatureableProducts['BRACELET']['0']);
+
+
 
 
 
@@ -621,20 +764,21 @@ $w.onReady(function () {
 			console.log('ladiesBagsIncludedCount: ' + ladiesBagsIncludedCount);
 			console.log('ladiesShoesIncludedCount: ' + ladiesShoesIncludedCount);
 
-			let womensFeaturableShoesList = womensFeatureableProducts['SHOE'];
-			let womensFeaturableBagsList = womensFeatureableProducts['HANDBAG'];
 
-			let typeWomensFeaturableShoesList = typeof(womensFeaturableShoesList);
-			let typeWomensFeaturableBagsList = typeof(womensFeaturableBagsList);
+			let typeWomensFeaturableShoesListCopy = typeof(womensFeaturableShoesListCopy);
+			let typeWomensFeaturableBagsListCopy = typeof(womensFeaturableBagsListCopy);
 
 			let maxNumberOfShoesThatShouldBeAddedTorecommendedForWomen = 0;
 			let maxNumberOfBagsThatShouldBeAddedTorecommendedForWomen = 0;
 
+			console.log('womensFeaturableShoesListCopy: ' + womensFeaturableShoesListCopy);
+			console.log('ladiesShoesIncludedCount: ' + ladiesShoesIncludedCount);
+
 
 			// if shoe products exists in the shoe category with up to one product
-			if (typeWomensFeaturableShoesList == 'object'){
+			if (typeWomensFeaturableShoesListCopy == 'object'){
 
-				if (womensFeaturableShoesList.length >= 1){
+				if (womensFeaturableShoesListCopy.length >= 1){
 
 					maxNumberOfShoesThatShouldBeAddedTorecommendedForWomen = 3 - ladiesShoesIncludedCount;
 
@@ -644,12 +788,12 @@ $w.onReady(function () {
 				}
 
 				// loop to remove non handbag or shoe item from featuredGallery and replace with shoes instead
-				for (let indexOne = 0 ; indexOne < womensFeaturableShoesList.length; indexOne ++){
+				for (let indexOne = 0 ; indexOne < womensFeaturableShoesListCopy.length; indexOne ++){
 
 					// remove a featured general gallery item that's not a handbag or shoe..
 					for (let indexTwo in recommendedForWomen){
 
-						if (recommendedForWomen[indexTwo].slug != 'SHOE' && recommendedForWomen[indexTwo].slug != 'HANDBAG'){
+						if (recommendedForWomen[indexTwo].link != 'SHOE' && recommendedForWomen[indexTwo].link != 'HANDBAG'){
 
 							recommendedForWomen.splice(Number(indexTwo), 1);
 
@@ -659,7 +803,7 @@ $w.onReady(function () {
 					}
 
 					// add shoe product to featured general item
-					let currentShoeProduct = womensFeaturableShoesList[indexOne];
+					let currentShoeProduct = womensFeaturableShoesListCopy[indexOne];
 					let indexOfCurrentProduct = dbQueryAllResponseItems.indexOf(currentShoeProduct);
 
 					recommendedForWomen.push(
@@ -669,13 +813,15 @@ $w.onReady(function () {
 	  										"title": currentShoeProduct.title,
 	 		  								"src": currentShoeProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  										'description': currentShoeProduct.price,
-	  										'link': '',
+	  										'link': currentShoeProduct.productCategory,
 	  										'slug': String(indexOfCurrentProduct)
 										}
 
 					);
 
-					if (indexOne == maxNumberOfShoesThatShouldBeAddedTorecommendedForWomen ){
+					womensFeaturableShoesListCopy.splice(Number(indexOne), 1);
+
+					if (indexOne == maxNumberOfShoesThatShouldBeAddedTorecommendedForWomen - 1){ // manually augmented
 						break;
 					}
 
@@ -683,9 +829,9 @@ $w.onReady(function () {
 			}
 
 			// if handbag products exists in the handbag category with up to one product
-			if (typeWomensFeaturableBagsList == 'object'){
+			if (typeWomensFeaturableBagsListCopy == 'object'){
 
-				if (womensFeaturableBagsList.length >= 1){
+				if (womensFeaturableBagsListCopy.length >= 1){
 
 					maxNumberOfBagsThatShouldBeAddedTorecommendedForWomen = 3 - ladiesBagsIncludedCount;
 
@@ -696,16 +842,16 @@ $w.onReady(function () {
 
 
 				// i.e loop to remove non handbag or shoe item from featuredGallery and replace with handbag instead
-				for (let indexOne = 0 ; indexOne < womensFeaturableBagsList.length; indexOne ++){
+				for (let indexOne = 0 ; indexOne < womensFeaturableBagsListCopy.length; indexOne ++){
 
 					console.log('');
-					console.log('womensFeaturableBagsList.length: ' + womensFeaturableBagsList.length);
+					console.log('womensFeaturableBagsListCopy.length: ' + womensFeaturableBagsListCopy.length);
 
 
 					// remove a featured general gallery  that's not a bag or shoe..
 					for (let indexTwo in recommendedForWomen){
 
-						if (recommendedForWomen[indexTwo].slug != 'SHOE' && recommendedForWomen[indexTwo].slug != 'HANDBAG'){
+						if (recommendedForWomen[indexTwo].link != 'SHOE' && recommendedForWomen[indexTwo].link != 'HANDBAG'){
 
 							recommendedForWomen.splice(Number(indexTwo), 1);
 
@@ -715,7 +861,7 @@ $w.onReady(function () {
 					}
 
 					// add bag product to featured general item
-					let currentBagProduct = womensFeaturableBagsList[indexOne];
+					let currentBagProduct = womensFeaturableBagsListCopy[indexOne];
 					let indexOfCurrentProduct = dbQueryAllResponseItems.indexOf(currentBagProduct);
 					recommendedForWomen.push(
 
@@ -724,13 +870,14 @@ $w.onReady(function () {
 	  										"title": currentBagProduct.title,
 	 		  								"src": currentBagProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  										'description': currentBagProduct.price,
-	  										'link': '',
+	  										'link': currentBagProduct.productCategory,
 	  										'slug': String(indexOfCurrentProduct)
 										}
 
 					);
 
-					if (indexOne == maxNumberOfBagsThatShouldBeAddedTorecommendedForWomen){
+					womensFeaturableBagsListCopy.splice(Number(indexOne), 1);
+					if (indexOne == maxNumberOfBagsThatShouldBeAddedTorecommendedForWomen - 1){ // manually augmented
 						break;
 					}
 				}
@@ -773,7 +920,7 @@ $w.onReady(function () {
 		let isDisplayFlowersAndWomensRings = isItemsInList(availableProductCategoriesForWomen, ['FLOWER', 'RING']);
 		let isDisplayTravelBagsAndOtherBags = isItemsInList(availableProductCategoriesForWomen, ['TRAVEL BAG', 'BAG']);
 		let isDisplayOtherAccessoriesForWomen = isItemsInList(availableProductCategoriesForWomen, ['ACCESSORIES']);
-		let isDisplayGiftsForHim = isItemsInList(availableProductCategoriesForMen, ['FLOWER', 'RING', 'WATCH', 'WATCHES', ]);
+		let isDisplayGiftsForHim = isItemsInList(availableProductCategoriesForMen, ['FLOWER', 'RING', 'WATCH', 'WATCHES']);
 
 		if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
 			listOfProductCategoryForWomen.push({"label": "Recommended", "value": "Recommended"});
@@ -792,7 +939,7 @@ $w.onReady(function () {
 		}
 
 		if (isDisplayWomensClothesAndPerfumes){
-			listOfProductCategoryForWomen.push({"label": "Clothes And Perfumes", "value": "Clothes And Perfumes"});
+			listOfProductCategoryForWomen.push({"label": "Clothes & Perfumes", "value": "Clothes & Perfumes"});
 		}
 
 		if (isDisplayFlowersAndWomensRings){
@@ -836,7 +983,7 @@ $w.onReady(function () {
 		let isDisplayFlowersAndMensRings = isItemsInList(availableProductCategoriesForMen, ['FLOWER', 'RING']);
 		let isDisplayMensTravelBagsAndOtherBags = isItemsInList(availableProductCategoriesForMen, ['TRAVEL BAG', 'BAG']);
 		let isDisplayOtherAccessoriesForMen = isItemsInList(availableProductCategoriesForMen, ['ACCESSORIES']);
-		let isDisplayGiftsForHer = isItemsInList(availableProductCategoriesForWomen, ['FLOWER', 'RING', 'WATCH', 'WATCHES', ]);
+		let isDisplayGiftsForHer = isItemsInList(availableProductCategoriesForWomen, ['FLOWER', 'RING', 'EARRING', 'NECKLACE', ]);
 
 		if (isDisplayMensShoesAndWatches){
 			listOfProductCategoryForMen.push({"label": "Shoes & Watches", "value": "Shoes & Watches"});
@@ -880,11 +1027,17 @@ $w.onReady(function () {
 
 			if ($w('#dropdown1').value == 'Women'){
 				$w('#dropdown3').options = listOfProductCategoryForWomen;
+				$w('#dropdown3').value = 'Shoes & More';
+				setMainGalleryBasedOnProductCategory();
 			}
 			else if ($w('#dropdown1').value == 'Men'){
 				$w('#dropdown3').options = listOfProductCategoryForMen;
+				$w('#dropdown3').value = 'Shoes & Watches';
+				setMainGalleryBasedOnProductCategory();
 			}
+
 		});
+
 
 
 		// brand options
@@ -918,14 +1071,21 @@ $w.onReady(function () {
 		})
 
 
+
 		// Gallery contents when gender is female and product category is 'recommended'
 		// console.log(recommendedForWomen);
+		// This is the default main gallery's content for mobile devices
 
 		if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
 			$w('#gallery1').items = recommendedForWomen;
 			$w('#gallery1').show();
 		}
 
+		// This is the default main gallery's content for desktops devices
+		if(wixWindow.formFactor === "Desktop"){
+			$w('#gallery1').items = orderProducts(shoesAndMoreWomen, 'SHOE', 3);
+			$w('#gallery1').show();
+		}
 
 		// console.log('dbQueryAllResponseItems: ' + dbQueryAllResponseItems);
 
@@ -957,10 +1117,16 @@ $w.onReady(function () {
 				// $w('#gallery1').items = recommendedForWomen;
 
 				// let indexOfEventItem = recommendedForWomen.indexOf[event.item.slug];
-
 				openTarget(event);
 
 
+
+		});
+
+		// set main gallery's each time productCategory filter's value changes
+		$w('#dropdown3').onChange((event) => {
+
+			setMainGalleryBasedOnProductCategory();
 
 		});
 
@@ -1006,7 +1172,7 @@ function isItemsInList(
 
 function openTarget(event){
 
-	$w('#button1').link = dbQueryAllResponseItems[Number(event.item.slug)].productLink;
+	// $w('#button1').link = dbQueryAllResponseItems[Number(event.item.slug)].productLink;
 				$w('#button1').target = '_blank';
 				$w('#button1').enable();
 				// $w('#html1').postMessage('click');
@@ -1022,5 +1188,279 @@ function openTarget(event){
 					$w('#button1').link = '';
 
 				});
+
+}
+
+function setMainGalleryBasedOnProductCategory(){
+
+	let currentProductCategory = $w('#dropdown3').value;
+	let gender = $w('#dropdown1').value;
+
+
+	if (gender == 'Women'){
+
+		// product categories that pertain to women
+		if (currentProductCategory == 'Shoes & More'){
+
+			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+				$w('#gallery1').items = orderProducts(shoesAndMoreWomen, 'SHOE', 2);
+				mainGalleryCopy = $w('#gallery1').items;
+			}
+			if(wixWindow.formFactor === "Desktop"){
+				$w('#gallery1').items = orderProducts(shoesAndMoreWomen, 'SHOE', 3);
+				mainGalleryCopy = $w('#gallery1').items;
+			}
+
+		}
+		else if (currentProductCategory == 'Handbags & More'){
+
+			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+				$w('#gallery1').items = orderProducts(handbagsAndMoreWomen, 'HANDBAG', 2);
+				mainGalleryCopy = $w('#gallery1').items;
+			}
+			if(wixWindow.formFactor === "Desktop"){
+				$w('#gallery1').items = orderProducts(handbagsAndMoreWomen, 'HANDBAG', 3);
+				mainGalleryCopy = $w('#gallery1').items;
+			}
+
+		}
+		else if (currentProductCategory == 'Furnitures'){
+
+			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+				$w('#gallery1').items = orderProducts(furnituresMenAndWomen, 'FURNITURE', 2);
+				mainGalleryCopy = $w('#gallery1').items;
+			}
+			if(wixWindow.formFactor === "Desktop"){
+				$w('#gallery1').items = orderProducts(furnituresMenAndWomen, 'FURNITURE', 3);
+				mainGalleryCopy = $w('#gallery1').items;
+			}
+
+		}
+		else if (currentProductCategory == 'Clothes & Perfumes'){
+
+			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+				$w('#gallery1').items = orderProducts(clothesAndPerfumesWomen, 'CLOTHING', 2);
+				mainGalleryCopy = $w('#gallery1').items;
+			}
+			if(wixWindow.formFactor === "Desktop"){
+				$w('#gallery1').items = orderProducts(clothesAndPerfumesWomen, 'CLOTHING', 3);
+				mainGalleryCopy = $w('#gallery1').items;
+			}
+
+		}
+		else if (currentProductCategory == 'Flowers & Rings'){
+
+			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+				$w('#gallery1').items = orderProducts(flowersAndRingsWomen, 'RING', 2);
+				mainGalleryCopy = $w('#gallery1').items;
+			}
+			if(wixWindow.formFactor === "Desktop"){
+				$w('#gallery1').items = orderProducts(flowersAndRingsWomen, 'RING', 3);
+				mainGalleryCopy = $w('#gallery1').items;
+			}
+
+		}
+		else if (currentProductCategory == 'Travel Bags & Other Bags'){
+
+			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+				$w('#gallery1').items = orderProducts(travelBagsAndOtherBagsWomen, 'TRAVEL BAG', 2);
+				mainGalleryCopy = $w('#gallery1').items;
+			}
+			if(wixWindow.formFactor === "Desktop"){
+				$w('#gallery1').items = orderProducts(travelBagsAndOtherBagsWomen, 'TRAVEL BAG', 3);
+				mainGalleryCopy = $w('#gallery1').items;
+			}
+
+		}
+		else if (currentProductCategory == 'Other Accessories'){
+
+			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+				$w('#gallery1').items = orderProducts(otherAccessoriesWomen, 'ACCESSORIES', 2);
+				mainGalleryCopy = $w('#gallery1').items;
+			}
+			if(wixWindow.formFactor === "Desktop"){
+				$w('#gallery1').items = orderProducts(otherAccessoriesWomen, 'ACCESSORIES', 3);
+				mainGalleryCopy = $w('#gallery1').items;
+			}
+
+		}else if (currentProductCategory == 'Gifts For Him'){
+
+			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+				$w('#gallery1').items = orderProducts(giftsForHim, 'WATCHES', 2);
+				mainGalleryCopy = $w('#gallery1').items;
+			}
+			if(wixWindow.formFactor === "Desktop"){
+				$w('#gallery1').items = orderProducts(giftsForHim, 'WATCHES', 3);
+				mainGalleryCopy = $w('#gallery1').items;
+			}
+		}
+	}
+
+	else if (gender == 'Men'){
+
+		if (currentProductCategory == 'Shoes & Watches'){
+
+		if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+			$w('#gallery1').items = orderProducts(shoesAndWatchesMen, 'SHOE', 1);
+			mainGalleryCopy = $w('#gallery1').items;
+		}
+		if(wixWindow.formFactor === "Desktop"){
+			$w('#gallery1').items = orderProducts(shoesAndWatchesMen, 'SHOE', 1);
+			mainGalleryCopy = $w('#gallery1').items;
+		}
+		}
+		else if (currentProductCategory == 'Necklaces & Bracelets'){
+
+			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+				$w('#gallery1').items = orderProducts(necklacesAndBracletsMen, 'NECKLACE', 2);
+				mainGalleryCopy = $w('#gallery1').items;
+			}
+			if(wixWindow.formFactor === "Desktop"){
+				$w('#gallery1').items = orderProducts(necklacesAndBracletsMen, 'NECKLACE', 3);
+				mainGalleryCopy = $w('#gallery1').items;
+			}
+		}
+		else if (currentProductCategory == 'Furnitures'){
+
+			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+				$w('#gallery1').items = orderProducts(furnituresMenAndWomen, 'FURNITURE', 2);
+				mainGalleryCopy = $w('#gallery1').items;
+			}
+			if(wixWindow.formFactor === "Desktop"){
+				$w('#gallery1').items = orderProducts(furnituresMenAndWomen, 'FURNITURE', 3);
+				mainGalleryCopy = $w('#gallery1').items;
+			}
+		}
+		else if (currentProductCategory == 'Clothes & Perfumes'){
+
+			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+				$w('#gallery1').items = orderProducts(clothesAndPerfumesMen, 'CLOTHING', 2);
+				mainGalleryCopy = $w('#gallery1').items;
+			}
+			if(wixWindow.formFactor === "Desktop"){
+				$w('#gallery1').items = orderProducts(clothesAndPerfumesMen, 'CLOTHING', 3);
+				mainGalleryCopy = $w('#gallery1').items;
+			}
+		}
+		else if (currentProductCategory == 'Flowers & Rings'){
+
+			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+				$w('#gallery1').items = orderProducts(flowersAndRingsMen, 'RING', 2);
+				mainGalleryCopy = $w('#gallery1').items;
+			}
+			if(wixWindow.formFactor === "Desktop"){
+				$w('#gallery1').items = orderProducts(flowersAndRingsMen, 'RING', 3);
+				mainGalleryCopy = $w('#gallery1').items;
+			}
+		}
+		else if (currentProductCategory == 'Travel Bags & Other Bags'){
+
+			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+				$w('#gallery1').items = orderProducts(travelBagsAndOtherBagsMen, 'TRAVEL BAG', 2);
+				mainGalleryCopy = $w('#gallery1').items;
+			}
+			if(wixWindow.formFactor === "Desktop"){
+				$w('#gallery1').items = orderProducts(travelBagsAndOtherBagsMen, 'TRAVEL BAG', 3);
+				mainGalleryCopy = $w('#gallery1').items;
+			}
+		}
+		else if (currentProductCategory == 'Other Accessories'){
+
+			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+				$w('#gallery1').items = orderProducts(otherAccessoriesMen, 'ACCESSORIES', 2);
+				mainGalleryCopy = $w('#gallery1').items;
+			}
+			if(wixWindow.formFactor === "Desktop"){
+				$w('#gallery1').items = orderProducts(otherAccessoriesMen, 'ACCESSORIES', 3);
+				mainGalleryCopy = $w('#gallery1').items;
+			}
+		}
+		else if (currentProductCategory == 'Gifts For Her'){
+
+			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+				$w('#gallery1').items = orderProducts(giftForHer, 'NECKLACE', 1);
+				mainGalleryCopy = $w('#gallery1').items;
+			}
+			if(wixWindow.formFactor === "Desktop"){
+				$w('#gallery1').items = orderProducts(giftForHer, 'NECKLACE', 1);
+				mainGalleryCopy = $w('#gallery1').items;
+			}
+		}
+	}
+
+}
+
+// ordering product categories options' content(s)
+// Most product categories options have up to 2 subcategories
+function orderProducts(
+	listOfCategoryOptionsProducts,
+	mainCategoryName,
+	positionOfSubcategoryFromMainCategory = 4,
+	subcategoryOneName = 'None', // for future 'improve'
+	subcategoryTwoName = 'None', // for future 'improve'
+){
+
+	let orderedContent = [];
+
+	let initialValueofPositionOfSubcategoryFrommainCategoryVariable = positionOfSubcategoryFromMainCategory;
+	let nonMainCategoryProductInsertIndex = positionOfSubcategoryFromMainCategory;
+
+	// include the mainCategory in the orderedContent list first..
+	for (let productIndex in listOfCategoryOptionsProducts){
+
+		let currentProduct = listOfCategoryOptionsProducts[productIndex];
+
+		if (currentProduct.link == mainCategoryName){
+			orderedContent.push(currentProduct)
+		}
+	}
+
+	// include every other product whose category is not the main category..
+	for (let productIndex in listOfCategoryOptionsProducts){
+
+		let currentProduct = listOfCategoryOptionsProducts[productIndex];
+
+		// if the value that indicates where non main category products should be positioned
+		// has not changed, insert the current non main category product at the 'positionOfSubcategoryFromMainCategory'
+		// else place it just after the 'positionOfSubcategoryFromMainCategory'. This helps ensure that non main category products are
+		// positioned evenly..
+		// if (nonMainCategoryProductInsertIndex == initialValueofPositionOfSubcategoryFrommainCategoryVariable){
+
+			if (currentProduct.link != mainCategoryName){
+				orderedContent.splice(nonMainCategoryProductInsertIndex, 0, currentProduct);
+				nonMainCategoryProductInsertIndex += positionOfSubcategoryFromMainCategory + 1;
+			}
+		// }
+		// else if (nonMainCategoryProductInsertIndex == initialValueofPositionOfSubcategoryFrommainCategoryVariable * 2){
+//
+		// 	if (currentProduct.link != mainCategoryName){
+		// 		orderedContent.splice(nonMainCategoryProductInsertIndex - 1, 0, currentProduct);
+		// 		nonMainCategoryProductInsertIndex += positionOfSubcategoryFromMainCategory;
+		// 	}
+		// }
+		// else{
+//
+		// 	if (currentProduct.link != mainCategoryName){
+		// 		orderedContent.splice(nonMainCategoryProductInsertIndex, 0, currentProduct);
+		// 		nonMainCategoryProductInsertIndex += positionOfSubcategoryFromMainCategory;
+		// 	}
+		// }
+
+	}
+
+	return orderedContent;
+
+}
+
+
+function sortMainGallery(){
+
+	let currentSortValue = $w('#dropdown5').value;
+
+	if (currentSortValue == 'Relevance'){
+
+		$w('#gallery1').items = mainGalleryCopy;
+
+	}
 
 }
