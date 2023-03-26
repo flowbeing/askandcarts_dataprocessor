@@ -18,7 +18,8 @@ from process_scraped import *
 
 from settings.q.default_folder_and_filename_settings \
     import all_scraped_data_folder, all_log_files_folder, other_settings_data_folder, \
-    filter_error_log_filename, filename_last_serviced_sitemap_folder_dict_as_json, ws_filename
+    filter_error_log_filename, filename_last_serviced_sitemap_folder_dict_as_json, ws_filename, \
+    wx_upload_error_log_filename
 import settings.q.other_settings as othersettings
 
 
@@ -219,6 +220,15 @@ def detect_and_optional_download_and_process_files_within_returned_folders(
                 returned_folders = returned_folders[index_of_last_serviced_sitemap_folder:]
 
             last_serviced_sitemap_folder_file.close()
+
+    elif is_continue_from_previous_stop_csv == False:
+
+        with open(f'{all_log_files_folder}{wx_upload_error_log_filename}.json', 'w') \
+                as wx_upload_error_log_file:
+
+            wx_upload_error_log_file.write('{}')
+
+            wx_upload_error_log_file.close()
 
     print(f'original returned_folders: {returned_folders}')
 

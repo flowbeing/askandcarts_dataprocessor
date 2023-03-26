@@ -103,15 +103,19 @@ def extract_elements_per_row_from_dataframe(
         # UPLOAD ROW DATA TO IT'S RELEVANT WIX DATABASE..
         try:
 
-            watches_com_fwrd_jimmy_choo_relative_extra_collections_name = ['uaeProducts', 'usaProducts']
-            watches_com_fwrd_jimmy_choo_relative_extra_countries_name = ['UAE', 'USA']
+            watches_com_fwrd_jimmy_choo_relative_extra_collections_name = ['uaeProducts', 'usaProducts', 'singaporeProducts']
+            watches_com_fwrd_jimmy_choo_relative_extra_countries_name = ['UAE', 'USA', 'SINGAPORE']
 
             number_of_times_to_upload_products_to_databases = 0
 
             # accounting for the fact that the following websites tend to 3 countries of which only one country's data
             # has been collected
-            if 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name:
+            if 'WATCHES_COM' in file_name:
                 number_of_times_to_upload_products_to_databases = 2
+
+            elif 'FWRD' in file_name or 'JIMMY_CHOO' in file_name:
+                number_of_times_to_upload_products_to_databases = 3
+
 
             else:
                 number_of_times_to_upload_products_to_databases = 1
@@ -329,18 +333,25 @@ def upload_skipped_csv_rows(
             # UPLOAD ROW DATA TO IT'S RELEVANT WIX DATABASE..
             try:
 
-                watches_com_fwrd_jimmy_choo_relative_extra_collections_name = ['uaeProducts', 'usaProducts']
-                watches_com_fwrd_jimmy_choo_relative_extra_countries_name = ['UAE', 'USA']
+                # ---
+                watches_com_fwrd_jimmy_choo_relative_extra_collections_name = ['uaeProducts', 'usaProducts',
+                                                                               'singaporeProducts']
+                watches_com_fwrd_jimmy_choo_relative_extra_countries_name = ['UAE', 'USA', 'SINGAPORE']
 
                 number_of_times_to_upload_products_to_databases = 0
 
                 # accounting for the fact that the following websites tend to 3 countries of which only one country's data
                 # has been collected
-                if 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name:
+                if 'WATCHES_COM' in file_name:
                     number_of_times_to_upload_products_to_databases = 2
+
+                elif 'FWRD' in file_name or 'JIMMY_CHOO' in file_name:
+                    number_of_times_to_upload_products_to_databases = 3
+
 
                 else:
                     number_of_times_to_upload_products_to_databases = 1
+
 
                 for i in range(number_of_times_to_upload_products_to_databases):
 

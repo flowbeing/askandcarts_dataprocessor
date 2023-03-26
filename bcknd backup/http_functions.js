@@ -212,14 +212,14 @@ async function convertProductPrice(
 	if (collectionName == 'singaporeProducts') {
 		console.log('here');
 
-		if (priceString.startsWith('SGD$') || priceString.startsWith('SGD')){
+		if ( priceString.includes('SGD$') || priceString.includes('SGD') ){
 
 			let currency = 'S$';
 			let amount = priceFloat.toFixed(2);
 			convertedPrice = currency + amount;
 
 		}
-		else if ((priceString.startsWith('USD$') || priceString.startsWith('USD')) || (priceString.startsWith('$'))){
+		else if ( priceString.includes('USD$') || priceString.includes('USD') || priceString.includes('$') ){
 			let currency = 'S$';
 			let amount = 0;
 
@@ -229,7 +229,7 @@ async function convertProductPrice(
 				// console.log(convertedPrice);
 			});
 		}
-		else if ((priceString.startsWith('AED')) || (priceString.startsWith('د.إ'))){
+		else if ( priceString.includes(' AED') || priceString.includes('AED') || priceString.includes('د.إ') ){
 			let currency = 'S$';
 			let amount = 0;
 
@@ -239,7 +239,7 @@ async function convertProductPrice(
 				// console.log(convertedPrice);
 			});
 		}
-		else if ((priceString.startsWith('EUR')) || (priceString.startsWith('€'))){
+		else if ( priceString.includes('EUR') || priceString.includes('€') ){
 			let currency = 'S$';
 			let amount = 0;
 
@@ -249,7 +249,7 @@ async function convertProductPrice(
 				// console.log(convertedPrice);
 			});
 		}
-		else if ((priceString.startsWith('GBP')) || (priceString.startsWith('£'))){
+		else if ( priceString.includes('GBP') || priceString.includes('£') ){
 			let currency = 'S$';
 			let amount = 0;
 
@@ -259,7 +259,7 @@ async function convertProductPrice(
 				// console.log(convertedPrice);
 			});
 		}
-		else if ((priceString.startsWith('CAD')) || (priceString.startsWith('C$')) || (priceString.startsWith('CAD$'))){
+		else if ( priceString.includes('CAD') || priceString.includes('C$') || priceString.includes('CAD$') ){
 			let currency = 'S$';
 			let amount = 0;
 
@@ -274,12 +274,12 @@ async function convertProductPrice(
 	else if (collectionName == 'uaeProducts') {
 		console.log('here');
 
-		if ((priceString.startsWith('د.إ'))){
+		if ((priceString.includes('د.إ'))){
 			let currency = 'AED ';
 			let amount = priceFloat;
 			convertedPrice = currency + String(amount.toFixed(2));
 		}
-		else if (priceString.startsWith('USD$') || priceString.startsWith('USD') || priceString.startsWith('$')){
+		else if (priceString.includes('USD$') || priceString.includes('USD') || priceString.includes('$') ){
 
 			let currency = 'AED ';
 			let amount = 0;
@@ -291,7 +291,7 @@ async function convertProductPrice(
 			});
 
 		}
-		else if (priceString.startsWith('SGD$') || priceString.startsWith('SGD') || priceString.startsWith('SGD$')){
+		else if ( priceString.includes('SGD$') || priceString.includes('SGD') || priceString.includes('SGD$') || priceString.includes('S$')){
 
 			let currency = 'AED ';
 			let amount = 0;
@@ -303,7 +303,7 @@ async function convertProductPrice(
 			});
 
 		}
-		else if ((priceString.startsWith('EUR')) || (priceString.startsWith('€'))){
+		else if ( priceString.includes('EUR') || priceString.includes('€') ){
 			let currency = 'AED ';
 			let amount = 0;
 
@@ -313,7 +313,7 @@ async function convertProductPrice(
 				// console.log(convertedPrice);
 			});
 		}
-		else if ((priceString.startsWith('GBP')) || (priceString.startsWith('£'))){
+		else if ( priceString.includes('GBP') || priceString.includes('£') ){
 			let currency = 'AED ';
 			let amount = 0;
 
@@ -323,7 +323,7 @@ async function convertProductPrice(
 				// console.log(convertedPrice);
 			});
 		}
-		else if (priceString.startsWith('CAD') || priceString.startsWith('C$') || priceString.startsWith('CAD$')){
+		else if (priceString.includes('CAD') || priceString.includes('C$') || priceString.includes('CAD$') ){
 			let currency = 'AED ';
 			let amount = 0;
 
@@ -338,12 +338,12 @@ async function convertProductPrice(
 	else if (collectionName == 'usaProducts') {
 		console.log('here');
 
-		if (priceString.startsWith('USD') || priceString.startsWith('USD$') || priceString.startsWith('US$')){
+		if ( priceString.includes('USD') || priceString.includes('USD$') || priceString.includes('US$') ){
 			let currency = '$';
 			let amount = priceFloat;
 			convertedPrice = currency + String(amount.toFixed(2));
 		}
-		else if ((priceString.startsWith('AED')) || (priceString.startsWith('د.إ'))){
+		else if ( priceString.includes('AED') || priceString.includes('د.إ') ){
 
 			let currency = '$';
 			let amount = 0;
@@ -355,7 +355,7 @@ async function convertProductPrice(
 			});
 
 		}
-		else if (priceString.startsWith('SGD$') || priceString.startsWith('SGD') || priceString.startsWith('SGD$')){
+		else if ( priceString.includes('SGD$') || priceString.includes('SGD') || priceString.includes('SGD$') || priceString.includes('S$')){
 
 			let currency = '$';
 			let amount = 0;
@@ -367,7 +367,7 @@ async function convertProductPrice(
 			});
 
 		}
-		else if ((priceString.startsWith('EUR')) || (priceString.startsWith('€'))){
+		else if ( priceString.includes('EUR') || priceString.includes('€') ){
 			let currency = '$';
 			let amount = 0;
 
@@ -377,7 +377,7 @@ async function convertProductPrice(
 				// console.log(convertedPrice);
 			});
 		}
-		else if ((priceString.startsWith('GBP')) || (priceString.startsWith('£'))){
+		else if ( priceString.includes('GBP') || priceString.includes('£') ){
 			let currency = '$';
 			let amount = 0;
 
@@ -387,7 +387,7 @@ async function convertProductPrice(
 				// console.log(convertedPrice);
 			});
 		}
-		else if (priceString.startsWith('CAD') || priceString.startsWith('C$') || priceString.startsWith('CAD$')){
+		else if ( priceString.includes('CAD') || priceString.includes('C$') || priceString.includes('CAD$') ){
 			let currency = '$';
 			let amount = 0;
 
@@ -403,13 +403,24 @@ async function convertProductPrice(
 	console.log('convertedPrice: ' + convertedPrice);
 
   if (convertedPrice == ''){
-    applicablePriceValue = String(Number(priceString.toFixed(2)));
+
+    applicablePriceValue = priceString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+    // if (collectionName == 'singaporeProducts'){
+    //   applicablePriceValue = 'S$' + String(Number(priceFloat.toFixed(2))).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    // }
+    // else if (collectionName == 'uaeProducts'){
+    //   applicablePriceValue = 'AED' + String(Number(priceFloat.toFixed(2))).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    // }
+    // else if (collectionName == 'usaProducts'){
+    //   applicablePriceValue = '$' + String(Number(priceFloat.toFixed(2))).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    // }
   }
   else{
-    applicablePriceValue = convertedPrice;
+    applicablePriceValue = convertedPrice.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
 
-	return applicablePriceValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	return applicablePriceValue // replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 	// else if (usersCountryCode == 'AE'){
 	// 	dbCollectionToFocusOn = 'uaeProducts';
 	// 	timeOut = 2500;
