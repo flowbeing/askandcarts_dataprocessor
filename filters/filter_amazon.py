@@ -13,6 +13,7 @@ def filter_amazon_scraped_data(
         file_address,
         minimum_profit_target,
         commission_per_sale,
+        is_continue_from_previous_stop_csv,
         minimum_ratedBy = 2,
         starting_index=0,
         ref_link = '',
@@ -210,24 +211,25 @@ def filter_amazon_scraped_data(
 
         extract_elements_per_row_from_dataframe(
             file_name=file_name[:-4], # to remove '.csv'
-            dataframe=cleaned_up_scraped_data_amazon
+            dataframe=cleaned_up_scraped_data_amazon,
+            is_continue_from_previous_stop_csv = is_continue_from_previous_stop_csv
         )
 
     return len(cleaned_up_scraped_data_amazon.index)
 
 
-try:
-    file_name = 'eleven_SINGAPORE_WATCHES_AMAZON_WOMEN.csv'
-    print(
-        filter_amazon_scraped_data(
-            file_name=file_name,
-            file_address=f'{all_scraped_data_folder}{file_name}',
-            minimum_profit_target=120,
-            commission_per_sale=commission_per_site['AMAZON_SG']['WATCHES'],
-            minimum_ratedBy=3,
-            ref_link=''
-        )
-    )
-
-except:
-    raise Exception('There was an error while trying to filters amazon scrapped data')
+# try:
+#     file_name = 'eleven_SINGAPORE_WATCHES_AMAZON_WOMEN.csv'
+#     print(
+#         filter_amazon_scraped_data(
+#             file_name=file_name,
+#             file_address=f'{all_scraped_data_folder}{file_name}',
+#             minimum_profit_target=120,
+#             commission_per_sale=commission_per_site['AMAZON_SG']['WATCHES'],
+#             minimum_ratedBy=3,
+#             ref_link=''
+#         )
+#     )
+#
+# except:
+#     raise Exception('There was an error while trying to filters amazon scrapped data')

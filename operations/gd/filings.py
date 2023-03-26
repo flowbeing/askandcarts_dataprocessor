@@ -4,6 +4,7 @@ from __future__ import print_function
 import io
 import json
 import os
+import sys
 import codecs
 import pickle
 import datetime
@@ -19,7 +20,7 @@ from process_scraped import *
 from settings.q.default_folder_and_filename_settings \
     import all_scraped_data_folder, all_log_files_folder, other_settings_data_folder, \
     filter_error_log_filename, filename_last_serviced_sitemap_folder_dict_as_json, ws_filename, \
-    wx_upload_error_log_filename
+    wx_upload_error_log_filename, wx_upload_tasks_status_log_file
 import settings.q.other_settings as othersettings
 
 
@@ -193,6 +194,113 @@ def detect_and_optional_download_and_process_files_within_returned_folders(
         is_wx_upload=False,
 ):
 
+    # keeping track of wx upload in progress and completion status to avoid upload from being started again when a
+    # previous one has not been completed as well as to prevent 'p' track | register from starting again in wx db
+
+    wx_upload_tasks_status_dict = {
+        'wx_upload_task_in_progress_datetime': 'datetime',
+        'last_wx_upload_task_completion_datetime': 'datetime'
+    }
+
+    if is_wx_upload == True and is_continue_from_previous_stop_csv == False :
+        with open(f'{all_log_files_folder}{wx_upload_tasks_status_log_file}', 'r') \
+                as wx_upload_task_completion_log_file_:
+            wx_upload_task_completion_log_json = wx_upload_task_completion_log_file_.read()
+            wx_upload_task_completion_log_json_as_dict = json.loads(wx_upload_task_completion_log_json)
+
+            last_completed_wx_upload_completion_date_str = \
+                wx_upload_task_completion_log_json_as_dict['last_wx_upload_task_completion_datetime']
+
+            last_completed_wx_upload_completion_date = datetime.datetime.strptime(
+                last_completed_wx_upload_completion_date_str,
+                '%Y-%m-%d %H:%M:%S.%f'
+            )
+
+            diff_last_completed_wx_upload_and_now = \
+                (datetime.datetime.now() - last_completed_wx_upload_completion_date).seconds
+
+            wx_upload_task_in_progress_datetime_str = \
+                wx_upload_task_completion_log_json_as_dict['wx_upload_task_in_progress_datetime']
+
+            wx_upload_task_in_progress_datetime = datetime.datetime.strptime(
+                wx_upload_task_in_progress_datetime_str,
+                '%Y-%m-%d %H:%M:%S.%f'
+            )
+
+            diff_last_wx_upload_task_in_progress_datetime_and_now = \
+                (datetime.datetime.now() - wx_upload_task_in_progress_datetime).seconds
+
+
+            # if the last wx upload time's lesser than 24 hours and there's been no subsequent unfinised wx upload
+            # in that time, super confirm whether wx upload should start from scratch as this will erase 'p' & prev
+            # wx upload errors (if any), and restart registration..
+            if diff_last_completed_wx_upload_and_now < 86400 and \
+                    last_completed_wx_upload_completion_date == wx_upload_task_in_progress_datetime:
+
+                print()
+                confirm_new_wx_upload = input("Looks like a wx upload task's been completed in less than a day.\n"
+                              "Are you sure you want to erase previous wx upload errors (if any), \n "
+                              "clear p, and start a new wx upload? \n "
+                              "Also, keep in mind the process usually takes up to 1 hr..\n "
+                                              "y/n: ")
+
+                if confirm_new_wx_upload == 'y':
+
+                    # update and log / save wx upload tasks status
+                    with open(f'{all_log_files_folder}{wx_upload_tasks_status_log_file}', 'w') \
+                            as wx_upload_task_completion_log_file_one:
+
+                        wx_upload_tasks_status_dict['wx_upload_task_in_progress_datetime'] = str(
+                            datetime.datetime.now())
+                        wx_upload_task_completion_log_json_as_dict['wx_upload_task_in_progress_datetime'] = \
+                            str(datetime.datetime.now())
+
+                        wx_upload_task_completion_log_file_one.write(
+                            json.dumps(wx_upload_task_completion_log_json_as_dict))
+
+                        wx_upload_task_completion_log_file_one.close()
+
+                    pass
+
+                elif confirm_new_wx_upload == 'n':
+                    is_continue_from_previous_stop_csv = True # JIC
+                    sys.exit('CSV file processing and wx upload has been terminated')
+                else:
+                    is_continue_from_previous_stop_csv = True  # JIC
+                    sys.exit('CSV file processing and wx upload has been terminated')
+
+            # if there's been a wx upload task that was not completed in the last 24 hours, super confirm whether the
+            # user wants to continue the last unfinished upload or start a new one
+            elif last_completed_wx_upload_completion_date != wx_upload_task_in_progress_datetime:
+                print()
+                confirm_continue_previous_wx_upload = input(
+                    f"Looks like there's an incomplete wx upload task that started on {wx_upload_task_in_progress_datetime}.\n"
+                    f"Would you like to continue it? y/n: ")
+
+                if confirm_continue_previous_wx_upload == 'y':
+                    is_continue_from_previous_stop_csv = True
+
+                    # update and log / save wx upload tasks status
+                    with open(f'{all_log_files_folder}{wx_upload_tasks_status_log_file}', 'w') \
+                            as wx_upload_task_completion_log_file_two:
+
+                        wx_upload_tasks_status_dict['wx_upload_task_in_progress_datetime'] = str(datetime.datetime.now())
+                        wx_upload_task_completion_log_json_as_dict['wx_upload_task_in_progress_datetime'] = \
+                            str(datetime.datetime.now())
+
+                        wx_upload_task_completion_log_file_two.write(json.dumps(wx_upload_task_completion_log_json_as_dict))
+
+                        wx_upload_task_completion_log_file_two.close()
+
+                elif confirm_continue_previous_wx_upload == 'n':
+                    is_continue_from_previous_stop_csv = False
+                else:
+                    sys.exit('CSV file processing and wx upload have been terminated')
+
+
+
+            wx_upload_task_completion_log_file_.close()
+
     # If there's been an abrupt stoppage while previosly downloading, processing (& uploading csv files), continue from
     # previous folder if is_continue_from_previous_stop_csv has been set to true..
     if is_continue_from_previous_stop_csv == True:
@@ -221,14 +329,18 @@ def detect_and_optional_download_and_process_files_within_returned_folders(
 
             last_serviced_sitemap_folder_file.close()
 
+    # if scraped csv files processing is starting fom scratch, reset wx upload error log since 'everything's' being
+    # restarted afresh.. if scraped csv files processing's being forced to start afresh, there so be no previous
+    # processing errors to make up for in the new processing operation
     elif is_continue_from_previous_stop_csv == False:
 
-        with open(f'{all_log_files_folder}{wx_upload_error_log_filename}.json', 'w') \
+        with open(f'{all_log_files_folder}{wx_upload_error_log_filename}', 'w') \
                 as wx_upload_error_log_file:
 
             wx_upload_error_log_file.write('{}')
 
             wx_upload_error_log_file.close()
+
 
     print(f'original returned_folders: {returned_folders}')
 
@@ -361,7 +473,8 @@ def detect_and_optional_download_and_process_files_within_returned_folders(
                             filter_csv_file = process_scraped_site(
                                 scraped_sitemap_csv_file_name=csv_filename,
                                 scraped_sitemap_csv_file_address=csv_file_write_path,
-                                is_wx_upload=is_wx_upload
+                                is_wx_upload=is_wx_upload,
+                                is_continue_from_previous_stop_csv = is_continue_from_previous_stop_csv
                             )
 
                             current_csv_file_data_points_count = filter_csv_file[0]
@@ -441,6 +554,22 @@ def detect_and_optional_download_and_process_files_within_returned_folders(
             f'Total number of filtered but empty csv files: {empty_csv_files_after_filtering_count}'
         )
         filtered_CSVs_stats.close()
+
+    # log wx task upload completion
+    if is_wx_upload == True:
+        with open(f'{all_filtered_data_folder}{wx_upload_tasks_status_log_file}', 'w') as wx_upload_tasks_status_log_file_:
+            wx_upload_completion_datetime = datetime.datetime.now()
+            wx_upload_tasks_status_dict['last_wx_upload_task_completion_datetime'] = str(wx_upload_completion_datetime)
+            wx_upload_tasks_status_dict['wx_upload_task_in_progress_datetime'] = str(wx_upload_completion_datetime)
+            wx_upload_tasks_status_dict_as_json = json.dumps(wx_upload_tasks_status_dict)
+
+            wx_upload_tasks_status_log_file_.write(wx_upload_tasks_status_dict_as_json)
+
+
+
+
+
+
 
     return files_within_each_folder
 

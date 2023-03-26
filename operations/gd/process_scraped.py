@@ -39,7 +39,9 @@ filter_functions_per_site = {
 def process_scraped_site(
         scraped_sitemap_csv_file_name,
         scraped_sitemap_csv_file_address,
-        is_wx_upload=False
+        is_continue_from_previous_stop_csv,
+        is_wx_upload=False,
+
 ):
 
     list_of_amazon_variants = list(commission_per_site.keys())[0:3]
@@ -177,6 +179,7 @@ def process_scraped_site(
                                     file_address=scraped_sitemap_csv_file_address,
                                     minimum_profit_target=minimum_profit,
                                     commission_per_sale=current_products_commission_as_per_amazon_variant,
+                                    is_continue_from_previous_stop_csv = is_continue_from_previous_stop_csv,
                                     minimum_ratedBy=3,
                                     ref_link='',
                                     is_wx_upload=is_wx_upload
@@ -254,6 +257,7 @@ def process_scraped_site(
                                 minimum_profit_target=minimum_profit,
                                 eur_to_sgd_exchange_rate=eur_to_sgd_exchange_rate,
                                 commission_per_sale=non_amazon_variants_commission,
+                                is_continue_from_previous_stop_csv = is_continue_from_previous_stop_csv,
                                 ref_link='',
                                 is_wx_upload=is_wx_upload
                             )
@@ -302,6 +306,7 @@ def process_scraped_site(
                                 file_address=scraped_sitemap_csv_file_address,
                                 minimum_profit_target=minimum_profit,
                                 commission_per_sale=non_amazon_variants_commission,
+                                is_continue_from_previous_stop_csv = is_continue_from_previous_stop_csv,
                                 ref_link='',
                                 is_wx_upload=is_wx_upload
                             )

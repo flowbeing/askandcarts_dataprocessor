@@ -1,3 +1,5 @@
+import sys
+
 import requests
 
 import json
@@ -11,6 +13,19 @@ dblist = [
     'usaProducts', 'usaProductsPopularity']
 
 url = 'https://flowbeing.wixsite.com/my-site-1/_functions-dev/clearDataBase'
+
+super_confirm = input('Clearing db will delete all platform files.\n'
+                      'Are you sure you want to proceed? y/n: ')
+
+if super_confirm == 'y':
+    pass
+elif super_confirm == 'n':
+    print()
+    sys.exit('DB Clear Task has been terminated')
+else:
+    print()
+    sys.exit('DB Clear Task has been terminated')
+
 
 for dbName in dblist:
 

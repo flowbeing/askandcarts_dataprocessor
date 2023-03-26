@@ -12,6 +12,7 @@ def filter_ashford_scraped_data(
         file_address,
         minimum_profit_target,
         commission_per_sale,
+        is_continue_from_previous_stop_csv,
         starting_index=0,
         ref_link = '',
         is_wx_upload=False
@@ -158,7 +159,8 @@ def filter_ashford_scraped_data(
 
         extract_elements_per_row_from_dataframe(
             file_name=file_name[:-4], # to remove '.csv'
-            dataframe=cleaned_up_scraped_data_ashford
+            dataframe=cleaned_up_scraped_data_ashford,
+            is_continue_from_previous_stop_csv = is_continue_from_previous_stop_csv
         )
 
     return len(cleaned_up_scraped_data_ashford.index)

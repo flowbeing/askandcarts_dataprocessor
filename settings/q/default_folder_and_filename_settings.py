@@ -31,6 +31,9 @@ all_log_files_folder = '/Users/admin/OneDrive/docs/affiliate/logs/'
 wx_upload_error_log_filename = 'data_to_wx_upload_error_log.json'
 filter_error_log_filename = 'filter_errors_log.txt'
 
+# WX UPLOAD TASK COMPLETION LOG
+wx_upload_tasks_status_log_file = 'wx_upload_task_completion_log.json'
+
 
 # FOLDER AND FILENAMES -> UPDATE SITEMAPS
 update_sitemaps_folder = '/Users/admin/OneDrive/docs/affiliate/sitemaps/update_sitemaps/'

@@ -15,8 +15,9 @@ from settings.q.default_folder_and_filename_settings \
 def extract_elements_per_row_from_dataframe(
         file_name,
         dataframe,
+        is_continue_from_previous_stop_csv,
         # useful for when upload stops at an index within a file; when there's no more internet connection for instance
-        index_number_to_start_from=0
+        index_number_to_start_from=0,
 ):
     print()
     print(f'file_name: {file_name}')
@@ -147,7 +148,8 @@ def extract_elements_per_row_from_dataframe(
 
                             country= watches_com_fwrd_jimmy_choo_relative_extra_countries_name[i]
                             if 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
-                            else current_row_country_name #
+                            else current_row_country_name, #
+                            is_continue_from_previous_stop_csv = is_continue_from_previous_stop_csv
                         )
 
                         if upload_data_operation_status_code != 200:
@@ -194,7 +196,8 @@ def extract_elements_per_row_from_dataframe(
 
                         country=watches_com_fwrd_jimmy_choo_relative_extra_countries_name[i]
                         if 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
-                        else current_row_country_name  #
+                        else current_row_country_name, #
+                        is_continue_from_previous_stop_csv=is_continue_from_previous_stop_csv
                     )
 
                     if upload_data_operation_status_code != 200:
@@ -377,7 +380,8 @@ def upload_skipped_csv_rows(
 
                                 country=watches_com_fwrd_jimmy_choo_relative_extra_countries_name[i]
                                 if 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
-                                else current_row_country_name  #
+                                else current_row_country_name , #
+                                is_continue_from_previous_stop_csv= True
                             )
 
                             if upload_data_operation_status_code == 200:
@@ -401,7 +405,8 @@ def upload_skipped_csv_rows(
 
                             country=watches_com_fwrd_jimmy_choo_relative_extra_countries_name[i]
                             if 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
-                            else current_row_country_name  #
+                            else current_row_country_name, #
+                            is_continue_from_previous_stop_csv= True
                         )
 
                         if upload_data_operation_status_code == 200:
@@ -440,7 +445,8 @@ def populate_site_db(
         product_link,
         image_src,
         site_name,
-        country
+        country,
+        is_continue_from_previous_stop_csv
 ):
     print('---------------------------------------------------------------------------------')
 
@@ -464,12 +470,20 @@ def populate_site_db(
     body = json.dumps(body)
     # print(f'insertRow type: {type(body)}')
 
+    is_reset_p = 'false'
+
+    if is_continue_from_previous_stop_csv == True:
+        is_reset_p = 'false'
+    else:
+        is_reset_p = 'true'
+
     req = requests.get(
         site_url,
         headers={
             'auth': api_key_wx,
             'wix-site-id': '9cf6f443-4ee4-4c04-bf19-38759205c05d',
-            'body': body
+            'body': body,
+            'is_reset_p': is_reset_p
         },
 
     )
