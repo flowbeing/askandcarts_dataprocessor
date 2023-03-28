@@ -39,7 +39,7 @@ let mainGalleryCopy = [];
 // WOMEN
 let recommendedForWomen = [];
 let shoesAndMoreWomen = []; // SHOES, & MORE (NECKLACE, EARRING)
-let handbagsAndMoreWomen = []; // HANDBAGS & MORE (BRACELET , WATCH)
+let handbagsAndMoreWomen = []; // Bags & Jewelleries (BRACELET , WATCH)
 let clothesAndPerfumesWomen = []; // CLOTHES AND PERFUMES
 let flowersAndRingsWomen = []; // FLOWERS & RINGS
 let travelBagsAndOtherBagsWomen = []; // TRAVEL BAGS & OTHER BAGS
@@ -72,7 +72,7 @@ let featuredRings = [];
 let featuredBags = [];
 let featuredAccessories = [];
 
-let timeOut = 2500;
+let timeOut = 3000;
 
 async function resolveGalleryItems(){
 
@@ -135,7 +135,7 @@ async function resolveGalleryItems(){
 	})
 	.then((dbCollectionToFocusOn) => {
 
-		console.log(dbCollectionToFocusOn);
+		// console.log(dbCollectionToFocusOn);
 
 		// obtaining products as per current country
 		let dbQueryAll = wixData.query(dbCollectionToFocusOn).limit(1000).find(options);
@@ -208,7 +208,7 @@ $w.onReady(function () {
 
 	setTimeout(() => {
 
-		console.log('dbQueryAllResponseItems.length: ' + dbQueryAllResponseItems.length);
+		console.log('items length: ' + dbQueryAllResponseItems.length);
 
 		// let gallery1ItemsReformatted = [];
 		let gallery1AlreadyIncludedCategoryTrackerList = [];
@@ -318,8 +318,8 @@ $w.onReady(function () {
 		// console.log(womensFeaturableBagsList == womensFeaturableBagsListCopy);
 
 		console.log('');
-		console.log('womensFeatureableProducts: ' + womensFeatureableProducts);
-		console.log('mensFeatureableProducts: ' + mensFeatureableProducts);
+		// console.log('womensFeatureableProducts: ' + womensFeatureableProducts);
+		// console.log('mensFeatureableProducts: ' + mensFeatureableProducts);
 
 		/// product categories that's currently available per gender selection
 		let availableProductCategoriesForMen = availableProductsCategoryForEachGender['MEN'];
@@ -746,10 +746,10 @@ $w.onReady(function () {
 		let ladiesShoesIncludedCount = ladiesShoesAndBagsIncludedTracker.filter((shoeOrBagIncluded) => shoeOrBagIncluded == 'SHOE').length;
 		let ladiesBagsIncludedCount = ladiesShoesAndBagsIncludedTracker.filter((shoeOrBagIncluded) => shoeOrBagIncluded == 'HANDBAG').length;
 
-		for (let index in recommendedForWomen){
-				console.log(recommendedForWomen[index]);
-				console.log('typeof(index): ' + typeof(index));
-		}
+		// for (let index in recommendedForWomen){
+		// 		console.log(recommendedForWomen[index]);
+		// 		console.log('typeof(index): ' + typeof(index));
+		// }
 		// console.log('');
 		// console.log(womensFeatureableProducts['BRACELET']['0']);
 
@@ -771,8 +771,8 @@ $w.onReady(function () {
 			let maxNumberOfShoesThatShouldBeAddedTorecommendedForWomen = 0;
 			let maxNumberOfBagsThatShouldBeAddedTorecommendedForWomen = 0;
 
-			console.log('womensFeaturableShoesListCopy: ' + womensFeaturableShoesListCopy);
-			console.log('ladiesShoesIncludedCount: ' + ladiesShoesIncludedCount);
+			// console.log('womensFeaturableShoesListCopy: ' + womensFeaturableShoesListCopy);
+			// console.log('ladiesShoesIncludedCount: ' + ladiesShoesIncludedCount);
 
 
 			// if shoe products exists in the shoe category with up to one product
@@ -782,8 +782,8 @@ $w.onReady(function () {
 
 					maxNumberOfShoesThatShouldBeAddedTorecommendedForWomen = 3 - ladiesShoesIncludedCount;
 
-					console.log('');
-					console.log('maxNumberOfShoesThatShouldBeAddedTorecommendedForWomen: ' + maxNumberOfShoesThatShouldBeAddedTorecommendedForWomen);
+					// console.log('');
+					// console.log('maxNumberOfShoesThatShouldBeAddedTorecommendedForWomen: ' + maxNumberOfShoesThatShouldBeAddedTorecommendedForWomen);
 
 				}
 
@@ -835,8 +835,8 @@ $w.onReady(function () {
 
 					maxNumberOfBagsThatShouldBeAddedTorecommendedForWomen = 3 - ladiesBagsIncludedCount;
 
-					console.log('');
-					console.log('maxNumberOfBagsThatShouldBeAddedTorecommendedForWomen: ' + maxNumberOfBagsThatShouldBeAddedTorecommendedForWomen);
+					// console.log('');
+					// console.log('maxNumberOfBagsThatShouldBeAddedTorecommendedForWomen: ' + maxNumberOfBagsThatShouldBeAddedTorecommendedForWomen);
 
 				}
 
@@ -844,8 +844,8 @@ $w.onReady(function () {
 				// i.e loop to remove non handbag or shoe item from featuredGallery and replace with handbag instead
 				for (let indexOne = 0 ; indexOne < womensFeaturableBagsListCopy.length; indexOne ++){
 
-					console.log('');
-					console.log('womensFeaturableBagsListCopy.length: ' + womensFeaturableBagsListCopy.length);
+					// console.log('');
+					// console.log('womensFeaturableBagsListCopy.length: ' + womensFeaturableBagsListCopy.length);
 
 
 					// remove a featured general gallery  that's not a bag or shoe..
@@ -899,8 +899,8 @@ $w.onReady(function () {
 		let listOfProductCategoryForWomen = [];
 
 		// let listOfProductCategoryForWomen = [
-		// 	{"label": "Shoes & More", "value": "Shoes & More"},
-		// 	{"label": "Handbags & More", "value": "Handbags & More"},
+		// 	{"label": "Shoes & Jewelleries", "value": "Shoes & Jewelleries"},
+		// 	{"label": "Bags & Jewelleries", "value": "Bags & Jewelleries"},
 		// 	{"label": "Furnitures", "value": "Furnitures"},
 		// 	{"label": "Clothes And Perfumes", "value": "Clothes And Perfumes"},
 		// 	{"label": "Flowers & Rings", "value": "Flowers & Rings"},
@@ -909,7 +909,7 @@ $w.onReady(function () {
 		// 	{"label": "Gifts For Him", "value": "Gifts For Him"}
 		// ];
 
-		console.log('availableProductCategoriesForWomen: ' + availableProductCategoriesForWomen);
+		// console.log('availableProductCategoriesForWomen: ' + availableProductCategoriesForWomen);
 		let isDisplayShoesAndMore = isItemsInList(availableProductCategoriesForWomen, ['SHOE', 'NECKLACE', 'EARRING']);
 		// console.log('isDisplayShoesAndMore: ' + isDisplayShoesAndMore);
 		let isDisplayHandbagsAndMore = isItemsInList(availableProductCategoriesForWomen, ['HANDBAG', 'BRACELET', 'WATCH', 'WATCHES']);
@@ -927,11 +927,11 @@ $w.onReady(function () {
 		}
 
 		if (isDisplayShoesAndMore){
-			listOfProductCategoryForWomen.push({"label": "Shoes & More", "value": "Shoes & More"});
+			listOfProductCategoryForWomen.push({"label": "Shoes & Jewelleries", "value": "Shoes & Jewelleries"});
 		}
 
 		if (isDisplayHandbagsAndMore){
-			listOfProductCategoryForWomen.push({"label": "Handbags & More", "value": "Handbags & More"});
+			listOfProductCategoryForWomen.push({"label": "Bags & Jewelleries", "value": "Bags & Jewelleries"});
 		}
 
 		if (isDisplayFurnituresForWomen){
@@ -1027,7 +1027,7 @@ $w.onReady(function () {
 
 			if ($w('#dropdown1').value == 'Women'){
 				$w('#dropdown3').options = listOfProductCategoryForWomen;
-				$w('#dropdown3').value = 'Shoes & More';
+				$w('#dropdown3').value = 'Shoes & Jewelleries';
 				setMainGalleryBasedOnProductCategory();
 			}
 			else if ($w('#dropdown1').value == 'Men'){
@@ -1047,8 +1047,8 @@ $w.onReady(function () {
 			{"label": "Relevance", "value": "Relevance"},
 			{"label": "Price Ascending", "value": "Price Ascending"},
 			{"label": "Price Descending", "value": "Price Descending"},
-			{"label": "Popularity", "value": "Popularity"},
-			{"label": "Most Recent", "value": "Most Recent"}
+			// {"label": "Popularity", "value": "Popularity"},
+			{"label": "Recently Added", "value": "Recently Added"}
 		];
 
 		$w('#dropdown5').options = sortOptions;
@@ -1084,6 +1084,7 @@ $w.onReady(function () {
 		// This is the default main gallery's content for desktops devices
 		if(wixWindow.formFactor === "Desktop"){
 			$w('#gallery1').items = orderProducts(shoesAndMoreWomen, 'SHOE', 3);
+			mainGalleryCopy = $w('#gallery1').items;
 			$w('#gallery1').show();
 		}
 
@@ -1130,6 +1131,28 @@ $w.onReady(function () {
 
 		});
 
+		$w('#dropdown5').onChange((event) => {
+
+			// let sortValue = $w('#dropdown5').value;
+//
+			// if (sortValue == 'Relevance'){
+			//
+			// 	setMainGalleryBasedOnProductCategory();
+			// }
+			// else{
+//
+			// 	$w('#gallery1').items = sortMainGallery();
+//
+			// }
+
+			setMainGalleryBasedOnProductCategory();
+
+		});
+
+		let options = {
+		  "suppressAuth": true,
+		  "suppressHooks": true
+		};
 
 
 
@@ -1194,25 +1217,84 @@ function openTarget(event){
 function setMainGalleryBasedOnProductCategory(){
 
 	let currentProductCategory = $w('#dropdown3').value;
+	let currentSortValue = $w('#dropdown5').value;
+
 	let gender = $w('#dropdown1').value;
 
 
 	if (gender == 'Women'){
 
 		// product categories that pertain to women
-		if (currentProductCategory == 'Shoes & More'){
+		if (currentProductCategory == 'Shoes & Jewelleries'){
 
 			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
-				$w('#gallery1').items = orderProducts(shoesAndMoreWomen, 'SHOE', 2);
+				let productsInFocusSortedByRelevance = orderProducts(shoesAndMoreWomen, 'SHOE', 2);
+
+				if (currentSortValue == 'Relevance'){
+					$w('#gallery1').items = productsInFocusSortedByRelevance;
+				}
+				else if (currentSortValue == 'Price Ascending'){
+					productsInFocusSortedByRelevance.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+					$w('#gallery1').items = productsInFocusSortedByRelevance;
+				}
+				else if (currentSortValue == 'Price Descending'){
+					productsInFocusSortedByRelevance.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+					$w('#gallery1').items = productsInFocusSortedByRelevance;
+				}
+				else if (currentSortValue == 'Recently Added'){
+
+					productsInFocusSortedByRelevance.sort((a, b) => {
+
+						console.log('here: Recently Added');
+
+						let firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+						let secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+						console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
+
+
+						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+					});
+
+					$w('#gallery1').items = productsInFocusSortedByRelevance;
+				}
+
+
 				mainGalleryCopy = $w('#gallery1').items;
 			}
 			if(wixWindow.formFactor === "Desktop"){
-				$w('#gallery1').items = orderProducts(shoesAndMoreWomen, 'SHOE', 3);
-				mainGalleryCopy = $w('#gallery1').items;
+				let productsInFocusSortedByRelevance = orderProducts(shoesAndMoreWomen, 'SHOE', 3);
+
+				if (currentSortValue == 'Relevance'){
+					$w('#gallery1').items = productsInFocusSortedByRelevance;
+				}
+				else if (currentSortValue == 'Price Ascending'){
+					productsInFocusSortedByRelevance.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+					$w('#gallery1').items = productsInFocusSortedByRelevance;
+				}
+				else if (currentSortValue == 'Price Descending'){
+					productsInFocusSortedByRelevance.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+					$w('#gallery1').items = productsInFocusSortedByRelevance;
+				}
+				else if (currentSortValue == 'Recently Added'){
+
+					productsInFocusSortedByRelevance.sort((a, b) => {
+
+						console.log('here: Recently Added');
+
+						let firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+						let secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+
+						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+					});
+
+					$w('#gallery1').items = orderProducts(productsInFocusSortedByRelevance, 'SHOE', 3);
+				}
 			}
 
 		}
-		else if (currentProductCategory == 'Handbags & More'){
+		else if (currentProductCategory == 'Bags & Jewelleries'){
 
 			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
 				$w('#gallery1').items = orderProducts(handbagsAndMoreWomen, 'HANDBAG', 2);
@@ -1452,15 +1534,669 @@ function orderProducts(
 
 }
 
+// extract float from a price
+function stripP(priceString){
 
-function sortMainGallery(){
+	let listPriceNumbers = [];
+	let priceFloat = 0;
 
-	let currentSortValue = $w('#dropdown5').value;
+	for (let i in priceString){
+		let isCharNumber = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'].filter((numberOrDot) => numberOrDot == priceString[i]).length > 0;
 
-	if (currentSortValue == 'Relevance'){
-
-		$w('#gallery1').items = mainGalleryCopy;
+		if (isCharNumber){
+			listPriceNumbers.push(priceString[i]);
+		}
 
 	}
 
+	return priceFloat = Number(listPriceNumbers.join(""));
+
+}
+
+let a = '';
+
+// codification of string
+function codifyUrl(urlString){
+
+	if (urlString.includes('https://www.')){
+		urlString = urlString.replace('https://www.', '');
+	}
+	else if (urlString.includes('https://')){
+		// console.log('replacing https://');
+		urlString = urlString.replace('https://', '');
+	}
+	else if (urlString.includes('http://www.')){
+		urlString = urlString.replace('http://www.', '');
+	}
+	else if (urlString.includes('http://')){
+		urlString = urlString.replace('http://', '');
+	}
+
+	// console.log('urlStirng length: ' + urlString.length);
+
+	// let alpha = 'abcdefghijklmnopqrstuvwxyz';
+	let alphaCodes = [];
+	// let additives = ["|", "!", 'I', '$', '£', ':', ")", '&', '%', 'œ', '∆', '†', ' ', '√', 'µ', '∫', '√', 'Ω', "  ", ]
+
+	// 1. char to alpha code..
+	for (let i in urlString){
+		let alphaCode = String.fromCharCode(urlString.charCodeAt(Number(i)) + 128);
+		// console.log(urlString[Number(i)]);
+		// if (alphaCode == ''){
+		// 	alphaCode = String.fromCharCode()
+		// }
+		alphaCodes.push(alphaCode);
+	}
+
+	a = alphaCodes.join('');
+
+
+	// console.log('alphacode pre: ' + alphaCodes);
+	// let rec = [];
+	// alphaCodes = JSON.parse(JSON.stringify((alphaCodes)));
+	// var look = JSON.parse(JSON.stringify((alphaCodes.join(''))));
+	//
+	// console.log('look: ' + look);
+	//
+	// for (let i in look){
+	// 	let alphaCode = String.fromCharCode(look.charCodeAt(Number(i)) - 128);
+	// 	// if (alphaCode == ''){
+	// 	// 	alphaCode = String.fromCharCode()
+	// 	// }
+	// 	rec.push(alphaCode);
+	// }
+	//
+	// console.log('alphacode post: ' + rec.join(''));
+
+
+
+	//
+
+
+	// 2. sum of alpha codes.. (hard to revert)
+	// let sumAlphaCodesToList = String(alphaCodes.reduce((partialSum, a) => partialSum + a, 0)).split('');
+	// console.log('sumAlphaCodesToList: ' + sumAlphaCodesToList);
+
+	// 3. obtaining approx midpoint of url to approx end of url from alpha codes..
+	// let alphaCodesMid = Math.round(alphaCodes.length / 1.8) ;
+	// let alphaCodesMidPlusStop = alphaCodes.length - Math.round(0.134 * alphaCodes.length);
+	// let alphaCodesMidPlus = alphaCodes.slice(alphaCodesMid, alphaCodesMidPlusStop); // codes midpoint plus
+	let tagLong = []
+	// console.log('alphaCodesMidPlus: ' + alphaCodesMidPlus);
+
+	let originalAlphaCodes = JSON.parse(JSON.stringify(alphaCodes));
+	alphaCodes.reverse();
+	let originalLengthAlpahCodes = JSON.parse(JSON.stringify(alphaCodes.length));
+
+
+	let opTrack = 0;
+
+	let tlIndex = 0;
+
+	// 4 populate tagLong
+	while (opTrack < originalLengthAlpahCodes){
+
+		// console.log('here1');
+
+
+		// let randomNum = generateRandomNumber(alphaCodes.length - 1, 0);
+		let randomAlphaCodeOne = '';
+		let randomAlphaCodeTwo = '';
+
+		while (randomAlphaCodeOne == '' && randomAlphaCodeTwo == ''){
+			randomAlphaCodeOne = originalAlphaCodes[generateRandomNumber(originalAlphaCodes.length - 1, 0)];
+			randomAlphaCodeTwo = originalAlphaCodes[generateRandomNumber(originalAlphaCodes.length - 1, 0)];
+		}
+
+		// console.log('here2');
+
+		// console.log('randomNum: ' + randomNum);
+
+		let randomCharOne = generateAlphaNumbericRandomChar();
+		let randomCharTwo = generateAlphaNumbericRandomChar();
+
+		let midCode = randomCharOne + randomAlphaCodeOne + randomCharTwo + randomAlphaCodeTwo;
+
+		alphaCodes.splice(tlIndex, 0, midCode);
+		tlIndex += 2;
+		opTrack += 1;
+
+		// console.log('tlIndex: ' + tlIndex);
+		// console.log('opTrack: ' + opTrack);
+		// tagLong.push(midCode.length);
+	}
+
+	// console.log('length post midC' + alphaCodes.length);
+
+	// 4. randomize alphacodes midplus..
+	let randomizedMidPlus = [];
+
+
+	// 5. the 5th end
+	// let cursor = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@£$%^&*()_+œ∑´®†¥¨^øπ“‘ßå∂ƒ©˙∆˚¬…æΩ≈ç√∫~µ≤≥÷';
+	let cursor = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ¡™#¢∞§¶•ªº–≠ÍÎÏÌÓÔÒ…Æ«ÛÙÇ◊ıˆ˜≤≥÷';
+	let count = 0;
+
+
+	while (count < 5){
+		alphaCodes.push(cursor[generateRandomNumber(cursor.length -1, 0)]);
+
+		count += 1;
+	}
+
+	// 6. 75%
+	count = 0;
+	let sI =  Math.floor(alphaCodes.length * .75);
+
+
+	while (count < 5){
+		alphaCodes.splice(sI, 0, cursor[generateRandomNumber(cursor.length -1, 0)]);
+
+		count += 1;
+		sI += 2;
+	}
+
+
+	// 7. 50%
+	count = 0;
+	let mid = Math.floor(alphaCodes.length / 2);
+
+
+	while (count < 5){
+		alphaCodes.splice(mid, 0, cursor[generateRandomNumber(cursor.length -1, 0)]);
+
+		count += 1;
+		mid += 2;
+	}
+
+
+	// 8. 25%
+	count = 0;
+	let sII =  Math.floor(alphaCodes.length * .25);
+
+
+	while (count < 5){
+		alphaCodes.splice(sII, 0, cursor[generateRandomNumber(cursor.length -1, 0)]);
+
+		// console.log('SII', count, sII + count, alphaCodes[sII + count]);
+
+		count += 1;
+		sII += 2;
+	}
+
+	// console.log('all alphaCodes: ' +(alphaCodes));
+	// console.log('all length at SII: ' +(alphaCodes.length));
+
+
+
+
+
+
+
+	let codifiedUrl = alphaCodes.join('');
+
+	// console.log('url length: ' + urlString.length);
+
+	// console.log('alphaCodes joined: ' + codifiedUrl);
+	// console.log('alphaCodes joined length: ' + codifiedUrl.length);
+
+	// console.log('alphaCodes: ' + alphaCodes);
+	// console.log('alphaCodes length: ' + alphaCodes.length);
+
+	// console.log('tagLong: ' + tagLong);
+	// console.log('tagLong length: ' + tagLong.length);
+
+	// console.log('alphaCode 73: ' + alphaCodes[73]);
+
+	return JSON.parse(JSON.stringify(codifiedUrl));
+
+}
+
+let url = 'https://www.fwrd.com/product-bottega-veneta-smooth-nappa-coloured-blouson-in-popcorn-gingersnap-burst/BOTT-MO19/?d=Mens&itrownum=3&itcurrpage=1&itview=05'; //
+let encodedUrl = codifyUrl(url);
+
+
+
+
+
+let checkOne = [];
+
+
+// decode codified url
+function decodeCodifiedUrl(codifiedUrl) {
+
+	if (codifiedUrl.includes('https://www.')){
+		codifiedUrl = codifiedUrl.replace('https://www.', '');
+	}
+	else if (codifiedUrl.includes('https://')){
+		// console.log('replacing https://');
+		codifiedUrl = codifiedUrl.replace('https://', '');
+	}
+	else if (codifiedUrl.includes('http://www.')){
+		codifiedUrl = codifiedUrl.replace('http://www.', '');
+	}
+	else if (codifiedUrl.includes('http://')){
+		codifiedUrl = codifiedUrl.replace('http://', '');
+	}
+
+	let urlLength = (codifiedUrl.length - 20) / 5;
+	let lengthPreSII = Math.floor(((urlLength * 2) + 15) * .25);
+	let lengthPreMid = Math.floor(((urlLength * 2) + 10) * .50);
+	let lengthPreSI = Math.floor(((urlLength * 2) + 5)* .75);
+
+	// convert codifiedUrl string to array
+	// let counter = 0;
+	// console.log('codifiedUrl: ' + codifiedUrl.length);
+
+	// 0 to first block;
+
+
+	let shiftCounter = 0;
+	let codifiedUrlListIndexCounter = 0;
+	let unfinishedBusiness = false;
+
+	let codifiedUrlList = [];
+	let codifiedUrlListUnpack = {};
+
+	let codifiedUrlListLastBlock = (urlLength * 2);
+
+	// generate codifiedUrlList
+	// 1. codifiedUrlList to first unblock
+	codifiedUrlListUnpack = generateCodifiedListPercent(
+		shiftCounter,
+		codifiedUrl,
+		codifiedUrlList,
+		codifiedUrlListIndexCounter,
+		lengthPreSII,
+		true,
+		unfinishedBusiness
+	);
+
+	// 2. codifiedUrlList to second unblock
+	codifiedUrlListUnpack = generateCodifiedListPercent(
+		codifiedUrlListUnpack['currentShiftCounterValue'],
+		codifiedUrl,
+		codifiedUrlListUnpack['codifiedUrlListRecentValue'],
+		codifiedUrlListUnpack['codifiedUrlListIndexCounter'],
+		lengthPreMid,
+		true,
+		codifiedUrlListUnpack['unfinishedBusinessBooleanValue']
+	);
+
+	// 3. codifiedUrlList to third unblock
+	codifiedUrlListUnpack = generateCodifiedListPercent(
+		codifiedUrlListUnpack['currentShiftCounterValue'],
+		codifiedUrl,
+		codifiedUrlListUnpack['codifiedUrlListRecentValue'],
+		codifiedUrlListUnpack['codifiedUrlListIndexCounter'],
+		lengthPreSI,
+		true,
+		codifiedUrlListUnpack['unfinishedBusinessBooleanValue']
+	);
+
+	// 4. codifiedUrlList full list
+	codifiedUrlListUnpack = generateCodifiedListPercent(
+		codifiedUrlListUnpack['currentShiftCounterValue'],
+		codifiedUrl,
+		codifiedUrlListUnpack['codifiedUrlListRecentValue'],
+		codifiedUrlListUnpack['codifiedUrlListIndexCounter'],
+		codifiedUrlListLastBlock,
+		false,
+		codifiedUrlListUnpack['unfinishedBusinessBooleanValue']
+	);
+
+	codifiedUrlList = codifiedUrlListUnpack['codifiedUrlListRecentValue'];
+
+
+	// console.log('full list: ' + codifiedUrlList);
+
+	// dequeue mid..
+
+	// let countNoOfDeletedItems = 0;
+	let codifiedUrlListlength = JSON.parse(JSON.stringify(codifiedUrlList.length));
+	let currentIndex = 0;
+
+	while (currentIndex < codifiedUrlListlength){
+
+		let currentItem = codifiedUrlList[0];
+		// console.log('current item: ' + currentItem);
+		let countNumberOfTimesHere = 1;
+
+		// console.log('String.fromCharCode(currentItem.charCodeAt(0) - 128)' + String.fromCharCode(currentItem.charCodeAt(0) - 128));
+
+		if (currentItem.length == 1){
+			// console.log('currentItem.length == 1: ' + currentItem.length);
+			// console.log('number of times here: ' + countNumberOfTimesHere);
+			let c = String.fromCharCode(currentItem.charCodeAt(0) - 128);
+			// console.log('b');
+			codifiedUrlList.push(c);
+			codifiedUrlList.shift();
+		}
+		else if (currentItem.length > 1){
+			// console.log('currentItem.length > 1: ' + currentItem.length)
+			codifiedUrlList.shift();
+		}
+
+		currentIndex += 1;
+
+	}
+
+
+	codifiedUrlList.reverse();
+
+	let returnValue = 'https://' + codifiedUrlList.join('');
+
+	// console.log(returnValue);
+
+	// codifiedUrlList.re('')
+
+	return returnValue;
+
+}
+
+let decodedUrl = decodeCodifiedUrl(encodedUrl);
+
+// console.log('check encoded == decoded: ' + encodedUrl == decodedUrl)
+
+
+function generateCodifiedListPercent(
+	currentShiftCounterValue,
+	codifiedUrl,
+	codifiedUrlListRecentValue,
+	codifiedUrlListIndexCounter,
+	blockInFocusInputIndex,
+	applyUnblock,
+	unfinishedBusinessBooleanValue
+){
+
+	// let shiftCounter = currentShiftCounterValue;
+	// let codifiedUrlList = codifiedUrlListRecentValue;
+
+
+	// obataining the length of the las item in codifiedUrlList if applicable..
+	let isLastCodifiedUrlListItemsLengthAfterUnblockEqualToOne = false;
+	let isLastCodifiedUrlListItemsLengthAfterUnblockGreaterThanOne = false;
+
+	// if the current printing point is not the start of the codified url and codifiedUrlList has been populated to an unblocking,
+	// check if the last unblocked item's (string) length is equal to 1.. useful after each unblock
+	if (currentShiftCounterValue != 0 && codifiedUrlListRecentValue.length > 0){
+
+		// codifiedUrlListIndexCounter = codifiedUrlListIndexCounter - 1;
+
+
+
+
+		// console.log('codifiedUrlListRecentValue length: ' + codifiedUrlListRecentValue.length);
+		// console.log('codifiedUrlListIndexCounter: ' + codifiedUrlListIndexCounter);
+		// console.log('Item at codifiedUrlListIndexCounter: ' + codifiedUrlListRecentValue[codifiedUrlListIndexCounter - 1]);
+		// console.log('currentShiftCounterValue: ' + currentShiftCounterValue);
+		// console.log('Item at currentShiftCounterValue: ' + codifiedUrl[currentShiftCounterValue]);
+
+
+		let lengthOfLastItem = codifiedUrlListRecentValue[codifiedUrlListIndexCounter - 1].length;
+
+		if (lengthOfLastItem == 1){
+			isLastCodifiedUrlListItemsLengthAfterUnblockEqualToOne = true;
+			// isLastCodifiedUrlListItemsLengthAfterUnblockGreaterThanOne = false
+		}
+		else if (lengthOfLastItem > 1){
+			isLastCodifiedUrlListItemsLengthAfterUnblockGreaterThanOne = true;
+			// isLastCodifiedUrlListItemsLengthAfterUnblockEqualToOne = false
+		}
+	}
+
+	if (currentShiftCounterValue == 0 || (currentShiftCounterValue != 0 && isLastCodifiedUrlListItemsLengthAfterUnblockEqualToOne == true)){
+
+		while (codifiedUrlListIndexCounter < blockInFocusInputIndex && unfinishedBusinessBooleanValue == false){
+
+			// console.log('in equal to one');
+
+			let tai = codifiedUrl[currentShiftCounterValue] + codifiedUrl[currentShiftCounterValue + 1] + codifiedUrl[currentShiftCounterValue + 2] + codifiedUrl[currentShiftCounterValue + 3];
+			let c = codifiedUrl[currentShiftCounterValue + 4];
+
+
+
+
+			// codifiedUrlListRecentValue.push(tai);
+			// codifiedUrlListIndexCounter += 1;
+
+			// if codifiedUrlListIndexCounter is same as blockInFocusInputIndex i.e prog has gotten to index of stoppage,
+			// don't add the fourth sequence i.e the next index, rather signify that the fourth
+			// sequence or the next index has not been added
+
+			// if (codifiedUrlListIndexCounter == blockInFocusInputIndex){
+			// 	currentShiftCounterValue -= 1; // remove an excess one index that will be added to shift counter
+			// 	unfinishedBusinessBooleanValue = true;
+			// }
+			// else{
+			// 	codifiedUrlListRecentValue.push(c);
+			// 	codifiedUrlListIndexCounter += 1;
+			// }
+	//
+			// currentShiftCounterValue += 5
+
+			//
+
+			if (codifiedUrlListIndexCounter == blockInFocusInputIndex){
+				unfinishedBusinessBooleanValue = true;
+			}
+
+			codifiedUrlListRecentValue.push(tai);
+			codifiedUrlListIndexCounter += 1;
+			currentShiftCounterValue += 4;
+
+			if (codifiedUrlListIndexCounter != blockInFocusInputIndex){
+				codifiedUrlListRecentValue.push(c);
+				codifiedUrlListIndexCounter += 1;
+				currentShiftCounterValue += 1;
+			}else{
+				// currentShiftCounterValue += 1;
+				unfinishedBusinessBooleanValue = true;
+			}
+		}
+	}
+
+	else if ((currentShiftCounterValue != 0 && isLastCodifiedUrlListItemsLengthAfterUnblockGreaterThanOne == true)){
+
+		while (codifiedUrlListIndexCounter < blockInFocusInputIndex && unfinishedBusinessBooleanValue == false){
+
+			// console.log('in greater than');
+
+			let c = codifiedUrl[currentShiftCounterValue];
+			let tai = codifiedUrl[currentShiftCounterValue + 1] + codifiedUrl[currentShiftCounterValue + 2] + codifiedUrl[currentShiftCounterValue + 3] + codifiedUrl[currentShiftCounterValue + 4];
+
+			// if codifiedUrlListIndexCounter is same as blockInFocusInputIndex i.e prog has gotten to index of stoppage,
+			// don't add the fourth sequence i.e the next index, rather signify that the fourth
+			// sequence or the next index has not been added
+
+			// console.log('codifiedUrlListIndexCounter: ' + codifiedUrlListIndexCounter);
+			// console.log('blockInFocusInputIndex: ' + blockInFocusInputIndex);
+
+			//if (codifiedUrlListIndexCounter + 1 != blockInFocusInputIndex){
+			//
+			//
+			//}
+
+			if (codifiedUrlListIndexCounter == blockInFocusInputIndex){
+				unfinishedBusinessBooleanValue = true;
+			}
+
+			codifiedUrlListRecentValue.push(c);
+			codifiedUrlListIndexCounter += 1;
+			currentShiftCounterValue += 1;
+
+			if (codifiedUrlListIndexCounter != blockInFocusInputIndex){
+				codifiedUrlListRecentValue.push(tai);
+				codifiedUrlListIndexCounter += 1;
+				currentShiftCounterValue += 4;
+			}else{
+				// currentShiftCounterValue += 1;
+				unfinishedBusinessBooleanValue = true;
+			}
+
+
+		}
+
+		// console.log('codifiedUrlListIndexCounter: ' + codifiedUrlListIndexCounter);
+		// console.log('blockInFocusInputIndex: ' + blockInFocusInputIndex);
+
+
+	}
+
+	// unblocking
+	if (applyUnblock == true){
+
+		// first block to next start
+		if (unfinishedBusinessBooleanValue == true){
+			// console.log('IN TRUE');
+			// console.log('Pre Block Item shiftCounterValue: ' + codifiedUrl[currentShiftCounterValue - 1]);
+			// console.log('Block identified at at shiftCounterValue: ' + codifiedUrl[currentShiftCounterValue]);
+			// console.log('Post Block Item shiftCounterValue: ' + codifiedUrl[currentShiftCounterValue + 1]);
+			// console.log('');
+
+			// let currentShiftCounterValueTwo = currentShiftCounterValue;
+
+			// let indexToStartFrom = codifiedUrlListIndexCounter;
+			let doNum = 0;
+
+			while (doNum < 5){
+
+				// console.log('codifiedUrlListRecentValue: ' + codifiedUrlListRecentValue);
+				// console.log('codifiedUrlListRecentValueLength: ' + codifiedUrlListRecentValue.length);
+				let lengthOfItemBeforeBlock = codifiedUrlListRecentValue[codifiedUrlListIndexCounter - 1].length;
+
+				let block = codifiedUrl[currentShiftCounterValue];
+				let next = '';
+
+				if (lengthOfItemBeforeBlock > 1){
+					next = codifiedUrl[currentShiftCounterValue + 1];
+					codifiedUrlListRecentValue.push(next);
+					codifiedUrlListIndexCounter += 1;
+					currentShiftCounterValue += 2; // next block sequence to be focused on..
+				}
+				else if (lengthOfItemBeforeBlock == 1){
+					next = codifiedUrl[currentShiftCounterValue + 1] + codifiedUrl[currentShiftCounterValue + 2] + codifiedUrl[currentShiftCounterValue + 3] + codifiedUrl[currentShiftCounterValue + 4];
+					codifiedUrlListRecentValue.push(next);
+					codifiedUrlListIndexCounter += 1;
+					currentShiftCounterValue += 5;
+				}
+
+				doNum += 1;
+
+			}
+
+
+		}
+
+		else if (unfinishedBusinessBooleanValue == false){
+			// console.log('IN FALSE');
+			// console.log('Pre Block Item shiftCounterValue: ' + codifiedUrl[currentShiftCounterValue - 1]);
+			// console.log('Block identified at at shiftCounterValue: ' + codifiedUrl[currentShiftCounterValue]);
+			// console.log('Post Block Item shiftCounterValue: ' + codifiedUrl[currentShiftCounterValue + 1]);
+			// console.log('');
+
+			// codifiedUrlListIndexCounter += 1;
+
+			// let currentShiftCounterValueTwo = currentShiftCounterValue;
+
+			let indexToStartFrom = codifiedUrlListIndexCounter;
+
+			// console.log('codifiedUrlListRecentValue: ' + codifiedUrlListRecentValue);
+			// console.log('codifiedUrlListRecentValueLength: ' + codifiedUrlListRecentValue.length);
+			// let lengthOfItemBeforeBlock = codifiedUrlListRecentValue[codifiedUrlListIndexCounter - 1].length;
+
+			let doNum = 0;
+
+			while (doNum < 5){
+
+				// console.log('codifiedUrlListRecentValue: ' + codifiedUrlListRecentValue);
+				// console.log('codifiedUrlListRecentValueLength: ' + codifiedUrlListRecentValue.length);
+				let lengthOfItemBeforeBlock = codifiedUrlListRecentValue[codifiedUrlListIndexCounter - 1].length;
+
+				let block = codifiedUrl[currentShiftCounterValue];
+				let next = '';
+
+				if (lengthOfItemBeforeBlock == 1){
+
+					next = codifiedUrl[currentShiftCounterValue + 1] + codifiedUrl[currentShiftCounterValue + 2] + codifiedUrl[currentShiftCounterValue + 3] + codifiedUrl[currentShiftCounterValue + 4];
+					codifiedUrlListRecentValue.push(next);
+					codifiedUrlListIndexCounter += 1;
+					currentShiftCounterValue += 5; // next block sequence to be focused on..
+
+				}
+				else if (lengthOfItemBeforeBlock > 1){
+
+					next = codifiedUrl[currentShiftCounterValue + 1];
+					codifiedUrlListRecentValue.push(next);
+					codifiedUrlListIndexCounter += 1;
+					currentShiftCounterValue += 2; // next block sequence to be focused on..
+
+				}
+
+				doNum += 1;
+
+			}
+
+		}
+
+		unfinishedBusinessBooleanValue = false;
+
+	}
+
+	// console.log('gen: ' + codifiedUrlListRecentValue);
+
+	return {
+		'currentShiftCounterValue': currentShiftCounterValue,
+		'codifiedUrlListRecentValue': codifiedUrlListRecentValue,
+		'codifiedUrlListIndexCounter': codifiedUrlListIndexCounter,
+		'blockInFocusInputIndex': blockInFocusInputIndex,
+		'unfinishedBusinessBooleanValue': unfinishedBusinessBooleanValue
+	}
+
+}
+
+
+// console.log('.fwrd.com/product-bottega-veneta-denim-printed-nubuck-leather-trousers-in-medium-blue-denim/BOTT-MP17/?d=Mens&itrownum=1&itcurrpage=1&itview=05');
+// let decodedUrl = decodeCodifiedUrl(codifiedUrl);
+
+// console.log(decodedUrl);
+
+// console.log('included: ' + codifiedUrl.includes(decodedUrl))
+
+
+// generate a random non alphanumeric non space character..
+function generateAlphaNumbericRandomChar(){
+
+	let randomNonAlphaNumbericNonSpaceCharacter = '';
+
+	let numRange = [Math.ceil(48), Math.floor(57)];
+	let lowerCase = [Math.ceil(97), Math.floor(122)];
+	let upperCase = [Math.ceil(65), Math.floor(90)];
+
+	let listCases = [numRange, lowerCase, upperCase];
+
+	let minListCases = Math.ceil(0);
+	let maxListCases = Math.floor(2);
+
+	let randomListCaseIndex = generateRandomNumber(minListCases, maxListCases);
+	let randomListCase = listCases[randomListCaseIndex];
+
+	let min = randomListCase[0];
+	let max = randomListCase[1];
+
+	let randomCharOne = String.fromCharCode(Math.floor( Math.random() * ( max - min) + min));
+
+	while (randomCharOne.includes(' ')){
+		randomCharOne = String.fromCharCode(Math.floor( Math.random() * (max - min) + min));
+	}
+
+	return randomCharOne;
+
+}
+
+// console.log(generateAlphaNumbericRandomChar());
+
+function generateRandomNumber(max, min){
+
+	return Math.floor( Math.random() * ( max - min) + min)
 }
