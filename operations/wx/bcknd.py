@@ -474,6 +474,7 @@ def populate_site_db(
 
     if is_continue_from_previous_stop_csv == True:
         is_reset_p = 'false'
+
     else:
         is_reset_p = 'true'
 

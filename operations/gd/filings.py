@@ -16,6 +16,7 @@ from googleapiclient.http import MediaIoBaseDownload
 from google.auth.transport.requests import Request
 
 from process_scraped import *
+from operations.wx.reset_p import *
 
 from settings.q.default_folder_and_filename_settings \
     import all_scraped_data_folder, all_log_files_folder, other_settings_data_folder, \
@@ -195,7 +196,8 @@ def detect_and_optional_download_and_process_files_within_returned_folders(
 ):
 
     # keeping track of wx upload in progress and completion status to avoid upload from being started again when a
-    # previous one has not been completed as well as to prevent 'p' track | register from starting again in wx db
+    # previous one has not been completed as well as to prevent 'p' track | register from starting again
+    # (unintentionally) in wx db..
 
     wx_upload_tasks_status_dict = {
         'wx_upload_task_in_progress_datetime': 'datetime',
@@ -245,6 +247,8 @@ def detect_and_optional_download_and_process_files_within_returned_folders(
                                               "y/n: ")
 
                 if confirm_new_wx_upload == 'y':
+
+                    is_continue_from_previous_stop_csv = False
 
                     # update and log / save wx upload tasks status
                     with open(f'{all_log_files_folder}{wx_upload_tasks_status_log_file}', 'w') \
@@ -297,6 +301,41 @@ def detect_and_optional_download_and_process_files_within_returned_folders(
                 else:
                     sys.exit('CSV file processing and wx upload have been terminated')
 
+            else:
+                confirm_new_wx_upload = input('There are no recent incomplete wx upload tasks and \n'
+                      'the last wx upload operation is past 24 hrs. \n'
+                      'Recommended only proceed with this operation if new scraped data is available\n'
+                      'Are you sure you want to clear p, and start a new wx upload? y/n')
+
+                if confirm_new_wx_upload == 'y':
+
+                    is_continue_from_previous_stop_csv = False
+
+                    # update and log / save wx upload tasks status
+                    with open(f'{all_log_files_folder}{wx_upload_tasks_status_log_file}', 'w') \
+                            as wx_upload_task_completion_log_file_one:
+
+                        wx_upload_tasks_status_dict['wx_upload_task_in_progress_datetime'] = str(
+                            datetime.datetime.now())
+                        wx_upload_task_completion_log_json_as_dict['wx_upload_task_in_progress_datetime'] = \
+                            str(datetime.datetime.now())
+
+                        wx_upload_task_completion_log_file_one.write(
+                            json.dumps(wx_upload_task_completion_log_json_as_dict))
+
+                        reset_p()
+
+                        wx_upload_task_completion_log_file_one.close()
+
+                    pass
+
+                elif confirm_new_wx_upload == 'n':
+                    is_continue_from_previous_stop_csv = True # JIC
+                    sys.exit('CSV file processing and wx upload has been terminated')
+                else:
+                    is_continue_from_previous_stop_csv = True  # JIC
+                    sys.exit('CSV file processing and wx upload has been terminated')
+
 
 
             wx_upload_task_completion_log_file_.close()
@@ -329,7 +368,7 @@ def detect_and_optional_download_and_process_files_within_returned_folders(
 
             last_serviced_sitemap_folder_file.close()
 
-    # if scraped csv files processing is starting fom scratch, reset wx upload error log since 'everything's' being
+    # if scraped csv files processing is starting fom scratch, reset wx upload error & p log since 'everything's' being
     # restarted afresh.. if scraped csv files processing's being forced to start afresh, there so be no previous
     # processing errors to make up for in the new processing operation
     elif is_continue_from_previous_stop_csv == False:
@@ -338,6 +377,8 @@ def detect_and_optional_download_and_process_files_within_returned_folders(
                 as wx_upload_error_log_file:
 
             wx_upload_error_log_file.write('{}')
+
+            reset_p()
 
             wx_upload_error_log_file.close()
 
