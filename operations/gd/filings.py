@@ -144,10 +144,12 @@ def search_file(
     """
     # creds, _ = google.auth.default()
 
-    try:
-        # create drive api client
+    # create drive api client
 
-        files = []
+    files = []
+
+    def search():
+
         page_token = None
         while True:
             # pylint: disable=maybe-no-member
@@ -174,12 +176,18 @@ def search_file(
             if page_token is None:
                 break
 
+    try:
+        search()
 
+    except:
 
-    except HttpError as error:
-        print(F'An error occurred: {error}')
-        files = None
+        # if there's an error, try searching again
+        try:
+            search()
 
+        except HttpError as error:
+            print(F'An error occurred: {error}')
+            files = None
 
 
     return files

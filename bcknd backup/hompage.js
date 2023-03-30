@@ -7,15 +7,15 @@ import wixWindow from 'wix-window';
 import {currencies} from 'wix-pay';
 
 // user's country
-let usersCountryCode = '';
+var usersCountryCode = '';
 
 // list of all currencies
-// let allCurrenciesDict = {}
+// var allCurrenciesDict = {}
 //
 // currencies.getAllCurrencies()
 //   .then((listOfAllCurrencies) => {
 //
-// 	  for (let currencyIndex in listOfAllCurrencies){
+// 	  for (var currencyIndex in listOfAllCurrencies){
 //
 // 		  console.log(listOfAllCurrencies[currencyIndex].code, listOfAllCurrencies[currencyIndex].symbol)
 //
@@ -27,64 +27,64 @@ let usersCountryCode = '';
 //
 //   });
 
-let dbQueryAllResponseItems = [];
+var dbQueryAllResponseItems = [];
 /// VARIABLES TO DEFINE FEATURED PRODUCTS
 
 // MEN AND WOMEN
-let furnituresMenAndWomen = []; // Furnitures
+var furnituresMenAndWomen = []; // Furnitures
 
 // Main gallery's copy
-let mainGalleryCopy = [];
+var mainGalleryCopy = [];
 
 // WOMEN
-let recommendedForWomen = [];
-let shoesAndMoreWomen = []; // SHOES, & MORE (NECKLACE, EARRING)
-let handbagsAndMoreWomen = []; // Bags & Jewelleries (BRACELET , WATCH)
-let clothesAndPerfumesWomen = []; // CLOTHES AND PERFUMES
-let flowersAndRingsWomen = []; // FLOWERS & RINGS
-let travelBagsAndOtherBagsWomen = []; // TRAVEL BAGS & OTHER BAGS
-let otherAccessoriesWomen = []; // OTHER ACCESSORIES
-let giftsForHim = []; // GIFTS FOR HIM (WATCHES, PERFUMES, FLOWERS)
+var recommendedForWomen = [];
+var shoesAndMoreWomen = []; // SHOES, & MORE (NECKLACE, EARRING)
+var handbagsAndMoreWomen = []; // Bags & Jewelleries (BRACEvar , WATCH)
+var clothesAndPerfumesWomen = []; // CLOTHES AND PERFUMES
+var flowersAndRingsWomen = []; // FLOWERS & RINGS
+var travelBagsAndOtherBagsWomen = []; // TRAVEL BAGS & OTHER BAGS
+var otherAccessoriesWomen = []; // OTHER ACCESSORIES
+var giftsForHim = []; // GIFTS FOR HIM (WATCHES, PERFUMES, FLOWERS)
 
 // MEN
-let shoesAndWatchesMen = []; // SHOES AND WATCHES
-let necklacesAndBracletsMen = []; // NECKLACES AND BRACELETS
-let clothesAndPerfumesMen = []; // CLOTHES AND PERFUMES
-let flowersAndRingsMen = []; // FLOWERS & RINGS
-let travelBagsAndOtherBagsMen = []; // TRAVEL BAGS & OTHER BAGS
-let otherAccessoriesMen = []; // OTHER ACCESSORIES
-let giftForHer = []; // GIFTS FOR HER (WATCHES, PERFUMES, FLOWERS)
+var shoesAndWatchesMen = []; // SHOES AND WATCHES
+var necklacesAndBracvarsMen = []; // NECKLACES AND BRACEvarS
+var clothesAndPerfumesMen = []; // CLOTHES AND PERFUMES
+var flowersAndRingsMen = []; // FLOWERS & RINGS
+var travelBagsAndOtherBagsMen = []; // TRAVEL BAGS & OTHER BAGS
+var otherAccessoriesMen = []; // OTHER ACCESSORIES
+var giftForHer = []; // GIFTS FOR HER (WATCHES, PERFUMES, FLOWERS)
 
 // OTHERS
-let featuredWatches = [];
-let featuredHandbags = [];
-let featuredShoes = [];
-let featuredBelts = [];
-let featuredBracelets = [];
-let featuredFurnitures = [];
-let featuredClothings = [];
-let featuredEarrings = [];
-let featuredPerfumes = [];
-let featuredNecklaces = [];
-let featuredFlowers = [];
-let featuredTravelBags = [];
-let featuredRings = [];
-let featuredBags = [];
-let featuredAccessories = [];
+var featuredWatches = [];
+var featuredHandbags = [];
+var featuredShoes = [];
+var featuredBelts = [];
+var featuredBracevars = [];
+var featuredFurnitures = [];
+var featuredClothings = [];
+var featuredEarrings = [];
+var featuredPerfumes = [];
+var featuredNecklaces = [];
+var featuredFlowers = [];
+var featuredTravelBags = [];
+var featuredRings = [];
+var featuredBags = [];
+var featuredAccessories = [];
 
-let timeOut = 3000;
+var timeOut = 5000;
 
 async function resolveGalleryItems(){
 
-	let ipLoc = {};
+	var ipLoc = {};
 
-	let dbCollectionToFocusOn = '';
+	var dbCollectionToFocusOn = '';
 
-	let eIPURL='https://extreme-ip-lookup.com/json/?key=uLYcH3A5LvgGZm9CKjxM';
+	var eIPURL='https://extreme-ip-lookup.com/json/?key=uLYcH3A5LvgGZm9CKjxM';
 
 
 
-	let options = {
+	var options = {
       "suppressAuth": true,
       "suppressHooks": true,
     };
@@ -138,15 +138,16 @@ async function resolveGalleryItems(){
 		// console.log(dbCollectionToFocusOn);
 
 		// obtaining products as per current country
-		let dbQueryAll = wixData.query(dbCollectionToFocusOn).limit(1000).find(options);
-
-		return dbQueryAll.then((dbQueryAllResponse) => {
+		return wixData.query(dbCollectionToFocusOn).limit(1000).find(options)
+		.then((dbQueryAllResponse) => {
 
 			dbQueryAllResponseItems	= dbQueryAllResponse.items;
 
 			return dbQueryAllResponse.items
 
 		});
+
+
 
 		// console.log(typeof(dbQueryAllResponseItems[0].title));
 
@@ -164,7 +165,7 @@ async function resolveGalleryItems(){
 
 	//$w.onReady(function () {
 	//
-	//	let gallery1ItemsReformatted = [];
+	//	var gallery1ItemsReformatted = [];
 	//
 	//	dbQueryAllResponseItems.forEach((item) => {
 	//		gallery1ItemsReformatted.push(
@@ -208,38 +209,42 @@ $w.onReady(function () {
 
 	setTimeout(() => {
 
+
 		console.log('items length: ' + dbQueryAllResponseItems.length);
 
-		// let gallery1ItemsReformatted = [];
-		let gallery1AlreadyIncludedCategoryTrackerList = [];
-		let gallery1AlreadyIncludedAsPerTheirRelativeGenderTrackerList = [];
-		let ladiesShoesAndBagsIncludedTracker = [];
+		// var gallery1ItemsReformatted = [];
+		var gallery1AlreadyIncludedCategoryTrackerList = [];
+		var gallery1AlreadyIncludedAsPerTheirRelativeGenderTrackerList = [];
+		var ladiesShoesAndBagsIncludedTracker = [];
 
 		// counting the number of products per gender --> for use in recommendedForWomen..
-		// let dbQueryAllResponseItemsTotalProductsCount = dbQueryAllResponseItems.length;
-		// let dbQueryAllResponseItemsMensProductCount = dbQueryAllResponseItems.filter(item => item.gender == 'MEN').length;
-		// let dbQueryAllResponseItemsWomensProductCount = dbQueryAllResponseItemsTotalProductsCount - dbQueryAllResponseItemsMensProductCount;
+		// var dbQueryAllResponseItemsTotalProductsCount = dbQueryAllResponseItems.length;
+		// var dbQueryAllResponseItemsMensProductCount = dbQueryAllResponseItems.filter(item => item.gender == 'MEN').length;
+		// var dbQueryAllResponseItemsWomensProductCount = dbQueryAllResponseItemsTotalProductsCount - dbQueryAllResponseItemsMensProductCount;
 
 		// making a perfect count of product per category per gender
-		let totalProductsPerCategoryPerGender = {'WOMEN': {}, 'MEN': {}};
+		var totalProductsPerCategoryPerGender = {'WOMEN': {}, 'MEN': {}};
 
 		// tracking available categories for each gender
-		let availableProductsCategoryForEachGender = {
+		var availableProductsCategoryForEachGender = {
 			'WOMEN': [], 'MEN': []
 		}
 
-		let count = 0;
+		var count = 0;
 
+		// if (dbQueryAllResponseItems.length == 0){
+		// 	wixLocation.to('https://flowbeing.wixsite.com/my-site-1');
+		// }
 
 		dbQueryAllResponseItems.forEach((item) => {
 
 			// console.log('here');
-			let productCat = item.productCategory;
-			let productGender = item.gender;
+			var productCat = item.productCategory;
+			var productGender = item.gender;
 
 			// check whether or not the current product's category has been added to availableProductsCategoryForEachGender,
 			// if it hasn't been added, add it to the appropriate gender..
-			let isCurrentProductCategoryInAvailableProductsCategoryForEachGender = false;
+			var isCurrentProductCategoryInAvailableProductsCategoryForEachGender = false;
 
 			if (productGender == 'WOMEN'){
 				isCurrentProductCategoryInAvailableProductsCategoryForEachGender =
@@ -262,7 +267,7 @@ $w.onReady(function () {
 
 
 			// console.log(totalProductsPerCategoryPerGender.WOMEN.productCategory == undefined);
-			// let currentCategoryWithinCurrentGender = totalProductsPerCategoryPerGender[productGender][productCat];
+			// var currentCategoryWithinCurrentGender = totalProductsPerCategoryPerGender[productGender][productCat];
 			// console.log('typeof: ' + typeof(currentCategoryWithinCurrentGender));
 			// console.log('typeof(0): ' + typeof(0));
 
@@ -301,18 +306,18 @@ $w.onReady(function () {
 		});
 
 
-		let womensFeatureableProducts = totalProductsPerCategoryPerGender.WOMEN;
-		let mensFeatureableProducts = totalProductsPerCategoryPerGender.MEN;
+		var womensFeatureableProducts = totalProductsPerCategoryPerGender.WOMEN;
+		var mensFeatureableProducts = totalProductsPerCategoryPerGender.MEN;
 
 		// list of shoes and bags that are available for women
-		let womensFeaturableShoesList = womensFeatureableProducts['SHOE'];
-		let womensFeaturableBagsList = womensFeatureableProducts['HANDBAG'];
+		var womensFeaturableShoesList = womensFeatureableProducts['SHOE'];
+		var womensFeaturableBagsList = womensFeatureableProducts['HANDBAG'];
 
-		let womensFeaturableShoesListCopy = JSON.parse(JSON.stringify(womensFeatureableProducts['SHOE']));// womensFeatureableProducts['SHOE'];
-		let womensFeaturableBagsListCopy = JSON.parse(JSON.stringify(womensFeatureableProducts['HANDBAG'])); // womensFeatureableProducts['HANDBAG'];
+		var womensFeaturableShoesListCopy = JSON.parse(JSON.stringify(womensFeatureableProducts['SHOE']));// womensFeatureableProducts['SHOE'];
+		var womensFeaturableBagsListCopy = JSON.parse(JSON.stringify(womensFeatureableProducts['HANDBAG'])); // womensFeatureableProducts['HANDBAG'];
 
 		// console.log('type check');
-		// for (let x in womensFeaturableShoesList){
+		// for (var x in womensFeaturableShoesList){
 		// 	console.log(JSON.stringify(womensFeaturableShoesList[x].productLink == womensFeaturableShoesListCopy[x].productLink));
 		// }
 		// console.log(womensFeaturableBagsList == womensFeaturableBagsListCopy);
@@ -322,19 +327,19 @@ $w.onReady(function () {
 		// console.log('mensFeatureableProducts: ' + mensFeatureableProducts);
 
 		/// product categories that's currently available per gender selection
-		let availableProductCategoriesForMen = availableProductsCategoryForEachGender['MEN'];
-		let availableProductCategoriesForWomen = availableProductsCategoryForEachGender['WOMEN'];
+		var availableProductCategoriesForMen = availableProductsCategoryForEachGender['MEN'];
+		var availableProductCategoriesForWomen = availableProductsCategoryForEachGender['WOMEN'];
 
 		console.log('');
 		console.log("Available Categories Men: [" + availableProductCategoriesForMen + ']');
 		console.log("Available Categories Women: [" + availableProductCategoriesForWomen + ']');
 
 
-		// let gallery1MensProductsCount = gallery1AlreadyIncludedAsPerTheirRelativeGenderTrackerList.filter(gender => gender == 'MEN').length;
-		// let gallery1WomensProductsCount = gallery1AlreadyIncludedAsPerTheirRelativeGenderTrackerList.filter(gender => gender == 'WOMEN').length;
+		// var gallery1MensProductsCount = gallery1AlreadyIncludedAsPerTheirRelativeGenderTrackerList.filter(gender => gender == 'MEN').length;
+		// var gallery1WomensProductsCount = gallery1AlreadyIncludedAsPerTheirRelativeGenderTrackerList.filter(gender => gender == 'WOMEN').length;
 
 		/// setting recommendedForWomen's limit based on the number of items in dbQueryAllResponseItems
-		let recommendedForWomenContentTargetCount = 10;
+		var recommendedForWomenContentTargetCount = 10;
 
 		if (dbQueryAllResponseItems.length < 10){
 
@@ -343,7 +348,7 @@ $w.onReady(function () {
 		}
 
 
-		let currentProductItemsIndexWithinListOfAllProducts = 1;
+		var currentProductItemsIndexWithinListOfAllProducts = 1;
 
 
 
@@ -354,23 +359,23 @@ $w.onReady(function () {
 
 			while (currentProductItemsIndexWithinListOfAllProducts < dbQueryAllResponseItems.length) {
 
-				for (let gender in totalProductsPerCategoryPerGender){
+				for (var gender in totalProductsPerCategoryPerGender){
 
-						for (let productCategory in totalProductsPerCategoryPerGender[gender]){
+						for (var productCategory in totalProductsPerCategoryPerGender[gender]){
 
 							// ' + productCategory);
 
 							if (totalProductsPerCategoryPerGender[gender][productCategory].length != 0){
 
 								/// current product within current product category
-								let currentProduct = totalProductsPerCategoryPerGender[gender][productCategory][0];
+								var currentProduct = totalProductsPerCategoryPerGender[gender][productCategory][0];
 
 								// console.log('currentProduct: ' + currentProduct.title);
 
 								if (currentProduct.siteName != ''){
 
 									// defining item's title
-									let currentProductTitle = currentProduct.title;
+									var currentProductTitle = currentProduct.title;
 
 									if (currentProductTitle.length > 30){
 										currentProductTitle = currentProduct.title.substring(0,59) + '..';
@@ -388,11 +393,11 @@ $w.onReady(function () {
 
 									// adding current item to recommendedForWomen while making sure men's product within recommendedForWomen does not exceed
 									// if (gender == 'MEN' && gallery1MensProductsCount == 2){
-									// 	let doNothing = {};
+									// 	var doNothing = {};
 									// }
 
 
-										let indexOfCurrentProduct = dbQueryAllResponseItems.indexOf(currentProduct);
+										var indexOfCurrentProduct = dbQueryAllResponseItems.indexOf(currentProduct);
 
 										// populating each available women's category with their relevant products
 										if (currentProduct.gender == 'WOMEN'){
@@ -419,7 +424,7 @@ $w.onReady(function () {
 													});
 												}
 											}
-											else if (productCategory == 'HANDBAG' || productCategory == 'BRACELET' || productCategory == 'WATCH' || productCategory == 'WATCHES'){
+											else if (productCategory == 'HANDBAG' || productCategory == 'BRACEvar' || productCategory == 'WATCH' || productCategory == 'WATCHES'){
 												handbagsAndMoreWomen.push({
 													"type": "image",
 	  												"title": currentProductTitle,
@@ -429,7 +434,7 @@ $w.onReady(function () {
 	  												'slug': String(indexOfCurrentProduct)
 												});
 
-												if (productCategory == 'BRACELET' && giftForHer.length < 20){
+												if (productCategory == 'BRACEvar' && giftForHer.length < 20){
 													giftForHer.push({
 														"type": "image",
 	  													"title": currentProductTitle,
@@ -507,14 +512,14 @@ $w.onReady(function () {
 										// populating all product categories for men
 										if (currentProduct.gender == 'MEN'){
 
-											// let isDisplayMensShoesAndWatches = isItemsInList(availableProductCategoriesForMen, ['SHOE', 'WATCH', 'WATCHES']);
-											// let isDisplayMensNecklacesAndBracelet = isItemsInList(availableProductCategoriesForMen, ['NECKLACE', 'BRACELET']);
-											// let isDisplayFurnituresForMen = isItemsInList(availableProductCategoriesForMen, ['FURNITURE']);
-											// let isDisplayMensClothesAndPerfumes = isItemsInList(availableProductCategoriesForMen, ['CLOTHING', 'PERFUME']);
-											// let isDisplayFlowersAndMensRings = isItemsInList(availableProductCategoriesForMen, ['FLOWER', 'RING']);
-											// let isDisplayMensTravelBagsAndOtherBags = isItemsInList(availableProductCategoriesForMen, ['TRAVEL BAG', 'BAG']);
-											// let isDisplayOtherAccessoriesForMen = isItemsInList(availableProductCategoriesForMen, ['ACCESSORIES']);
-											// let isDisplayGiftsForHer = isItemsInList(availableProductCategoriesForWomen, ['FLOWER', 'RING', 'NECKLACE', ]);
+											// var isDisplayMensShoesAndWatches = isItemsInList(availableProductCategoriesForMen, ['SHOE', 'WATCH', 'WATCHES']);
+											// var isDisplayMensNecklacesAndBracevar = isItemsInList(availableProductCategoriesForMen, ['NECKLACE', 'BRACEvar']);
+											// var isDisplayFurnituresForMen = isItemsInList(availableProductCategoriesForMen, ['FURNITURE']);
+											// var isDisplayMensClothesAndPerfumes = isItemsInList(availableProductCategoriesForMen, ['CLOTHING', 'PERFUME']);
+											// var isDisplayFlowersAndMensRings = isItemsInList(availableProductCategoriesForMen, ['FLOWER', 'RING']);
+											// var isDisplayMensTravelBagsAndOtherBags = isItemsInList(availableProductCategoriesForMen, ['TRAVEL BAG', 'BAG']);
+											// var isDisplayOtherAccessoriesForMen = isItemsInList(availableProductCategoriesForMen, ['ACCESSORIES']);
+											// var isDisplayGiftsForHer = isItemsInList(availableProductCategoriesForWomen, ['FLOWER', 'RING', 'NECKLACE', ]);
 
 
 											if (productCategory == 'SHOE' || productCategory == 'WATCH' || productCategory == 'WATCHES'){
@@ -538,8 +543,8 @@ $w.onReady(function () {
 													});
 												}
 											}
-											else if (productCategory == 'NECKLACE' || productCategory == 'BRACELET'){
-												necklacesAndBracletsMen.push({
+											else if (productCategory == 'NECKLACE' || productCategory == 'BRACEvar'){
+												necklacesAndBracvarsMen.push({
 													"type": "image",
 	  												"title": currentProductTitle,
 	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -743,15 +748,15 @@ $w.onReady(function () {
 
 
 		/// ensuring that at least two ladies clothings and bags have been included in recommendedForWomenGallery
-		let ladiesShoesIncludedCount = ladiesShoesAndBagsIncludedTracker.filter((shoeOrBagIncluded) => shoeOrBagIncluded == 'SHOE').length;
-		let ladiesBagsIncludedCount = ladiesShoesAndBagsIncludedTracker.filter((shoeOrBagIncluded) => shoeOrBagIncluded == 'HANDBAG').length;
+		var ladiesShoesIncludedCount = ladiesShoesAndBagsIncludedTracker.filter((shoeOrBagIncluded) => shoeOrBagIncluded == 'SHOE').length;
+		var ladiesBagsIncludedCount = ladiesShoesAndBagsIncludedTracker.filter((shoeOrBagIncluded) => shoeOrBagIncluded == 'HANDBAG').length;
 
-		// for (let index in recommendedForWomen){
+		// for (var index in recommendedForWomen){
 		// 		console.log(recommendedForWomen[index]);
 		// 		console.log('typeof(index): ' + typeof(index));
 		// }
 		// console.log('');
-		// console.log(womensFeatureableProducts['BRACELET']['0']);
+		// console.log(womensFeatureableProducts['BRACEvar']['0']);
 
 
 
@@ -760,23 +765,23 @@ $w.onReady(function () {
 		if (ladiesShoesIncludedCount < 3 ||
 				ladiesBagsIncludedCount < 3){
 
-			console.log('');
-			console.log('ladiesBagsIncludedCount: ' + ladiesBagsIncludedCount);
-			console.log('ladiesShoesIncludedCount: ' + ladiesShoesIncludedCount);
+			// console.log('');
+			// console.log('ladiesBagsIncludedCount: ' + ladiesBagsIncludedCount);
+			// console.log('ladiesShoesIncludedCount: ' + ladiesShoesIncludedCount);
 
 
-			let typeWomensFeaturableShoesListCopy = typeof(womensFeaturableShoesListCopy);
-			let typeWomensFeaturableBagsListCopy = typeof(womensFeaturableBagsListCopy);
 
-			let maxNumberOfShoesThatShouldBeAddedTorecommendedForWomen = 0;
-			let maxNumberOfBagsThatShouldBeAddedTorecommendedForWomen = 0;
+
+
+			var maxNumberOfShoesThatShouldBeAddedTorecommendedForWomen = 0;
+			var maxNumberOfBagsThatShouldBeAddedTorecommendedForWomen = 0;
 
 			// console.log('womensFeaturableShoesListCopy: ' + womensFeaturableShoesListCopy);
 			// console.log('ladiesShoesIncludedCount: ' + ladiesShoesIncludedCount);
 
 
 			// if shoe products exists in the shoe category with up to one product
-			if (typeWomensFeaturableShoesListCopy == 'object'){
+			if (typeof(womensFeaturableShoesListCopy) == 'object'){
 
 				if (womensFeaturableShoesListCopy.length >= 1){
 
@@ -788,10 +793,10 @@ $w.onReady(function () {
 				}
 
 				// loop to remove non handbag or shoe item from featuredGallery and replace with shoes instead
-				for (let indexOne = 0 ; indexOne < womensFeaturableShoesListCopy.length; indexOne ++){
+				for (var indexOne = 0 ; indexOne < womensFeaturableShoesListCopy.length; indexOne ++){
 
 					// remove a featured general gallery item that's not a handbag or shoe..
-					for (let indexTwo in recommendedForWomen){
+					for (var indexTwo in recommendedForWomen){
 
 						if (recommendedForWomen[indexTwo].link != 'SHOE' && recommendedForWomen[indexTwo].link != 'HANDBAG'){
 
@@ -803,8 +808,8 @@ $w.onReady(function () {
 					}
 
 					// add shoe product to featured general item
-					let currentShoeProduct = womensFeaturableShoesListCopy[indexOne];
-					let indexOfCurrentProduct = dbQueryAllResponseItems.indexOf(currentShoeProduct);
+					var currentShoeProduct = womensFeaturableShoesListCopy[indexOne];
+					var indexOfCurrentProduct = dbQueryAllResponseItems.indexOf(currentShoeProduct);
 
 					recommendedForWomen.push(
 
@@ -829,7 +834,7 @@ $w.onReady(function () {
 			}
 
 			// if handbag products exists in the handbag category with up to one product
-			if (typeWomensFeaturableBagsListCopy == 'object'){
+			if (typeof(womensFeaturableBagsListCopy) == 'object'){
 
 				if (womensFeaturableBagsListCopy.length >= 1){
 
@@ -842,14 +847,14 @@ $w.onReady(function () {
 
 
 				// i.e loop to remove non handbag or shoe item from featuredGallery and replace with handbag instead
-				for (let indexOne = 0 ; indexOne < womensFeaturableBagsListCopy.length; indexOne ++){
+				for (var indexOne = 0 ; indexOne < womensFeaturableBagsListCopy.length; indexOne ++){
 
 					// console.log('');
 					// console.log('womensFeaturableBagsListCopy.length: ' + womensFeaturableBagsListCopy.length);
 
 
 					// remove a featured general gallery  that's not a bag or shoe..
-					for (let indexTwo in recommendedForWomen){
+					for (var indexTwo in recommendedForWomen){
 
 						if (recommendedForWomen[indexTwo].link != 'SHOE' && recommendedForWomen[indexTwo].link != 'HANDBAG'){
 
@@ -861,8 +866,8 @@ $w.onReady(function () {
 					}
 
 					// add bag product to featured general item
-					let currentBagProduct = womensFeaturableBagsListCopy[indexOne];
-					let indexOfCurrentProduct = dbQueryAllResponseItems.indexOf(currentBagProduct);
+					var currentBagProduct = womensFeaturableBagsListCopy[indexOne];
+					var indexOfCurrentProduct = dbQueryAllResponseItems.indexOf(currentBagProduct);
 					recommendedForWomen.push(
 
 										{
@@ -896,9 +901,9 @@ $w.onReady(function () {
 
 		// CONFIGURING THE FILTERS AND CONTENTS OF THE MAIN GALLERY
 		// 1.a Product Category Filter For Women
-		let listOfProductCategoryForWomen = [];
+		var listOfProductCategoryForWomen = [];
 
-		// let listOfProductCategoryForWomen = [
+		// var listOfProductCategoryForWomen = [
 		// 	{"label": "Shoes & Jewelleries", "value": "Shoes & Jewelleries"},
 		// 	{"label": "Bags & Jewelleries", "value": "Bags & Jewelleries"},
 		// 	{"label": "Furnitures", "value": "Furnitures"},
@@ -910,17 +915,17 @@ $w.onReady(function () {
 		// ];
 
 		// console.log('availableProductCategoriesForWomen: ' + availableProductCategoriesForWomen);
-		let isDisplayShoesAndMore = isItemsInList(availableProductCategoriesForWomen, ['SHOE', 'NECKLACE', 'EARRING']);
+		var isDisplayShoesAndMore = isItemsInList(availableProductCategoriesForWomen, ['SHOE', 'NECKLACE', 'EARRING']);
 		// console.log('isDisplayShoesAndMore: ' + isDisplayShoesAndMore);
-		let isDisplayHandbagsAndMore = isItemsInList(availableProductCategoriesForWomen, ['HANDBAG', 'BRACELET', 'WATCH', 'WATCHES']);
+		var isDisplayHandbagsAndMore = isItemsInList(availableProductCategoriesForWomen, ['HANDBAG', 'BRACEvar', 'WATCH', 'WATCHES']);
 		// console.log('isDisplayHandbagsAndMore: ' + isDisplayHandbagsAndMore);
-		let isDisplayFurnituresForWomen = isItemsInList(availableProductCategoriesForWomen, ['FURNITURE']);
+		var isDisplayFurnituresForWomen = isItemsInList(availableProductCategoriesForWomen, ['FURNITURE']);
 		// console.log('isDisplayFurnitures: ' + isDisplayFurnitures);
-		let isDisplayWomensClothesAndPerfumes = isItemsInList(availableProductCategoriesForWomen, ['CLOTHING', 'PERFUME']);
-		let isDisplayFlowersAndWomensRings = isItemsInList(availableProductCategoriesForWomen, ['FLOWER', 'RING']);
-		let isDisplayTravelBagsAndOtherBags = isItemsInList(availableProductCategoriesForWomen, ['TRAVEL BAG', 'BAG']);
-		let isDisplayOtherAccessoriesForWomen = isItemsInList(availableProductCategoriesForWomen, ['ACCESSORIES']);
-		let isDisplayGiftsForHim = isItemsInList(availableProductCategoriesForMen, ['FLOWER', 'RING', 'WATCH', 'WATCHES']);
+		var isDisplayWomensClothesAndPerfumes = isItemsInList(availableProductCategoriesForWomen, ['CLOTHING', 'PERFUME']);
+		var isDisplayFlowersAndWomensRings = isItemsInList(availableProductCategoriesForWomen, ['FLOWER', 'RING']);
+		var isDisplayTravelBagsAndOtherBags = isItemsInList(availableProductCategoriesForWomen, ['TRAVEL BAG', 'BAG']);
+		var isDisplayOtherAccessoriesForWomen = isItemsInList(availableProductCategoriesForWomen, ['ACCESSORIES']);
+		var isDisplayGiftsForHim = isItemsInList(availableProductCategoriesForMen, ['FLOWER', 'RING', 'WATCH', 'WATCHES']);
 
 		if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
 			listOfProductCategoryForWomen.push({"label": "Recommended", "value": "Recommended"});
@@ -962,12 +967,12 @@ $w.onReady(function () {
 		$w('#dropdown3').selectedIndex = 0;
 
 		// 1.b Product Category Filter For Men
-		let listOfProductCategoryForMen = [];
+		var listOfProductCategoryForMen = [];
 
 
-		// let listOfProductCategoryForMen = [
+		// var listOfProductCategoryForMen = [
 		// 	{"label": "Shoes & Watches", "value": "Shoes & Watches"},
-		// 	{"label": "Necklaces & Bracelets", "value": "Necklaces & Bracelets"},
+		// 	{"label": "Necklaces & Bracevars", "value": "Necklaces & Bracevars"},
 		// 	{"label": "Furnitures", "value": "Furnitures"},
 		// 	{"label": "Clothes & Perfumes", "value": "Clothes & Perfumes"},
 		// 	{"label": "Flowers & Rings", "value": "Flowers & Rings"},
@@ -976,21 +981,21 @@ $w.onReady(function () {
 		// 	{"label": "Gifts For Her", "value": "Gifts For Her"}
 		// ];
 
-		let isDisplayMensShoesAndWatches = isItemsInList(availableProductCategoriesForMen, ['SHOE', 'WATCH', 'WATCHES']);
-		let isDisplayMensNecklacesAndBracelet = isItemsInList(availableProductCategoriesForMen, ['NECKLACE', 'BRACELET']);
-		let isDisplayFurnituresForMen = isItemsInList(availableProductCategoriesForMen, ['FURNITURE']);
-		let isDisplayMensClothesAndPerfumes = isItemsInList(availableProductCategoriesForMen, ['CLOTHING', 'PERFUME']);
-		let isDisplayFlowersAndMensRings = isItemsInList(availableProductCategoriesForMen, ['FLOWER', 'RING']);
-		let isDisplayMensTravelBagsAndOtherBags = isItemsInList(availableProductCategoriesForMen, ['TRAVEL BAG', 'BAG']);
-		let isDisplayOtherAccessoriesForMen = isItemsInList(availableProductCategoriesForMen, ['ACCESSORIES']);
-		let isDisplayGiftsForHer = isItemsInList(availableProductCategoriesForWomen, ['FLOWER', 'RING', 'EARRING', 'NECKLACE', ]);
+		var isDisplayMensShoesAndWatches = isItemsInList(availableProductCategoriesForMen, ['SHOE', 'WATCH', 'WATCHES']);
+		var isDisplayMensNecklacesAndBracevar = isItemsInList(availableProductCategoriesForMen, ['NECKLACE', 'BRACEvar']);
+		var isDisplayFurnituresForMen = isItemsInList(availableProductCategoriesForMen, ['FURNITURE']);
+		var isDisplayMensClothesAndPerfumes = isItemsInList(availableProductCategoriesForMen, ['CLOTHING', 'PERFUME']);
+		var isDisplayFlowersAndMensRings = isItemsInList(availableProductCategoriesForMen, ['FLOWER', 'RING']);
+		var isDisplayMensTravelBagsAndOtherBags = isItemsInList(availableProductCategoriesForMen, ['TRAVEL BAG', 'BAG']);
+		var isDisplayOtherAccessoriesForMen = isItemsInList(availableProductCategoriesForMen, ['ACCESSORIES']);
+		var isDisplayGiftsForHer = isItemsInList(availableProductCategoriesForWomen, ['FLOWER', 'RING', 'EARRING', 'NECKLACE', ]);
 
 		if (isDisplayMensShoesAndWatches){
 			listOfProductCategoryForMen.push({"label": "Shoes & Watches", "value": "Shoes & Watches"});
 		}
 
-		if (isDisplayMensNecklacesAndBracelet){
-			listOfProductCategoryForMen.push({"label": "Necklaces & Bracelets", "value": "Necklaces & Bracelets"});
+		if (isDisplayMensNecklacesAndBracevar){
+			listOfProductCategoryForMen.push({"label": "Necklaces & Bracevars", "value": "Necklaces & Bracevars"});
 		}
 
 		if (isDisplayFurnituresForMen){
@@ -1043,7 +1048,7 @@ $w.onReady(function () {
 		// brand options
 
 		// sort options
-		let sortOptions = [
+		var sortOptions = [
 			{"label": "Relevance", "value": "Relevance"},
 			{"label": "Price Ascending", "value": "Price Ascending"},
 			{"label": "Price Descending", "value": "Price Descending"},
@@ -1093,14 +1098,14 @@ $w.onReady(function () {
 		// When each main gallery recommended item is clicked, get the link, and open it in new tab...
 		$w('#recommendedForWomenGallery').onItemClicked((event) => {
 
-				// let replacement = event.item;
+				// var replacement = event.item;
 				// recommendedForWomen[0].link = 'https://row.jimmychoo.com/en_AE/women/shoes/saeda-100/unicorn-printed-satin-pumps-with-crystal-embellishment-SAEDA100BAY051552.html?cgid=women-shoes';
 
 				// recommendedForWomen[0] = replacement;
 
 				// $w('#gallery1').items = recommendedForWomen;
 
-				// let indexOfEventItem = recommendedForWomen.indexOf[event.item.slug];
+				// var indexOfEventItem = recommendedForWomen.indexOf[event.item.slug];
 
 				openTarget(event);
 
@@ -1110,14 +1115,14 @@ $w.onReady(function () {
 
 		$w('#gallery1').onItemClicked((event) => {
 
-				// let replacement = event.item;
+				// var replacement = event.item;
 				// recommendedForWomen[0].link = 'https://row.jimmychoo.com/en_AE/women/shoes/saeda-100/unicorn-printed-satin-pumps-with-crystal-embellishment-SAEDA100BAY051552.html?cgid=women-shoes';
 
 				// recommendedForWomen[0] = replacement;
 
 				// $w('#gallery1').items = recommendedForWomen;
 
-				// let indexOfEventItem = recommendedForWomen.indexOf[event.item.slug];
+				// var indexOfEventItem = recommendedForWomen.indexOf[event.item.slug];
 				openTarget(event);
 
 
@@ -1133,7 +1138,7 @@ $w.onReady(function () {
 
 		$w('#dropdown5').onChange((event) => {
 
-			// let sortValue = $w('#dropdown5').value;
+			// var sortValue = $w('#dropdown5').value;
 //
 			// if (sortValue == 'Relevance'){
 			//
@@ -1149,7 +1154,7 @@ $w.onReady(function () {
 
 		});
 
-		let options = {
+		var options = {
 		  "suppressAuth": true,
 		  "suppressHooks": true
 		};
@@ -1168,12 +1173,12 @@ function isItemsInList(
 	containerlist,
 	listOfItemsToSearchFor,
 ){
-	let responseList = [];
+	var responseList = [];
 
-	for (let indexOfItemToSearchFor in listOfItemsToSearchFor){
+	for (var indexOfItemToSearchFor in listOfItemsToSearchFor){
 
 		// check whether or not the current item to search for is within the container list, if so return true and vice versa
-		let response = containerlist.filter((itemWithinList) => {
+		var response = containerlist.filter((itemWithinList) => {
 			// console.log(itemWithinList, listOfItemsToSearchFor[indexOfItemToSearchFor]);
 			return itemWithinList == listOfItemsToSearchFor[indexOfItemToSearchFor];
 		}).length > 0;
@@ -1216,10 +1221,10 @@ function openTarget(event){
 
 function setMainGalleryBasedOnProductCategory(){
 
-	let currentProductCategory = $w('#dropdown3').value;
-	let currentSortValue = $w('#dropdown5').value;
+	var currentProductCategory = $w('#dropdown3').value;
+	var currentSortValue = $w('#dropdown5').value;
 
-	let gender = $w('#dropdown1').value;
+	var gender = $w('#dropdown1').value;
 
 
 	if (gender == 'Women'){
@@ -1227,28 +1232,31 @@ function setMainGalleryBasedOnProductCategory(){
 		// product categories that pertain to women
 		if (currentProductCategory == 'Shoes & Jewelleries'){
 
+			var productsInFocusSortedByRelevanceMobile = orderProducts(shoesAndMoreWomen, 'SHOE', 2);
+			var productsInFocusSortedByRelevanceDesktop = orderProducts(shoesAndMoreWomen, 'SHOE', 3);
+
 			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
-				let productsInFocusSortedByRelevance = orderProducts(shoesAndMoreWomen, 'SHOE', 2);
+
 
 				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevance;
+					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
 				}
 				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevance.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevance;
+					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
 				}
 				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevance.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevance;
+					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
 				}
 				else if (currentSortValue == 'Recently Added'){
 
-					productsInFocusSortedByRelevance.sort((a, b) => {
+					productsInFocusSortedByRelevanceMobile.sort((a, b) => {
 
 						console.log('here: Recently Added');
 
-						let firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						let secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
 
 						console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
 
@@ -1256,89 +1264,331 @@ function setMainGalleryBasedOnProductCategory(){
 						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
 					});
 
-					$w('#gallery1').items = productsInFocusSortedByRelevance;
+					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
 				}
 
 
 				mainGalleryCopy = $w('#gallery1').items;
 			}
-			if(wixWindow.formFactor === "Desktop"){
-				let productsInFocusSortedByRelevance = orderProducts(shoesAndMoreWomen, 'SHOE', 3);
+			else if(wixWindow.formFactor === "Desktop"){
 
 				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevance;
+					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
 				}
 				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevance.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevance;
+					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
 				}
 				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevance.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevance;
+					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
 				}
 				else if (currentSortValue == 'Recently Added'){
 
-					productsInFocusSortedByRelevance.sort((a, b) => {
+					productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
 
 						console.log('here: Recently Added');
 
-						let firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						let secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
 
 
 						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
 					});
 
-					$w('#gallery1').items = orderProducts(productsInFocusSortedByRelevance, 'SHOE', 3);
+					$w('#gallery1').items = orderProducts(productsInFocusSortedByRelevanceDesktop, 'SHOE', 3);
 				}
 			}
 
 		}
 		else if (currentProductCategory == 'Bags & Jewelleries'){
 
+			var productsInFocusSortedByRelevanceMobile = orderProducts(handbagsAndMoreWomen, 'HANDBAG', 2);
+			var productsInFocusSortedByRelevanceDesktop = orderProducts(handbagsAndMoreWomen, 'HANDBAG', 3);
+
 			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
-				$w('#gallery1').items = orderProducts(handbagsAndMoreWomen, 'HANDBAG', 2);
+
+
+				if (currentSortValue == 'Relevance'){
+					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+				}
+				else if (currentSortValue == 'Price Ascending'){
+					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+				}
+				else if (currentSortValue == 'Price Descending'){
+					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+				}
+				else if (currentSortValue == 'Recently Added'){
+
+					productsInFocusSortedByRelevanceMobile.sort((a, b) => {
+
+						console.log('here: Recently Added');
+
+						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+						console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
+
+
+						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+					});
+
+					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+				}
+
+
 				mainGalleryCopy = $w('#gallery1').items;
 			}
-			if(wixWindow.formFactor === "Desktop"){
-				$w('#gallery1').items = orderProducts(handbagsAndMoreWomen, 'HANDBAG', 3);
-				mainGalleryCopy = $w('#gallery1').items;
+			else if(wixWindow.formFactor === "Desktop"){
+
+				if (currentSortValue == 'Relevance'){
+					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+				}
+				else if (currentSortValue == 'Price Ascending'){
+					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+				}
+				else if (currentSortValue == 'Price Descending'){
+					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+				}
+				else if (currentSortValue == 'Recently Added'){
+
+					productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
+
+						console.log('here: Recently Added');
+
+						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+
+						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+					});
+
+					$w('#gallery1').items = orderProducts(productsInFocusSortedByRelevanceDesktop, 'SHOE', 3);
+				}
 			}
+
+
+
+
 
 		}
 		else if (currentProductCategory == 'Furnitures'){
 
+			var productsInFocusSortedByRelevanceMobile = orderProducts(furnituresMenAndWomen, 'FURNITURE', 2);
+			var productsInFocusSortedByRelevanceDesktop = orderProducts(furnituresMenAndWomen, 'FURNITURE', 2);
+
 			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
-				$w('#gallery1').items = orderProducts(furnituresMenAndWomen, 'FURNITURE', 2);
+
+
+				if (currentSortValue == 'Relevance'){
+					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+				}
+				else if (currentSortValue == 'Price Ascending'){
+					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+				}
+				else if (currentSortValue == 'Price Descending'){
+					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+				}
+				else if (currentSortValue == 'Recently Added'){
+
+					productsInFocusSortedByRelevanceMobile.sort((a, b) => {
+
+						console.log('here: Recently Added');
+
+						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+						console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
+
+
+						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+					});
+
+					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+				}
+
+
 				mainGalleryCopy = $w('#gallery1').items;
 			}
-			if(wixWindow.formFactor === "Desktop"){
-				$w('#gallery1').items = orderProducts(furnituresMenAndWomen, 'FURNITURE', 3);
-				mainGalleryCopy = $w('#gallery1').items;
+			else if(wixWindow.formFactor === "Desktop"){
+
+				if (currentSortValue == 'Relevance'){
+					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+				}
+				else if (currentSortValue == 'Price Ascending'){
+					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+				}
+				else if (currentSortValue == 'Price Descending'){
+					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+				}
+				else if (currentSortValue == 'Recently Added'){
+
+					productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
+
+						console.log('here: Recently Added');
+
+						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+
+						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+					});
+
+					$w('#gallery1').items = orderProducts(productsInFocusSortedByRelevanceDesktop, 'SHOE', 3);
+				}
 			}
+
+
 
 		}
 		else if (currentProductCategory == 'Clothes & Perfumes'){
 
+			var productsInFocusSortedByRelevanceMobile = orderProducts(clothesAndPerfumesWomen, 'CLOTHING', 2);
+			var productsInFocusSortedByRelevanceDesktop = orderProducts(clothesAndPerfumesWomen, 'CLOTHING', 3);
+
 			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
-				$w('#gallery1').items = orderProducts(clothesAndPerfumesWomen, 'CLOTHING', 2);
+
+
+				if (currentSortValue == 'Relevance'){
+					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+				}
+				else if (currentSortValue == 'Price Ascending'){
+					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+				}
+				else if (currentSortValue == 'Price Descending'){
+					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+				}
+				else if (currentSortValue == 'Recently Added'){
+
+					productsInFocusSortedByRelevanceMobile.sort((a, b) => {
+
+						console.log('here: Recently Added');
+
+						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+						console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
+
+
+						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+					});
+
+					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+				}
+
+
 				mainGalleryCopy = $w('#gallery1').items;
 			}
-			if(wixWindow.formFactor === "Desktop"){
-				$w('#gallery1').items = orderProducts(clothesAndPerfumesWomen, 'CLOTHING', 3);
-				mainGalleryCopy = $w('#gallery1').items;
+			else if(wixWindow.formFactor === "Desktop"){
+
+				if (currentSortValue == 'Relevance'){
+					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+				}
+				else if (currentSortValue == 'Price Ascending'){
+					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+				}
+				else if (currentSortValue == 'Price Descending'){
+					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+				}
+				else if (currentSortValue == 'Recently Added'){
+
+					productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
+
+						console.log('here: Recently Added');
+
+						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+
+						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+					});
+
+					$w('#gallery1').items = orderProducts(productsInFocusSortedByRelevanceDesktop, 'SHOE', 3);
+				}
 			}
+
 
 		}
 		else if (currentProductCategory == 'Flowers & Rings'){
 
+			var productsInFocusSortedByRelevanceMobile = orderProducts(flowersAndRingsWomen, 'RING', 2);
+			var productsInFocusSortedByRelevanceDesktop = orderProducts(flowersAndRingsWomen, 'RING', 3);
+
 			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
-				$w('#gallery1').items = orderProducts(flowersAndRingsWomen, 'RING', 2);
+
+
+				if (currentSortValue == 'Relevance'){
+					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+				}
+				else if (currentSortValue == 'Price Ascending'){
+					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+				}
+				else if (currentSortValue == 'Price Descending'){
+					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+				}
+				else if (currentSortValue == 'Recently Added'){
+
+					productsInFocusSortedByRelevanceMobile.sort((a, b) => {
+
+						console.log('here: Recently Added');
+
+						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+						console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
+
+
+						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+					});
+
+					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+				}
+
+
 				mainGalleryCopy = $w('#gallery1').items;
 			}
-			if(wixWindow.formFactor === "Desktop"){
-				$w('#gallery1').items = orderProducts(flowersAndRingsWomen, 'RING', 3);
-				mainGalleryCopy = $w('#gallery1').items;
+			else if(wixWindow.formFactor === "Desktop"){
+
+				if (currentSortValue == 'Relevance'){
+					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+				}
+				else if (currentSortValue == 'Price Ascending'){
+					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+				}
+				else if (currentSortValue == 'Price Descending'){
+					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+				}
+				else if (currentSortValue == 'Recently Added'){
+
+					productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
+
+						console.log('here: Recently Added');
+
+						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+
+						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+					});
+
+					$w('#gallery1').items = orderProducts(productsInFocusSortedByRelevanceDesktop, 'SHOE', 3);
+				}
 			}
 
 		}
@@ -1391,14 +1641,14 @@ function setMainGalleryBasedOnProductCategory(){
 			mainGalleryCopy = $w('#gallery1').items;
 		}
 		}
-		else if (currentProductCategory == 'Necklaces & Bracelets'){
+		else if (currentProductCategory == 'Necklaces & Bracevars'){
 
 			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
-				$w('#gallery1').items = orderProducts(necklacesAndBracletsMen, 'NECKLACE', 2);
+				$w('#gallery1').items = orderProducts(necklacesAndBracvarsMen, 'NECKLACE', 2);
 				mainGalleryCopy = $w('#gallery1').items;
 			}
 			if(wixWindow.formFactor === "Desktop"){
-				$w('#gallery1').items = orderProducts(necklacesAndBracletsMen, 'NECKLACE', 3);
+				$w('#gallery1').items = orderProducts(necklacesAndBracvarsMen, 'NECKLACE', 3);
 				mainGalleryCopy = $w('#gallery1').items;
 			}
 		}
@@ -1482,15 +1732,15 @@ function orderProducts(
 	subcategoryTwoName = 'None', // for future 'improve'
 ){
 
-	let orderedContent = [];
+	var orderedContent = [];
 
-	let initialValueofPositionOfSubcategoryFrommainCategoryVariable = positionOfSubcategoryFromMainCategory;
-	let nonMainCategoryProductInsertIndex = positionOfSubcategoryFromMainCategory;
+	var initialValueofPositionOfSubcategoryFrommainCategoryVariable = positionOfSubcategoryFromMainCategory;
+	var nonMainCategoryProductInsertIndex = positionOfSubcategoryFromMainCategory;
 
 	// include the mainCategory in the orderedContent list first..
-	for (let productIndex in listOfCategoryOptionsProducts){
+	for (var productIndex in listOfCategoryOptionsProducts){
 
-		let currentProduct = listOfCategoryOptionsProducts[productIndex];
+		var currentProduct = listOfCategoryOptionsProducts[productIndex];
 
 		if (currentProduct.link == mainCategoryName){
 			orderedContent.push(currentProduct)
@@ -1498,9 +1748,9 @@ function orderProducts(
 	}
 
 	// include every other product whose category is not the main category..
-	for (let productIndex in listOfCategoryOptionsProducts){
+	for (var productIndex in listOfCategoryOptionsProducts){
 
-		let currentProduct = listOfCategoryOptionsProducts[productIndex];
+		var currentProduct = listOfCategoryOptionsProducts[productIndex];
 
 		// if the value that indicates where non main category products should be positioned
 		// has not changed, insert the current non main category product at the 'positionOfSubcategoryFromMainCategory'
@@ -1537,11 +1787,11 @@ function orderProducts(
 // extract float from a price
 function stripP(priceString){
 
-	let listPriceNumbers = [];
-	let priceFloat = 0;
+	var listPriceNumbers = [];
+	var priceFloat = 0;
 
-	for (let i in priceString){
-		let isCharNumber = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'].filter((numberOrDot) => numberOrDot == priceString[i]).length > 0;
+	for (var i in priceString){
+		var isCharNumber = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'].filter((numberOrDot) => numberOrDot == priceString[i]).length > 0;
 
 		if (isCharNumber){
 			listPriceNumbers.push(priceString[i]);
@@ -1553,213 +1803,6 @@ function stripP(priceString){
 
 }
 
-let a = '';
-
-// codification of string
-function codifyUrl(urlString){
-
-	if (urlString.includes('https://www.')){
-		urlString = urlString.replace('https://www.', '');
-	}
-	else if (urlString.includes('https://')){
-		// console.log('replacing https://');
-		urlString = urlString.replace('https://', '');
-	}
-	else if (urlString.includes('http://www.')){
-		urlString = urlString.replace('http://www.', '');
-	}
-	else if (urlString.includes('http://')){
-		urlString = urlString.replace('http://', '');
-	}
-
-	// console.log('urlStirng length: ' + urlString.length);
-
-	// let alpha = 'abcdefghijklmnopqrstuvwxyz';
-	let alphaCodes = [];
-	// let additives = ["|", "!", 'I', '$', '£', ':', ")", '&', '%', 'œ', '∆', '†', ' ', '√', 'µ', '∫', '√', 'Ω', "  ", ]
-
-	// 1. char to alpha code..
-	for (let i in urlString){
-		let alphaCode = String.fromCharCode(urlString.charCodeAt(Number(i)) + 128);
-		// console.log(urlString[Number(i)]);
-		// if (alphaCode == ''){
-		// 	alphaCode = String.fromCharCode()
-		// }
-		alphaCodes.push(alphaCode);
-	}
-
-	a = alphaCodes.join('');
-
-
-	// console.log('alphacode pre: ' + alphaCodes);
-	// let rec = [];
-	// alphaCodes = JSON.parse(JSON.stringify((alphaCodes)));
-	// var look = JSON.parse(JSON.stringify((alphaCodes.join(''))));
-	//
-	// console.log('look: ' + look);
-	//
-	// for (let i in look){
-	// 	let alphaCode = String.fromCharCode(look.charCodeAt(Number(i)) - 128);
-	// 	// if (alphaCode == ''){
-	// 	// 	alphaCode = String.fromCharCode()
-	// 	// }
-	// 	rec.push(alphaCode);
-	// }
-	//
-	// console.log('alphacode post: ' + rec.join(''));
-
-
-
-	//
-
-
-	// 2. sum of alpha codes.. (hard to revert)
-	// let sumAlphaCodesToList = String(alphaCodes.reduce((partialSum, a) => partialSum + a, 0)).split('');
-	// console.log('sumAlphaCodesToList: ' + sumAlphaCodesToList);
-
-	// 3. obtaining approx midpoint of url to approx end of url from alpha codes..
-	// let alphaCodesMid = Math.round(alphaCodes.length / 1.8) ;
-	// let alphaCodesMidPlusStop = alphaCodes.length - Math.round(0.134 * alphaCodes.length);
-	// let alphaCodesMidPlus = alphaCodes.slice(alphaCodesMid, alphaCodesMidPlusStop); // codes midpoint plus
-	let tagLong = []
-	// console.log('alphaCodesMidPlus: ' + alphaCodesMidPlus);
-
-	let originalAlphaCodes = JSON.parse(JSON.stringify(alphaCodes));
-	alphaCodes.reverse();
-	let originalLengthAlpahCodes = JSON.parse(JSON.stringify(alphaCodes.length));
-
-
-	let opTrack = 0;
-
-	let tlIndex = 0;
-
-	// 4 populate tagLong
-	while (opTrack < originalLengthAlpahCodes){
-
-		// console.log('here1');
-
-
-		// let randomNum = generateRandomNumber(alphaCodes.length - 1, 0);
-		let randomAlphaCodeOne = '';
-		let randomAlphaCodeTwo = '';
-
-		while (randomAlphaCodeOne == '' && randomAlphaCodeTwo == ''){
-			randomAlphaCodeOne = originalAlphaCodes[generateRandomNumber(originalAlphaCodes.length - 1, 0)];
-			randomAlphaCodeTwo = originalAlphaCodes[generateRandomNumber(originalAlphaCodes.length - 1, 0)];
-		}
-
-		// console.log('here2');
-
-		// console.log('randomNum: ' + randomNum);
-
-		let randomCharOne = generateAlphaNumbericRandomChar();
-		let randomCharTwo = generateAlphaNumbericRandomChar();
-
-		let midCode = randomCharOne + randomAlphaCodeOne + randomCharTwo + randomAlphaCodeTwo;
-
-		alphaCodes.splice(tlIndex, 0, midCode);
-		tlIndex += 2;
-		opTrack += 1;
-
-		// console.log('tlIndex: ' + tlIndex);
-		// console.log('opTrack: ' + opTrack);
-		// tagLong.push(midCode.length);
-	}
-
-	// console.log('length post midC' + alphaCodes.length);
-
-	// 4. randomize alphacodes midplus..
-	let randomizedMidPlus = [];
-
-
-	// 5. the 5th end
-	// let cursor = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@£$%^&*()_+œ∑´®†¥¨^øπ“‘ßå∂ƒ©˙∆˚¬…æΩ≈ç√∫~µ≤≥÷';
-	let cursor = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ¡™#¢∞§¶•ªº–≠ÍÎÏÌÓÔÒ…Æ«ÛÙÇ◊ıˆ˜≤≥÷';
-	let count = 0;
-
-
-	while (count < 5){
-		alphaCodes.push(cursor[generateRandomNumber(cursor.length -1, 0)]);
-
-		count += 1;
-	}
-
-	// 6. 75%
-	count = 0;
-	let sI =  Math.floor(alphaCodes.length * .75);
-
-
-	while (count < 5){
-		alphaCodes.splice(sI, 0, cursor[generateRandomNumber(cursor.length -1, 0)]);
-
-		count += 1;
-		sI += 2;
-	}
-
-
-	// 7. 50%
-	count = 0;
-	let mid = Math.floor(alphaCodes.length / 2);
-
-
-	while (count < 5){
-		alphaCodes.splice(mid, 0, cursor[generateRandomNumber(cursor.length -1, 0)]);
-
-		count += 1;
-		mid += 2;
-	}
-
-
-	// 8. 25%
-	count = 0;
-	let sII =  Math.floor(alphaCodes.length * .25);
-
-
-	while (count < 5){
-		alphaCodes.splice(sII, 0, cursor[generateRandomNumber(cursor.length -1, 0)]);
-
-		// console.log('SII', count, sII + count, alphaCodes[sII + count]);
-
-		count += 1;
-		sII += 2;
-	}
-
-	// console.log('all alphaCodes: ' +(alphaCodes));
-	// console.log('all length at SII: ' +(alphaCodes.length));
-
-
-
-
-
-
-
-	let codifiedUrl = alphaCodes.join('');
-
-	// console.log('url length: ' + urlString.length);
-
-	// console.log('alphaCodes joined: ' + codifiedUrl);
-	// console.log('alphaCodes joined length: ' + codifiedUrl.length);
-
-	// console.log('alphaCodes: ' + alphaCodes);
-	// console.log('alphaCodes length: ' + alphaCodes.length);
-
-	// console.log('tagLong: ' + tagLong);
-	// console.log('tagLong length: ' + tagLong.length);
-
-	// console.log('alphaCode 73: ' + alphaCodes[73]);
-
-	return JSON.parse(JSON.stringify(codifiedUrl));
-
-}
-
-let url = 'https://www.fwrd.com/product-bottega-veneta-smooth-nappa-coloured-blouson-in-popcorn-gingersnap-burst/BOTT-MO19/?d=Mens&itrownum=3&itcurrpage=1&itview=05'; //
-let encodedUrl = codifyUrl(url);
-
-
-
-
-
-let checkOne = [];
 
 
 // decode codified url
@@ -1779,26 +1822,26 @@ function decodeCodifiedUrl(codifiedUrl) {
 		codifiedUrl = codifiedUrl.replace('http://', '');
 	}
 
-	let urlLength = (codifiedUrl.length - 20) / 5;
-	let lengthPreSII = Math.floor(((urlLength * 2) + 15) * .25);
-	let lengthPreMid = Math.floor(((urlLength * 2) + 10) * .50);
-	let lengthPreSI = Math.floor(((urlLength * 2) + 5)* .75);
+	var urlLength = (codifiedUrl.length - 20) / 5;
+	var lengthPreSII = Math.floor(((urlLength * 2) + 15) * .25);
+	var lengthPreMid = Math.floor(((urlLength * 2) + 10) * .50);
+	var lengthPreSI = Math.floor(((urlLength * 2) + 5)* .75);
 
 	// convert codifiedUrl string to array
-	// let counter = 0;
+	// var counter = 0;
 	// console.log('codifiedUrl: ' + codifiedUrl.length);
 
 	// 0 to first block;
 
 
-	let shiftCounter = 0;
-	let codifiedUrlListIndexCounter = 0;
-	let unfinishedBusiness = false;
+	var shiftCounter = 0;
+	var codifiedUrlListIndexCounter = 0;
+	var unfinishedBusiness = false;
 
-	let codifiedUrlList = [];
-	let codifiedUrlListUnpack = {};
+	var codifiedUrlList = [];
+	var codifiedUrlListUnpack = {};
 
-	let codifiedUrlListLastBlock = (urlLength * 2);
+	var codifiedUrlListLastBlock = (urlLength * 2);
 
 	// generate codifiedUrlList
 	// 1. codifiedUrlList to first unblock
@@ -1852,22 +1895,22 @@ function decodeCodifiedUrl(codifiedUrl) {
 
 	// dequeue mid..
 
-	// let countNoOfDeletedItems = 0;
-	let codifiedUrlListlength = JSON.parse(JSON.stringify(codifiedUrlList.length));
-	let currentIndex = 0;
+	// var countNoOfDevaredItems = 0;
+	var codifiedUrlListlength = JSON.parse(JSON.stringify(codifiedUrlList.length));
+	var currentIndex = 0;
 
 	while (currentIndex < codifiedUrlListlength){
 
-		let currentItem = codifiedUrlList[0];
+		var currentItem = codifiedUrlList[0];
 		// console.log('current item: ' + currentItem);
-		let countNumberOfTimesHere = 1;
+		var countNumberOfTimesHere = 1;
 
 		// console.log('String.fromCharCode(currentItem.charCodeAt(0) - 128)' + String.fromCharCode(currentItem.charCodeAt(0) - 128));
 
 		if (currentItem.length == 1){
 			// console.log('currentItem.length == 1: ' + currentItem.length);
 			// console.log('number of times here: ' + countNumberOfTimesHere);
-			let c = String.fromCharCode(currentItem.charCodeAt(0) - 128);
+			var c = String.fromCharCode(currentItem.charCodeAt(0) - 128);
 			// console.log('b');
 			codifiedUrlList.push(c);
 			codifiedUrlList.shift();
@@ -1884,19 +1927,13 @@ function decodeCodifiedUrl(codifiedUrl) {
 
 	codifiedUrlList.reverse();
 
-	let returnValue = 'https://' + codifiedUrlList.join('');
+	var returnValue = 'https://' + codifiedUrlList.join('');
 
 	// console.log(returnValue);
-
-	// codifiedUrlList.re('')
 
 	return returnValue;
 
 }
-
-let decodedUrl = decodeCodifiedUrl(encodedUrl);
-
-// console.log('check encoded == decoded: ' + encodedUrl == decodedUrl)
 
 
 function generateCodifiedListPercent(
@@ -1909,13 +1946,13 @@ function generateCodifiedListPercent(
 	unfinishedBusinessBooleanValue
 ){
 
-	// let shiftCounter = currentShiftCounterValue;
-	// let codifiedUrlList = codifiedUrlListRecentValue;
+	// var shiftCounter = currentShiftCounterValue;
+	// var codifiedUrlList = codifiedUrlListRecentValue;
 
 
 	// obataining the length of the las item in codifiedUrlList if applicable..
-	let isLastCodifiedUrlListItemsLengthAfterUnblockEqualToOne = false;
-	let isLastCodifiedUrlListItemsLengthAfterUnblockGreaterThanOne = false;
+	var isLastCodifiedUrlListItemsLengthAfterUnblockEqualToOne = false;
+	var isLastCodifiedUrlListItemsLengthAfterUnblockGreaterThanOne = false;
 
 	// if the current printing point is not the start of the codified url and codifiedUrlList has been populated to an unblocking,
 	// check if the last unblocked item's (string) length is equal to 1.. useful after each unblock
@@ -1933,7 +1970,7 @@ function generateCodifiedListPercent(
 		// console.log('Item at currentShiftCounterValue: ' + codifiedUrl[currentShiftCounterValue]);
 
 
-		let lengthOfLastItem = codifiedUrlListRecentValue[codifiedUrlListIndexCounter - 1].length;
+		var lengthOfLastItem = codifiedUrlListRecentValue[codifiedUrlListIndexCounter - 1].length;
 
 		if (lengthOfLastItem == 1){
 			isLastCodifiedUrlListItemsLengthAfterUnblockEqualToOne = true;
@@ -1951,31 +1988,8 @@ function generateCodifiedListPercent(
 
 			// console.log('in equal to one');
 
-			let tai = codifiedUrl[currentShiftCounterValue] + codifiedUrl[currentShiftCounterValue + 1] + codifiedUrl[currentShiftCounterValue + 2] + codifiedUrl[currentShiftCounterValue + 3];
-			let c = codifiedUrl[currentShiftCounterValue + 4];
-
-
-
-
-			// codifiedUrlListRecentValue.push(tai);
-			// codifiedUrlListIndexCounter += 1;
-
-			// if codifiedUrlListIndexCounter is same as blockInFocusInputIndex i.e prog has gotten to index of stoppage,
-			// don't add the fourth sequence i.e the next index, rather signify that the fourth
-			// sequence or the next index has not been added
-
-			// if (codifiedUrlListIndexCounter == blockInFocusInputIndex){
-			// 	currentShiftCounterValue -= 1; // remove an excess one index that will be added to shift counter
-			// 	unfinishedBusinessBooleanValue = true;
-			// }
-			// else{
-			// 	codifiedUrlListRecentValue.push(c);
-			// 	codifiedUrlListIndexCounter += 1;
-			// }
-	//
-			// currentShiftCounterValue += 5
-
-			//
+			var tai = codifiedUrl[currentShiftCounterValue] + codifiedUrl[currentShiftCounterValue + 1] + codifiedUrl[currentShiftCounterValue + 2] + codifiedUrl[currentShiftCounterValue + 3];
+			var c = codifiedUrl[currentShiftCounterValue + 4];
 
 			if (codifiedUrlListIndexCounter == blockInFocusInputIndex){
 				unfinishedBusinessBooleanValue = true;
@@ -2002,8 +2016,8 @@ function generateCodifiedListPercent(
 
 			// console.log('in greater than');
 
-			let c = codifiedUrl[currentShiftCounterValue];
-			let tai = codifiedUrl[currentShiftCounterValue + 1] + codifiedUrl[currentShiftCounterValue + 2] + codifiedUrl[currentShiftCounterValue + 3] + codifiedUrl[currentShiftCounterValue + 4];
+			var c = codifiedUrl[currentShiftCounterValue];
+			var tai = codifiedUrl[currentShiftCounterValue + 1] + codifiedUrl[currentShiftCounterValue + 2] + codifiedUrl[currentShiftCounterValue + 3] + codifiedUrl[currentShiftCounterValue + 4];
 
 			// if codifiedUrlListIndexCounter is same as blockInFocusInputIndex i.e prog has gotten to index of stoppage,
 			// don't add the fourth sequence i.e the next index, rather signify that the fourth
@@ -2011,11 +2025,6 @@ function generateCodifiedListPercent(
 
 			// console.log('codifiedUrlListIndexCounter: ' + codifiedUrlListIndexCounter);
 			// console.log('blockInFocusInputIndex: ' + blockInFocusInputIndex);
-
-			//if (codifiedUrlListIndexCounter + 1 != blockInFocusInputIndex){
-			//
-			//
-			//}
 
 			if (codifiedUrlListIndexCounter == blockInFocusInputIndex){
 				unfinishedBusinessBooleanValue = true;
@@ -2054,19 +2063,19 @@ function generateCodifiedListPercent(
 			// console.log('Post Block Item shiftCounterValue: ' + codifiedUrl[currentShiftCounterValue + 1]);
 			// console.log('');
 
-			// let currentShiftCounterValueTwo = currentShiftCounterValue;
+			// var currentShiftCounterValueTwo = currentShiftCounterValue;
 
-			// let indexToStartFrom = codifiedUrlListIndexCounter;
-			let doNum = 0;
+			// var indexToStartFrom = codifiedUrlListIndexCounter;
+			var doNum = 0;
 
 			while (doNum < 5){
 
 				// console.log('codifiedUrlListRecentValue: ' + codifiedUrlListRecentValue);
 				// console.log('codifiedUrlListRecentValueLength: ' + codifiedUrlListRecentValue.length);
-				let lengthOfItemBeforeBlock = codifiedUrlListRecentValue[codifiedUrlListIndexCounter - 1].length;
+				var lengthOfItemBeforeBlock = codifiedUrlListRecentValue[codifiedUrlListIndexCounter - 1].length;
 
-				let block = codifiedUrl[currentShiftCounterValue];
-				let next = '';
+				var block = codifiedUrl[currentShiftCounterValue];
+				var next = '';
 
 				if (lengthOfItemBeforeBlock > 1){
 					next = codifiedUrl[currentShiftCounterValue + 1];
@@ -2097,24 +2106,24 @@ function generateCodifiedListPercent(
 
 			// codifiedUrlListIndexCounter += 1;
 
-			// let currentShiftCounterValueTwo = currentShiftCounterValue;
+			// var currentShiftCounterValueTwo = currentShiftCounterValue;
 
-			let indexToStartFrom = codifiedUrlListIndexCounter;
+			var indexToStartFrom = codifiedUrlListIndexCounter;
 
 			// console.log('codifiedUrlListRecentValue: ' + codifiedUrlListRecentValue);
 			// console.log('codifiedUrlListRecentValueLength: ' + codifiedUrlListRecentValue.length);
-			// let lengthOfItemBeforeBlock = codifiedUrlListRecentValue[codifiedUrlListIndexCounter - 1].length;
+			// var lengthOfItemBeforeBlock = codifiedUrlListRecentValue[codifiedUrlListIndexCounter - 1].length;
 
-			let doNum = 0;
+			var doNum = 0;
 
 			while (doNum < 5){
 
 				// console.log('codifiedUrlListRecentValue: ' + codifiedUrlListRecentValue);
 				// console.log('codifiedUrlListRecentValueLength: ' + codifiedUrlListRecentValue.length);
-				let lengthOfItemBeforeBlock = codifiedUrlListRecentValue[codifiedUrlListIndexCounter - 1].length;
+				var lengthOfItemBeforeBlock = codifiedUrlListRecentValue[codifiedUrlListIndexCounter - 1].length;
 
-				let block = codifiedUrl[currentShiftCounterValue];
-				let next = '';
+				var block = codifiedUrl[currentShiftCounterValue];
+				var next = '';
 
 				if (lengthOfItemBeforeBlock == 1){
 
@@ -2153,50 +2162,4 @@ function generateCodifiedListPercent(
 		'unfinishedBusinessBooleanValue': unfinishedBusinessBooleanValue
 	}
 
-}
-
-
-// console.log('.fwrd.com/product-bottega-veneta-denim-printed-nubuck-leather-trousers-in-medium-blue-denim/BOTT-MP17/?d=Mens&itrownum=1&itcurrpage=1&itview=05');
-// let decodedUrl = decodeCodifiedUrl(codifiedUrl);
-
-// console.log(decodedUrl);
-
-// console.log('included: ' + codifiedUrl.includes(decodedUrl))
-
-
-// generate a random non alphanumeric non space character..
-function generateAlphaNumbericRandomChar(){
-
-	let randomNonAlphaNumbericNonSpaceCharacter = '';
-
-	let numRange = [Math.ceil(48), Math.floor(57)];
-	let lowerCase = [Math.ceil(97), Math.floor(122)];
-	let upperCase = [Math.ceil(65), Math.floor(90)];
-
-	let listCases = [numRange, lowerCase, upperCase];
-
-	let minListCases = Math.ceil(0);
-	let maxListCases = Math.floor(2);
-
-	let randomListCaseIndex = generateRandomNumber(minListCases, maxListCases);
-	let randomListCase = listCases[randomListCaseIndex];
-
-	let min = randomListCase[0];
-	let max = randomListCase[1];
-
-	let randomCharOne = String.fromCharCode(Math.floor( Math.random() * ( max - min) + min));
-
-	while (randomCharOne.includes(' ')){
-		randomCharOne = String.fromCharCode(Math.floor( Math.random() * (max - min) + min));
-	}
-
-	return randomCharOne;
-
-}
-
-// console.log(generateAlphaNumbericRandomChar());
-
-function generateRandomNumber(max, min){
-
-	return Math.floor( Math.random() * ( max - min) + min)
 }
