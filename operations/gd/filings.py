@@ -331,8 +331,6 @@ def detect_and_optional_download_and_process_files_within_returned_folders(
                         wx_upload_task_completion_log_file_one.write(
                             json.dumps(wx_upload_task_completion_log_json_as_dict))
 
-                        reset_p()
-
                         wx_upload_task_completion_log_file_one.close()
 
                     pass
