@@ -160,14 +160,18 @@ async function resolveGalleryItems(){
 		// console.log(dbCollectionToFocusOn);
 
 		// obtaining products as per current country
-		return wixData.query(dbCollectionToFocusOn).limit(1000).find(options)
+		return wixData.query(dbCollectionToFocusOn).limit(999).find(options)
 		.then((dbQueryAllResponse) => {
 
 			dbQueryAllResponseItems	= dbQueryAllResponse.items;
 
 			return dbQueryAllResponse.items
 
-		});
+		}).catch((error) => {
+
+			return error(error);
+
+		})
 
 
 
@@ -650,7 +654,7 @@ $w.onReady(function () {
 	  												'description': currentProduct.price,
 	  												'link': currentProduct.productCategory,
 	  												'slug': String(indexOfCurrentProduct)
-												})
+												});
 
 												// populating Amazonless
 												if (!currentProduct.imageSrc.includes('amazon')){
