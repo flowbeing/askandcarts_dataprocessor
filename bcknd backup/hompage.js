@@ -651,20 +651,20 @@ $w.onReady(function () {
 	  												'link': currentProduct.productCategory,
 	  												'slug': String(indexOfCurrentProduct)
 												})
-											}
 
-											// populating Amazonless
-											if (!currentProduct.imageSrc.includes('amazon')){
+												// populating Amazonless
+												if (!currentProduct.imageSrc.includes('amazon')){
 
-												otherAccessoriesWomenAmazonless.push({
-													"type": "image",
-	  												"title": currentProductTitle,
-	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
-	  												'description': currentProduct.price,
-	  												'link': currentProduct.productCategory,
-	  												'slug': String(indexOfCurrentProduct)
-												});
+													otherAccessoriesWomenAmazonless.push({
+														"type": "image",
+	  													"title": currentProductTitle,
+	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	  													'description': currentProduct.price,
+	  													'link': currentProduct.productCategory,
+	  													'slug': String(indexOfCurrentProduct)
+													});
 
+												}
 											}
 
 										}
@@ -928,6 +928,7 @@ $w.onReady(function () {
 													});
 
 												}
+
 											}
 
 										}
@@ -1374,6 +1375,10 @@ $w.onReady(function () {
 			else if ($w('#button2').label == 'Show Amazon Products'){
 				$w('#button2').label = 'Hide Amazon Products';
 			}
+
+			setMainGalleryBasedOnProductCategory();
+			$w('#gallery1').hide();
+			$w('#gallery1').show();
 		})
 
 
@@ -1434,6 +1439,8 @@ $w.onReady(function () {
 		$w('#dropdown3').onChange((event) => {
 
 			setMainGalleryBasedOnProductCategory();
+			$w('#gallery1').hide();
+			$w('#gallery1').show();
 
 		});
 
@@ -1452,27 +1459,31 @@ $w.onReady(function () {
 			// }
 
 			setMainGalleryBasedOnProductCategory();
+			$w('#gallery1').hide();
+			$w('#gallery1').show();
 
 		});
 
-		$w('#button2').onClick((event) => {
-
-			// var sortValue = $w('#dropdown5').value;
+		// $w('#button2').onClick((event) => {
 //
-			// if (sortValue == 'Relevance'){
-			//
-			// 	setMainGalleryBasedOnProductCategory();
-			// }
-			// else{
+		// 	// var sortValue = $w('#dropdown5').value;
+// //
+		// 	// if (sortValue == 'Relevance'){
+		// 	//
+		// 	// 	setMainGalleryBasedOnProductCategory();
+		// 	// }
+		// 	// else{
+// //
+		// 	// 	$w('#gallery1').items = sortMainGallery();
+// //
+		// 	// }
 //
-			// 	$w('#gallery1').items = sortMainGallery();
+		// 	setMainGalleryBasedOnProductCategory();
+		// 	$w('#gallery1').hide();
+		// 	$w('#gallery1').show();
+		// 	// hideOrShowAmazonProducts();
 //
-			// }
-
-			setMainGalleryBasedOnProductCategory();
-			// hideOrShowAmazonProducts();
-
-		});
+		// });
 
 		var options = {
 		  "suppressAuth": true,
