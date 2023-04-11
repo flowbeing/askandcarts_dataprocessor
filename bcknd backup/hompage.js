@@ -40,10 +40,13 @@ var mainGalleryCopy = [];
 var productsInFocusSortedByRelevanceMobileCopy = [];
 var productsInFocusSortedByRelevanceDesktopCopy = [];
 
-let orignalLengthOfMobileAndDesktopProductList = 0;
+var productsInFocusAfterSearch = [];
+
+var orignalLengthOfMobileAndDesktopProductList = 0;
 
 // WOMEN
 var recommendedForWomen = [];
+var recommendedForWomenAmazonless = [];
 var shoesAndMoreWomen = []; // SHOES, & MORE (NECKLACE, EARRING)
 var shoesAndMoreWomenAmazonless = [];
 var handbagsAndMoreWomen = []; // Bags & Jewelleries (BRACELET , WATCH)
@@ -432,6 +435,7 @@ $w.onReady(function () {
 											if (productCategory == 'SHOE' || productCategory == 'NECKLACE' || productCategory == 'EARRING'){
 
 												shoesAndMoreWomen.push({
+
 													"type": "image",
 	  												"title": currentProductTitle,
 	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -442,6 +446,7 @@ $w.onReady(function () {
 
 												if (productCategory == 'NECKLACE' && giftForHer.length < 20){
 													giftForHer.push({
+
 														"type": "image",
 	  													"title": currentProductTitle,
 	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -455,6 +460,7 @@ $w.onReady(function () {
 												if (!currentProduct.imageSrc.includes('amazon')){
 
 													shoesAndMoreWomenAmazonless.push({
+
 														"type": "image",
 	  													"title": currentProductTitle,
 	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -465,6 +471,7 @@ $w.onReady(function () {
 
 													if (productCategory == 'NECKLACE' && giftForHer.length < 20 && !currentProduct.imageSrc.includes('amazon')){
 													giftForHerAmazonless.push({
+
 															"type": "image",
 	  														"title": currentProductTitle,
 	 		  												"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -479,6 +486,7 @@ $w.onReady(function () {
 											}
 											else if (productCategory == 'HANDBAG' || productCategory == 'BRACELET' || productCategory == 'WATCH' || productCategory == 'WATCHES'){
 												handbagsAndMoreWomen.push({
+
 													"type": "image",
 	  												"title": currentProductTitle,
 	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -489,6 +497,7 @@ $w.onReady(function () {
 
 												if (productCategory == 'BRACELET' && giftForHer.length < 20){
 													giftForHer.push({
+
 														"type": "image",
 	  													"title": currentProductTitle,
 	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -502,6 +511,7 @@ $w.onReady(function () {
 												if (!currentProduct.imageSrc.includes('amazon')){
 
 													handbagsAndMoreWomenAmazonless.push({
+
 														"type": "image",
 	  													"title": currentProductTitle,
 	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -513,6 +523,7 @@ $w.onReady(function () {
 													if (productCategory == 'BRACELET' && giftForHer.length < 20 && !currentProduct.imageSrc.includes('amazon')){
 
 													giftForHerAmazonless.push({
+
 															"type": "image",
 	  														"title": currentProductTitle,
 	 		  												"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -527,6 +538,7 @@ $w.onReady(function () {
 											}
 											else if (productCategory == 'FURNITURE'){
 												furnituresMenAndWomen.push({
+
 													"type": "image",
 	  												"title": currentProductTitle,
 	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -539,6 +551,7 @@ $w.onReady(function () {
 												if (!currentProduct.imageSrc.includes('amazon')){
 
 													furnituresMenAndWomenAmazonless.push({
+
 														"type": "image",
 	  													"title": currentProductTitle,
 	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -552,6 +565,7 @@ $w.onReady(function () {
 											}
 											else if (productCategory == 'CLOTHING' || productCategory == 'PERFUME'){
 												clothesAndPerfumesWomen.push({
+
 													"type": "image",
 	  												"title": currentProductTitle,
 	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -564,6 +578,7 @@ $w.onReady(function () {
 												if (!currentProduct.imageSrc.includes('amazon')){
 
 													clothesAndPerfumesWomenAmazonless.push({
+
 														"type": "image",
 	  													"title": currentProductTitle,
 	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -577,6 +592,7 @@ $w.onReady(function () {
 											}
 											else if (productCategory == 'FLOWER' || productCategory == 'RING'){
 												flowersAndRingsWomen.push({
+
 													"type": "image",
 	  												"title": currentProductTitle,
 	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -587,6 +603,7 @@ $w.onReady(function () {
 
 												if (giftForHer.length < 20){
 													giftForHer.push({
+
 														"type": "image",
 	  													"title": currentProductTitle,
 	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -600,6 +617,7 @@ $w.onReady(function () {
 												if (!currentProduct.imageSrc.includes('amazon')){
 
 													flowersAndRingsWomenAmazonless.push({
+
 														"type": "image",
 	  													"title": currentProductTitle,
 	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -610,6 +628,7 @@ $w.onReady(function () {
 
 													if (productCategory == 'RING' && giftForHer.length < 20 && !currentProduct.imageSrc.includes('amazon')){
 													giftForHerAmazonless.push({
+
 															"type": "image",
 	  														"title": currentProductTitle,
 	 		  												"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -623,6 +642,7 @@ $w.onReady(function () {
 											}
 											else if (productCategory == 'TRAVEL BAG' || productCategory == 'BAG'){
 												travelBagsAndOtherBagsWomen.push({
+
 													"type": "image",
 	  												"title": currentProductTitle,
 	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -635,6 +655,7 @@ $w.onReady(function () {
 												if (!currentProduct.imageSrc.includes('amazon')){
 
 													travelBagsAndOtherBagsWomenAmazonless.push({
+
 														"type": "image",
 	  													"title": currentProductTitle,
 	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -648,6 +669,7 @@ $w.onReady(function () {
 											else if (productCategory == 'ACCESSORIES'){
 
 												otherAccessoriesWomen.push({
+
 													"type": "image",
 	  												"title": currentProductTitle,
 	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -660,6 +682,7 @@ $w.onReady(function () {
 												if (!currentProduct.imageSrc.includes('amazon')){
 
 													otherAccessoriesWomenAmazonless.push({
+
 														"type": "image",
 	  													"title": currentProductTitle,
 	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -688,6 +711,7 @@ $w.onReady(function () {
 
 											if (productCategory == 'SHOE' || productCategory == 'WATCH' || productCategory == 'WATCHES'){
 												shoesAndWatchesMen.push({
+
 													"type": "image",
 	  												"title": currentProductTitle,
 	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -698,6 +722,7 @@ $w.onReady(function () {
 
 												if (productCategory == 'WATCH' || productCategory == 'WATCHES' && giftsForHim.length < 20){
 													giftsForHim.push({
+
 														"type": "image",
 	  													"title": currentProductTitle,
 	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -711,6 +736,7 @@ $w.onReady(function () {
 												if (!currentProduct.imageSrc.includes('amazon')){
 
 													shoesAndWatchesMenAmazonless.push({
+
 														"type": "image",
 	  													"title": currentProductTitle,
 	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -722,6 +748,7 @@ $w.onReady(function () {
 													if ((productCategory == 'WATCH' || productCategory == 'WATCHES') && giftsForHim.length < 20 && !currentProduct.imageSrc.includes('amazon')){
 
 														giftsForHimAmazonless.push({
+
 																"type": "image",
 	  															"title": currentProductTitle,
 	 		  													"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -737,6 +764,7 @@ $w.onReady(function () {
 											else if (productCategory == 'NECKLACE' || productCategory == 'BRACELET'){
 
 												necklacesAndBraceletsMen.push({
+
 													"type": "image",
 	  												"title": currentProductTitle,
 	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -748,6 +776,7 @@ $w.onReady(function () {
 												if (!currentProduct.imageSrc.includes('amazon')){
 
 													necklacesAndBraceletsMenAmazonless.push({
+
 														"type": "image",
 	  													"title": currentProductTitle,
 	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -764,6 +793,7 @@ $w.onReady(function () {
 
 												if (isItemsInList(furnituresMenAndWomen, [
 													{
+
 														"type": "image",
 	  													"title": currentProductTitle,
 	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -773,6 +803,7 @@ $w.onReady(function () {
 													}]) == false){
 
 													furnituresMenAndWomen.push({
+
 														"type": "image",
 	  													"title": currentProductTitle,
 	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -787,6 +818,7 @@ $w.onReady(function () {
 
 													if (isItemsInList(furnituresMenAndWomen, [
 													{
+
 														"type": "image",
 	  													"title": currentProductTitle,
 	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -796,6 +828,7 @@ $w.onReady(function () {
 													}]) == false){
 
 														furnituresMenAndWomenAmazonless.push({
+
 															"type": "image",
 	  														"title": currentProductTitle,
 	 		  												"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -812,6 +845,7 @@ $w.onReady(function () {
 											else if (productCategory == 'CLOTHING' || productCategory == 'PERFUME'){
 
 												clothesAndPerfumesMen.push({
+
 													"type": "image",
 	  												"title": currentProductTitle,
 	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -824,6 +858,7 @@ $w.onReady(function () {
 												if (!currentProduct.imageSrc.includes('amazon')){
 
 													clothesAndPerfumesMenAmazonless.push({
+
 														"type": "image",
 	  													"title": currentProductTitle,
 	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -838,6 +873,7 @@ $w.onReady(function () {
 											else if (productCategory == 'FLOWER' || productCategory == 'RING'){
 
 												flowersAndRingsMen.push({
+
 													"type": "image",
 	  												"title": currentProductTitle,
 	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -848,6 +884,7 @@ $w.onReady(function () {
 
 												if (giftsForHim.length < 20){
 													giftsForHim.push({
+
 														"type": "image",
 	  													"title": currentProductTitle,
 	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -860,6 +897,7 @@ $w.onReady(function () {
 												if (!currentProduct.imageSrc.includes('amazon')){
 
 													flowersAndRingsMenAmazonless.push({
+
 														"type": "image",
 	  													"title": currentProductTitle,
 	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -870,6 +908,7 @@ $w.onReady(function () {
 
 													if (giftsForHim.length < 20){
 														giftsForHimAmazonless.push({
+
 															"type": "image",
 	  														"title": currentProductTitle,
 	 		  												"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -885,6 +924,7 @@ $w.onReady(function () {
 											else if (productCategory == 'TRAVEL BAG' || productCategory == 'BAG'){
 
 												travelBagsAndOtherBagsMen.push({
+
 													"type": "image",
 	  												"title": currentProductTitle,
 	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -897,6 +937,7 @@ $w.onReady(function () {
 												if (!currentProduct.imageSrc.includes('amazon')){
 
 													travelBagsAndOtherBagsMenAmazonless.push({
+
 														"type": "image",
 	  													"title": currentProductTitle,
 	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -911,6 +952,7 @@ $w.onReady(function () {
 											else if (productCategory == 'ACCESSORIES'){
 
 												otherAccessoriesMen.push({
+
 													"type": "image",
 	  												"title": currentProductTitle,
 	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -923,6 +965,7 @@ $w.onReady(function () {
 												if (!currentProduct.imageSrc.includes('amazon')){
 
 													otherAccessoriesMenAmazonless.push({
+
 														"type": "image",
 	  													"title": currentProductTitle,
 	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
@@ -943,14 +986,16 @@ $w.onReady(function () {
 
 											recommendedForWomen.push(
 
-											{
-												"type": "image",
-	  											"title": currentProductTitle,
-	 		  									"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
-	  											'description': currentProduct.price,
-	  											'link': currentProduct.productCategory,
-	  											'slug': String(indexOfCurrentProduct)
-											});
+												{
+
+													"type": "image",
+	  												"title": currentProductTitle,
+	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	  												'description': currentProduct.price,
+	  												'link': currentProduct.productCategory,
+	  												'slug': String(indexOfCurrentProduct)
+												});
+
 
 											/// track bags and / or shoes has been added to recommendedForWomenGallery..
 											if ((currentProduct.gender == 'WOMEN' && currentProduct.productCategory == 'HANDBAG') ||
@@ -1115,7 +1160,11 @@ $w.onReady(function () {
 
 					// add shoe product to featured general item
 					var currentShoeProduct = womensFeaturableShoesListCopy[indexOne];
-					var indexOfCurrentProduct = dbQueryAllResponseItems.indexOf(currentShoeProduct);
+					var indexOfCurrentProduct = dbQueryAllResponseItems.findIndex((product) => product.productLink == currentShoeProduct.productLink); // dbQueryAllResponseItems.indexOf(currentShoeProduct);
+					// console.log('');
+					// console.log('slug extra shoe: ' + indexOfCurrentProduct);
+					// console.log('currentShoeProduct extra shoe: ' + currentShoeProduct.title, currentShoeProduct.productLink);
+					// console.log('');
 
 					recommendedForWomen.push(
 
@@ -1173,7 +1222,11 @@ $w.onReady(function () {
 
 					// add bag product to featured general item
 					var currentBagProduct = womensFeaturableBagsListCopy[indexOne];
-					var indexOfCurrentProduct = dbQueryAllResponseItems.indexOf(currentBagProduct);
+					var indexOfCurrentProduct = dbQueryAllResponseItems.findIndex((product) => product.productLink == currentBagProduct.productLink); // dbQueryAllResponseItems.indexOf(currentBagProduct);
+					// console.log('');
+					// console.log('slug extra bag: ' + indexOfCurrentProduct);
+					// console.log('currentBagProduct extra shoe: ' + currentBagProduct.title + ' , ' + currentBagProduct.productLink);
+					// console.log('');
 					recommendedForWomen.push(
 
 										{
@@ -1195,8 +1248,10 @@ $w.onReady(function () {
 			}
 		}
 
-		console.log($w('#customButton'));
-		$w('#customButton').show();
+
+		// custom button
+		// console.log($w('#customButton'));
+		// $w('#customButton').show();
 
 		/// CONFIGURING CONTENTS FOR RECOMMENDED GALLERY
 		if(wixWindow.formFactor === "Desktop"){
@@ -1275,6 +1330,14 @@ $w.onReady(function () {
 		// 1.b Product Category Filter For Men
 		var listOfProductCategoryForMen = [];
 
+		// current product value
+		var currentProductCategoryValue= $w('#dropdown3').value;
+
+		// hide 'hide or show amazon products'' button
+		if (currentProductCategoryValue == 'Recommended'){
+			// $w('#button2').hide();
+		}
+
 
 		// var listOfProductCategoryForMen = [
 		// 	{"label": "Shoes & Watches", "value": "Shoes & Watches"},
@@ -1339,12 +1402,17 @@ $w.onReady(function () {
 			if ($w('#dropdown1').value == 'Women'){
 				$w('#dropdown3').options = listOfProductCategoryForWomen;
 				$w('#dropdown3').value = 'Shoes & Jewelleries';
-				setMainGalleryBasedOnProductCategory();
+
+				var input = $w('#input1').value;
+				setMainGalleryBasedOnProductCategory(input);
+
 			}
 			else if ($w('#dropdown1').value == 'Men'){
 				$w('#dropdown3').options = listOfProductCategoryForMen;
 				$w('#dropdown3').value = 'Shoes & Watches';
-				setMainGalleryBasedOnProductCategory();
+
+				var input = $w('#input1').value;
+				setMainGalleryBasedOnProductCategory(input);
 			}
 
 		});
@@ -1380,10 +1448,23 @@ $w.onReady(function () {
 				$w('#button2').label = 'Hide Amazon Products';
 			}
 
-			setMainGalleryBasedOnProductCategory();
-			$w('#gallery1').hide();
-			$w('#gallery1').show();
-		})
+			var input = $w('#input1').value;
+			setMainGalleryBasedOnProductCategory(input, true);
+
+			// var brandOrProductSearchInput = $w('#input1').value;
+
+			// if (typeof(brandOrProductSearchInput.length) != 'undefined'){
+			// 	setMainGalleryBasedOnProductCategory(brandOrProductSearchInput);
+			// 	$w('#gallery1').hide();
+			// 	$w('#gallery1').show();
+			// }
+			// else{
+			// 	setMainGalleryBasedOnProductCategory();
+			// 	$w('#gallery1').hide();
+			// 	$w('#gallery1').show();
+			// }
+
+		});
 
 
 
@@ -1391,109 +1472,232 @@ $w.onReady(function () {
 		// console.log(recommendedForWomen);
 		// This is the default main gallery's content for mobile devices
 
-		if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
-			$w('#gallery1').items = recommendedForWomen;
-			$w('#gallery1').show();
-		}
-
-		// This is the default main gallery's content for desktops devices
-		if(wixWindow.formFactor === "Desktop"){
-			$w('#gallery1').items = orderProducts(shoesAndMoreWomen, 'SHOE', 3);
-			mainGalleryCopy = $w('#gallery1').items;
-			$w('#gallery1').show();
-		}
-
 		// console.log('dbQueryAllResponseItems: ' + dbQueryAllResponseItems);
 
 		// When each main gallery recommended item is clicked, get the link, and open it in new tab...
-		$w('#recommendedForWomenGallery').onItemClicked((event) => {
+		// $w('#recommendedForWomenGallery').onItemClicked((event) => {
+		//
+		// 		// var replacement = event.item;
+		// 		// recommendedForWomen[0].link = 'https://row.jimmychoo.com/en_AE/women/shoes/saeda-100/unicorn-printed-satin-pumps-with-crystal-embellishment-SAEDA100BAY051552.html?cgid=women-shoes';
+		//
+		// 		// recommendedForWomen[0] = replacement;
+		//
+		// 		// $w('#gallery1').items = recommendedForWomen;
+		//
+		// 		// var indexOfEventItem = recommendedForWomen.indexOf[event.item.slug];
+		//
+		// 		// openTarget(event);
+		//
+		//
+		//
+		// });
 
-				// var replacement = event.item;
-				// recommendedForWomen[0].link = 'https://row.jimmychoo.com/en_AE/women/shoes/saeda-100/unicorn-printed-satin-pumps-with-crystal-embellishment-SAEDA100BAY051552.html?cgid=women-shoes';
+		// if(wixWindow.formFactor === "Desktop"){
 
-				// recommendedForWomen[0] = replacement;
+			//$w('#button3').onViewportEnter((event) => {
+			//
+			//		console.log("$w('#gallery1').currentItem: " + $w('#gallery1').currentItem);
+			//
+			//		var input = $w('#input1').value;
+			//		setMainGalleryBasedOnProductCategory(input, true);
+			//
+			//		$w('#gallery1').clickAction = 'link';
+			//
+			//});
 
-				// $w('#gallery1').items = recommendedForWomen;
+			// $w('#gallery1').onViewportEnter((event) => {
+			//
+			// 		console.log("$w('#gallery1').currentItem: " + $w('#gallery1').currentItem);
+			//
+			// 		var input = $w('#input1').value;
+			// 		setMainGalleryBasedOnProductCategory(input, true);
+			//
+			// 		$w('#gallery1').clickAction = 'link';
+			//
+			// });
 
-				// var indexOfEventItem = recommendedForWomen.indexOf[event.item.slug];
-
-				openTarget(event);
-
-
-
-		});
-
-		$w('#gallery1').onItemClicked((event) => {
-
-				// var replacement = event.item;
-				// recommendedForWomen[0].link = 'https://row.jimmychoo.com/en_AE/women/shoes/saeda-100/unicorn-printed-satin-pumps-with-crystal-embellishment-SAEDA100BAY051552.html?cgid=women-shoes';
-
-				// recommendedForWomen[0] = replacement;
-
-				// $w('#gallery1').items = recommendedForWomen;
-
-				// var indexOfEventItem = recommendedForWomen.indexOf[event.item.slug];
-				openTarget(event);
+			// $w('#gallery1').onViewportLeave((event) => {
+			//
+			// 		// console.log("$w('#gallery1').currentItem: " + $w('#gallery1').currentItem);
+			//
+			// 		var input = $w('#input1').value;
+			// 		setMainGalleryBasedOnProductCategory(input, false);
+			//
+			// 		$w('#gallery1').clickAction = 'link';
+			//
+			// });
 
 
 
-		});
+		// }
+		// else if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+
+		//	setMainGalleryBasedOnProductCategory('', true);
+
+		// }
+
+
+		// $w('#gallery1').onItemClicked((event) => {
+		//
+		//
+		// 	// console.log('Mouse On');
+		// 	// console.log('Item Changed');
+		// 	// console.log('View Port Entered');
+		// 	console.log('Item Clicked');
+		//
+		// 	var elemEventFiredOn = event.target;
+		// 	var items =  elemEventFiredOn['items'];
+		// 	var options =  elemEventFiredOn['options'];
+		//
+		// 	// console.log('elemEventFiredOn: ' + elemEventFiredOn[0]);
+		//
+		// 	for (var i in items){
+		//
+		// 		console.log('i: ' + i);
+		// 		console.log('items[i]: ' + items[i]);
+		//
+		// 		for (var ii in items[i]){
+		// 			console.log('ii: ' + ii);
+		// 			console.log('items[i][ii]: ' + items[i][ii]);
+		// 		}
+		//
+		// 	}
+		//
+		// 	console.log('current item: ' + $w('#gallery1').currentItem);
+		// 	console.log('current index: ' + $w('#gallery1').currentIndex);
+		//
+		// 	// console.log('');
+		// 	//
+		// 	// console.log('OPTIONS');
+		// 	// for (var i in options){
+		// 	//
+		// 	// 	console.log('i: ' + i);
+		// 	// 	console.log('options[i]: ' + options[i]);
+		// 	//
+		// 	// }
+		//
+		//
+		// });
+
+
 
 		// set main gallery's each time productCategory filter's value changes
 		$w('#dropdown3').onChange((event) => {
 
-			setMainGalleryBasedOnProductCategory();
+			var input = $w('#input1').value;
+
+			setMainGalleryBasedOnProductCategory(input);
 			$w('#gallery1').hide();
 			$w('#gallery1').show();
+
+			// current product value
+			var currentProductCategoryValue= $w('#dropdown3').value;
+
+			// hide 'hide or show amazon products'' button
+			if (currentProductCategoryValue == 'Recommended'){
+				$w('#button2').hide()
+			}
+			else{
+				$w('#button2').show()
+			}
 
 		});
 
 		$w('#dropdown5').onChange((event) => {
 
 			// var sortValue = $w('#dropdown5').value;
-//
+			//
 			// if (sortValue == 'Relevance'){
 			//
 			// 	setMainGalleryBasedOnProductCategory();
 			// }
 			// else{
-//
+			//
 			// 	$w('#gallery1').items = sortMainGallery();
-//
+			//
 			// }
 
-			setMainGalleryBasedOnProductCategory();
+			var input = $w('#input1').value;
+
+			setMainGalleryBasedOnProductCategory(input);
 			$w('#gallery1').hide();
 			$w('#gallery1').show();
 
 		});
 
-		// $w('#button2').onClick((event) => {
-//
-		// 	// var sortValue = $w('#dropdown5').value;
-// //
-		// 	// if (sortValue == 'Relevance'){
-		// 	//
-		// 	// 	setMainGalleryBasedOnProductCategory();
-		// 	// }
-		// 	// else{
-// //
-		// 	// 	$w('#gallery1').items = sortMainGallery();
-// //
-		// 	// }
-//
-		// 	setMainGalleryBasedOnProductCategory();
-		// 	$w('#gallery1').hide();
-		// 	$w('#gallery1').show();
-		// 	// hideOrShowAmazonProducts();
-//
-		// });
 
-		var options = {
-		  "suppressAuth": true,
-		  "suppressHooks": true
-		};
 
+		// var options = {
+		//   "suppressAuth": true,
+		//   "suppressHooks": true
+		// };
+
+		// filtering by brand or product name..
+		$w('#input1').onInput((event) => {
+
+			var userInput = $w('#input1').value;
+
+			setMainGalleryBasedOnProductCategory(userInput);
+
+		});
+
+		// set main gallery for both desktop and mobile devices..
+		// setMainGalleryBasedOnProductCategory('', true);
+
+		if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+
+			$w('#button5').onViewportEnter((event) => {
+
+				var userInput = $w('#input1').value;
+				setMainGalleryBasedOnProductCategory(userInput, true);
+
+			});
+		}
+		// This is the default main gallery's content for desktops devices
+		else if(wixWindow.formFactor === "Desktop"){
+
+			// set recommendedForWomenGallery
+			setMainGalleryBasedOnProductCategory('', true, true);
+
+			$w('#button5').onViewportLeave((event) => {
+
+				// var userInput = $w('#input1').value;
+				setMainGalleryBasedOnProductCategory('', false, true);
+
+			});
+
+
+			$w('#button3').onViewportEnter((event) => {
+
+				var userInput = $w('#input1').value;
+				setMainGalleryBasedOnProductCategory(userInput, true);
+
+			});
+
+			$w('#button4').onViewportEnter((event) => {
+
+				var userInput = $w('#input1').value;
+				setMainGalleryBasedOnProductCategory('', false);
+
+			});
+
+
+			// $w('#button5').onViewportEnter((event) => {
+			//
+			// 	var userInput = $w('#input1').value;
+			// 	setMainGalleryBasedOnProductCategory('', true);
+//
+			// 	console.log("$w('#gallery1').next(): " + $w('#gallery1').next.);
+			//
+			// });
+
+
+
+
+			// $w('#gallery1').items = orderProducts(shoesAndMoreWomen, 'SHOE', 3);
+			// mainGalleryCopy = $w('#gallery1').items;
+			// $w('#gallery1').show();
+		}
 
 
 
@@ -1533,1544 +1737,2787 @@ function isItemsInList(
 
 }
 
-function openTarget(event){
-
-	// $w('#button1').link = dbQueryAllResponseItems[Number(event.item.slug)].productLink;
-				$w('#button1').target = '_blank';
-				$w('#button1').enable();
-				// $w('#html1').postMessage('click');
-				// console.log('event.item.slug: ' + event.item.slug);
-				// console.log('productLink: ' + dbQueryAllResponseItems[Number(event.item.slug)].productLink);
-				console.log(event.item.slug);
-				console.log($w('#button1').link);
-				console.log($w('#button1').id);
-				console.log($w('#button1').label);
-
-				$w('#button1').onClick((event) => {
-
-					$w('#button1').link = '';
-
-				});
-
-}
-
-// function hideOrShowAmazonProducts(){
+// function openTarget(event){
 //
-// 	let showOrHideAmazonButtonValue = $w('#button2').label;
+// 	// $w('#button1').link = dbQueryAllResponseItems[Number(event.item.slug)].productLink;
+// 				$w('#button1').target = '_blank';
+// 				$w('#button1').enable();
+// 				// $w('#html1').postMessage('click');
+// 				// console.log('event.item.slug: ' + event.item.slug);
+// 				// console.log('productLink: ' + dbQueryAllResponseItems[Number(event.item.slug)].productLink);
+// 				console.log(event.item.slug);
+// 				console.log($w('#button1').link);
+// 				console.log($w('#button1').id);
+// 				console.log($w('#button1').label);
 //
-// 	if (showOrHideAmazonButtonValue == 'Show Amazon Products'){ // do the opposite and vice versa
+// 				$w('#button1').onClick((event) => {
 //
-// 			// var productsInFocusSortedByRelevanceMobileCopy = JSON.parse(JSON.stringify(productsInFocusSortedByRelevanceMobile));
-// 			// var productsInFocusSortedByRelevanceDesktopCopy = JSON.parse(JSON.stringify(productsInFocusSortedByRelevanceDesktop));
-//
-// 				// REMOVE AMAZON PRODUCTS IF TRUE
-// 				let itemsInFocus = $w('#gallery1').items;
-//
-// 				orignalLengthOfMobileAndDesktopProductList = JSON.parse(JSON.stringify($w('#gallery1').items.length)); // JSON.parse(JSON.stringify(productsInFocusSortedByRelevanceMobile.length));
-//
-//
-// 				let index = 0;
-//
-// 					while (index < orignalLengthOfMobileAndDesktopProductList){
-//
-// 						var currentItemMobileOrDesktop = $w('#gallery1').items[0];
-// 						var indexOfCurrentItemMobileOrDesktop = Number(currentItemMobileOrDesktop.slug);
-// 						// console.log('slug: ' + indexOfCurrentItemMobile);
-// 						var currentItemMobileOrDesktopImageSrc = dbQueryAllResponseItems[indexOfCurrentItemMobileOrDesktop].imageSrc;
-// 						console.log('imageSrc: ' + currentItemMobileOrDesktopImageSrc);
-//
-// 						// var currentItemDesktop = productsInFocusSortedByRelevanceMobile[0];
-// 						// var indexOfCurrentItemDesktop = Number(currentItemDesktop.slug);
-// 						// var currentItemDesktopImageSrc = dbQueryAllResponseItems[indexOfCurrentItemDesktop].imageSrc;
-//
-// 						// keep all items without p in list of items to remove
-// 						if (!currentItemMobileOrDesktopImageSrc.includes('amazon')){
-// 							$w('#gallery1').items.push(currentItemMobileOrDesktop);
-// 							$w('#gallery1').items.shift();
-// 						}
-// 						// remove all items with p from list of items
-// 						else{
-//
-// 							if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
-// 								productsInFocusSortedByRelevanceMobileCopy.push(currentItemMobileOrDesktop);
-// 								$w('#gallery1').items.shift();
-// 							}
-// 							else if (wixWindow.formFactor === "Desktop"){
-// 								productsInFocusSortedByRelevanceDesktopCopy.push(currentItemMobileOrDesktop);
-// 								$w('#gallery1').items.shift();
-// 							}
-//
-// 						}
-//
-// 						// if (!currentItemDesktopImageSrc.includes('amazon')){
-// 						// 	productsInFocusSortedByRelevanceDesktop.push(currentItemDesktop);
-// 						// 	productsInFocusSortedByRelevanceDesktop.shift();
-// 						// }
-// 						// // remove all items with p from list of items
-// 						// else{
-// 						// 	productsInFocusSortedByRelevanceDesktopCopy.push(currentItemMobile);
-// 						// 	productsInFocusSortedByRelevanceDesktop.shift();
-// 						// }
-//
-// 						index += 1;
-//
-// 					}
-//
-// 					// console.log('index: ' + index);
-//
-//
-//
-//
-//
-//
-// 			}
-// 			else if (showOrHideAmazonButtonValue == 'Hide Amazon Products'){ // i.e show amazon products
-//
-// 				if (productsInFocusSortedByRelevanceMobileCopy.length == 0 && productsInFocusSortedByRelevanceDesktopCopy.length == 0){
-//
-// 					{};
-// 				}
-// 				else {
-//
-// 					let lengthOfCopy = 0;
-//
-//
-//
-// 					if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
-// 						lengthOfCopy = JSON.parse(JSON.stringify(productsInFocusSortedByRelevanceMobileCopy.length));
-// 					}
-// 					else if (wixWindow.formFactor === "Desktop"){
-// 						lengthOfCopy = JSON.parse(JSON.stringify(productsInFocusSortedByRelevanceDesktopCopy.length));
-// 					}
-//
-// 					let itemCounter = 0;
-//
-// 					while (itemCounter < lengthOfCopy){
-//
-// 						let currentItem = [];
-//
-// 						if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
-// 							currentItem = productsInFocusSortedByRelevanceMobileCopy[0];
-// 						}
-// 						else if (wixWindow.formFactor === "Desktop"){
-// 							currentItem = productsInFocusSortedByRelevanceDesktopCopy[0];
-// 						}
-//
-// 						// console.log('imageSrc: ' + currentItemMobileImageSrc);
-//
-// 						if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
-// 							$w('#gallery1').items.push(currentItem);
-// 							productsInFocusSortedByRelevanceMobileCopy.shift();
-// 						}
-// 						else if (wixWindow.formFactor === "Desktop"){
-// 							$w('#gallery1').items.push(currentItem);
-// 							productsInFocusSortedByRelevanceDesktopCopy.shift();
-// 						}
-//
-// 						itemCounter += 1;
-//
-// 					};
-// 				}
-//
-// 			}
-//
-// 			console.log("$w('#gallery1').items length: " + $w('#gallery1').items.length);
-// 			// console.log('productsInFocusSortedByRelevanceMobile length: ' + productsInFocusSortedByRelevanceMobile.length);
-//
-// 			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
-// 				// console.log('productsInFocusSortedByRelevanceMobileCopy: ' + productsInFocusSortedByRelevanceMobileCopy);
-//
-// 				console.log('productsInFocusSortedByRelevanceMobileCopy: ');
-//
-// 				productsInFocusSortedByRelevanceMobileCopy.forEach((item, index) => {
-//
-// 					console.log(productsInFocusSortedByRelevanceMobileCopy[index]);
+// 					$w('#button1').link = '';
 //
 // 				});
-//
-// 				console.log('productsInFocusSortedByRelevanceMobileCopy length: ' + productsInFocusSortedByRelevanceMobileCopy.length);
-// 			}
-// 			else if (wixWindow.formFactor === "Desktop"){
-//
-// 				console.log('productsInFocusSortedByRelevanceDesktopCopy: ');
-//
-// 				productsInFocusSortedByRelevanceDesktopCopy.forEach((item, index) => {
-//
-// 					console.log(productsInFocusSortedByRelevanceDesktopCopy[index]);
-//
-// 				});
-//
-// 				console.log('productsInFocusSortedByRelevanceDesktopCopy length: ' + productsInFocusSortedByRelevanceDesktopCopy.length);
-// 			}
-//
 //
 // }
 
 
-
-
-
-
 // SORT DISPLAY -> MAIN GALLERY
-function setMainGalleryBasedOnProductCategory(){
+function setMainGalleryBasedOnProductCategory(
+	userInput,
+	isShowLinks = true,
+	isRecommendedGalleryForDesktop = false,
+	){
+
+	// console.log('isShowLinks: ' + isShowLinks);
 
 	var currentProductCategory = $w('#dropdown3').value;
 	var currentSortValue = $w('#dropdown5').value;
 	var hideAmazonButtonValue = $w('#button2').label;
 
+	// console.log('dropdown 3 value: ' + currentProductCategory);
+
 	// console.log('hideAmazonButtonValue: ' + hideAmazonButtonValue);
 
 	var gender = $w('#dropdown1').value;
 
+	// setting recommended gallery
+	if (isRecommendedGalleryForDesktop == true){
 
-	if (gender == 'Women'){
-
-		// product categories that pertain to women
-		if (currentProductCategory == 'Shoes & Jewelleries'){
-
-			var productsInFocusSortedByRelevanceMobile = [];
+			// var productsInFocusSortedByRelevanceMobile = [];
 			var productsInFocusSortedByRelevanceDesktop = [];
 
-			if (hideAmazonButtonValue == 'Show Amazon Products'){
-				var productsInFocusSortedByRelevanceMobile = orderProducts(shoesAndMoreWomenAmazonless, 'SHOE', 2);
-				var productsInFocusSortedByRelevanceDesktop = orderProducts(shoesAndMoreWomenAmazonless, 'SHOE', 3);
-			}
-			else if (hideAmazonButtonValue == 'Hide Amazon Products'){
-				var productsInFocusSortedByRelevanceMobile = orderProducts(shoesAndMoreWomen, 'SHOE', 2);
-				var productsInFocusSortedByRelevanceDesktop = orderProducts(shoesAndMoreWomen, 'SHOE', 3);
-			}
+			var productsInFocusSortedByRelevanceDesktop = orderProducts(recommendedForWomen, 'None', 3, isShowLinks);
 
+			console.log('GOT HERE 1');
 
+			$w('#recommendedForWomenGallery').items = productsInFocusSortedByRelevanceDesktop;
 
 
-			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
-
-
-				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Recently Added'){
-
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => {
-
-						console.log('here: Recently Added');
-
-						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
-
-						console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
-
-
-						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
-					});
-
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-
-
-				mainGalleryCopy = $w('#gallery1').items;
-			}
-			else if(wixWindow.formFactor === "Desktop"){
-
-				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Recently Added'){
-
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
-
-						console.log('here: Recently Added');
-
-						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
-
-
-						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
-					});
-
-					$w('#gallery1').items = orderProducts(productsInFocusSortedByRelevanceDesktop, 'SHOE', 3);
-				}
-			}
-
-		}
-		else if (currentProductCategory == 'Bags & Jewelleries'){
-
-			// var productsInFocusSortedByRelevanceMobile = orderProducts(handbagsAndMoreWomen, 'HANDBAG', 2);
-			// var productsInFocusSortedByRelevanceDesktop = orderProducts(handbagsAndMoreWomen, 'HANDBAG', 3);
-
-			var productsInFocusSortedByRelevanceMobile = [];
-			var productsInFocusSortedByRelevanceDesktop = [];
-
-			if (hideAmazonButtonValue == 'Show Amazon Products'){
-				var productsInFocusSortedByRelevanceMobile = orderProducts(handbagsAndMoreWomenAmazonless, 'HANDBAG', 2);
-				var productsInFocusSortedByRelevanceDesktop = orderProducts(handbagsAndMoreWomenAmazonless, 'HANDBAG', 3);
-			}
-			else if (hideAmazonButtonValue == 'Hide Amazon Products'){
-				var productsInFocusSortedByRelevanceMobile = orderProducts(handbagsAndMoreWomen, 'HANDBAG', 2);
-				var productsInFocusSortedByRelevanceDesktop = orderProducts(handbagsAndMoreWomen, 'HANDBAG', 3);
-			}
-
-
-			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
-
-
-				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Recently Added'){
-
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => {
-
-						console.log('here: Recently Added');
-
-						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
-
-						console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
-
-
-						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
-					});
-
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile; //
-				}
-
-
-				mainGalleryCopy = $w('#gallery1').items;
-			}
-			else if(wixWindow.formFactor === "Desktop"){
-
-				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Recently Added'){
-
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
-
-						console.log('here: Recently Added');
-
-						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
-
-
-						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
-					});
-
-					$w('#gallery1').items = orderProducts(productsInFocusSortedByRelevanceDesktop, 'HANDBAG', 3);
-				}
-			}
-
-
-
-
-
-		}
-		else if (currentProductCategory == 'Furnitures'){
-
-			// var productsInFocusSortedByRelevanceMobile = orderProducts(furnituresMenAndWomen, 'FURNITURE', 2);
-			// var productsInFocusSortedByRelevanceDesktop = orderProducts(furnituresMenAndWomen, 'FURNITURE', 2);
-
-			var productsInFocusSortedByRelevanceMobile = [];
-			var productsInFocusSortedByRelevanceDesktop = [];
-
-			if (hideAmazonButtonValue == 'Show Amazon Products'){
-				var productsInFocusSortedByRelevanceMobile = orderProducts(furnituresMenAndWomenAmazonless, 'FURNITURE', 2);
-				var productsInFocusSortedByRelevanceDesktop = orderProducts(furnituresMenAndWomenAmazonless, 'FURNITURE', 2);
-			}
-			else if (hideAmazonButtonValue == 'Hide Amazon Products'){
-				var productsInFocusSortedByRelevanceMobile = orderProducts(furnituresMenAndWomen, 'FURNITURE', 2);
-				var productsInFocusSortedByRelevanceDesktop = orderProducts(furnituresMenAndWomen, 'FURNITURE', 2);
-			}
-
-			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
-
-
-				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Recently Added'){
-
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => {
-
-						console.log('here: Recently Added');
-
-						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
-
-						console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
-
-
-						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
-					});
-
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-
-
-				mainGalleryCopy = $w('#gallery1').items;
-			}
-			else if(wixWindow.formFactor === "Desktop"){
-
-				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Recently Added'){
-
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
-
-						console.log('here: Recently Added');
-
-						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
-
-
-						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
-					});
-
-					$w('#gallery1').items = orderProducts(productsInFocusSortedByRelevanceDesktop, 'FURNITURE', 2);
-				}
-			}
-
-
-
-		}
-		else if (currentProductCategory == 'Clothes & Perfumes'){
-
-			var productsInFocusSortedByRelevanceMobile = orderProducts(clothesAndPerfumesWomen, 'CLOTHING', 2);
-			var productsInFocusSortedByRelevanceDesktop = orderProducts(clothesAndPerfumesWomen, 'CLOTHING', 3);
-
-			var productsInFocusSortedByRelevanceMobile = [];
-			var productsInFocusSortedByRelevanceDesktop = [];
-
-			if (hideAmazonButtonValue == 'Show Amazon Products'){
-				var productsInFocusSortedByRelevanceMobile = orderProducts(clothesAndPerfumesWomenAmazonless, 'CLOTHING', 2);
-				var productsInFocusSortedByRelevanceDesktop = orderProducts(clothesAndPerfumesWomenAmazonless, 'CLOTHING', 3);
-			}
-			else if (hideAmazonButtonValue == 'Hide Amazon Products'){
-				var productsInFocusSortedByRelevanceMobile = orderProducts(clothesAndPerfumesWomen, 'CLOTHING', 2);
-				var productsInFocusSortedByRelevanceDesktop = orderProducts(clothesAndPerfumesWomen, 'CLOTHING', 3);
-			}
-
-			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
-
-
-				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Recently Added'){
-
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => {
-
-						console.log('here: Recently Added');
-
-						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
-
-						console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
-
-
-						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
-					});
-
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-
-
-				mainGalleryCopy = $w('#gallery1').items;
-			}
-			else if(wixWindow.formFactor === "Desktop"){
-
-				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Recently Added'){
-
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
-
-						console.log('here: Recently Added');
-
-						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
-
-
-						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
-					});
-
-					$w('#gallery1').items = orderProducts(productsInFocusSortedByRelevanceDesktop, 'CLOTHING', 3);
-				}
-			}
-
-
-		}
-		else if (currentProductCategory == 'Flowers & Rings'){
-
-			var productsInFocusSortedByRelevanceMobile = orderProducts(flowersAndRingsWomen, 'RING', 2);
-			var productsInFocusSortedByRelevanceDesktop = orderProducts(flowersAndRingsWomen, 'RING', 3);
-
-			var productsInFocusSortedByRelevanceMobile = [];
-			var productsInFocusSortedByRelevanceDesktop = [];
-
-			if (hideAmazonButtonValue == 'Show Amazon Products'){
-				var productsInFocusSortedByRelevanceMobile = orderProducts(flowersAndRingsWomenAmazonless, 'RING', 2);
-				var productsInFocusSortedByRelevanceDesktop = orderProducts(flowersAndRingsWomenAmazonless, 'RING', 3);
-			}
-			else if (hideAmazonButtonValue == 'Hide Amazon Products'){
-				var productsInFocusSortedByRelevanceMobile = orderProducts(flowersAndRingsWomen, 'RING', 2);
-				var productsInFocusSortedByRelevanceDesktop = orderProducts(flowersAndRingsWomen, 'RING', 3);
-			}
-
-			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
-
-
-				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Recently Added'){
-
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => {
-
-						console.log('here: Recently Added');
-
-						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
-
-						console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
-
-
-						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
-					});
-
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-
-
-				mainGalleryCopy = $w('#gallery1').items;
-			}
-			else if(wixWindow.formFactor === "Desktop"){
-
-				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Recently Added'){
-
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
-
-						console.log('here: Recently Added');
-
-						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
-
-
-						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
-					});
-
-					$w('#gallery1').items = orderProducts(productsInFocusSortedByRelevanceDesktop, 'RING', 3);
-				}
-			}
-
-		}
-		else if (currentProductCategory == 'Travel Bags & Other Bags'){
-
-			// var productsInFocusSortedByRelevanceMobile = orderProducts(travelBagsAndOtherBagsWomen, 'TRAVEL BAG', 2);
-			// var productsInFocusSortedByRelevanceDesktop = orderProducts(travelBagsAndOtherBagsWomen, 'TRAVEL BAG', 3);
-
-			var productsInFocusSortedByRelevanceMobile = [];
-			var productsInFocusSortedByRelevanceDesktop = [];
-
-			if (hideAmazonButtonValue == 'Show Amazon Products'){
-				var productsInFocusSortedByRelevanceMobile = orderProducts(travelBagsAndOtherBagsWomenAmazonless, 'TRAVEL BAG', 2);
-				var productsInFocusSortedByRelevanceDesktop = orderProducts(travelBagsAndOtherBagsWomenAmazonless, 'TRAVEL BAG', 3);
-			}
-			else if (hideAmazonButtonValue == 'Hide Amazon Products'){
-				var productsInFocusSortedByRelevanceMobile = orderProducts(travelBagsAndOtherBagsWomen, 'TRAVEL BAG', 2);
-				var productsInFocusSortedByRelevanceDesktop = orderProducts(travelBagsAndOtherBagsWomen, 'TRAVEL BAG', 3);
-			}
-
-			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
-
-
-				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Recently Added'){
-
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => {
-
-						console.log('here: Recently Added');
-
-						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
-
-						console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
-
-
-						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
-					});
-
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-
-
-				mainGalleryCopy = $w('#gallery1').items;
-			}
-			else if(wixWindow.formFactor === "Desktop"){
-
-				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Recently Added'){
-
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
-
-						console.log('here: Recently Added');
-
-						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
-
-
-						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
-					});
-
-					$w('#gallery1').items = orderProducts(productsInFocusSortedByRelevanceDesktop, 'TRAVEL BAG', 3);
-				}
-			}
-
-		}
-		else if (currentProductCategory == 'Other Accessories'){
-
-			// var productsInFocusSortedByRelevanceMobile = orderProducts(otherAccessoriesWomen, 'ACCESSORIES', 2);
-			// var productsInFocusSortedByRelevanceDesktop = orderProducts(otherAccessoriesWomen, 'ACCESSORIES', 3);
-
-			var productsInFocusSortedByRelevanceMobile = [];
-			var productsInFocusSortedByRelevanceDesktop = [];
-
-			if (hideAmazonButtonValue == 'Show Amazon Products'){
-				var productsInFocusSortedByRelevanceMobile = orderProducts(otherAccessoriesWomenAmazonless, 'ACCESSORIES', 2);
-				var productsInFocusSortedByRelevanceDesktop = orderProducts(otherAccessoriesWomenAmazonless, 'ACCESSORIES', 3);
-			}
-			else if (hideAmazonButtonValue == 'Hide Amazon Products'){
-				var productsInFocusSortedByRelevanceMobile = orderProducts(otherAccessoriesWomen, 'ACCESSORIES', 2);
-				var productsInFocusSortedByRelevanceDesktop = orderProducts(otherAccessoriesWomen, 'ACCESSORIES', 3);
-			}
-
-			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
-
-
-				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Recently Added'){
-
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => {
-
-						console.log('here: Recently Added');
-
-						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
-
-						console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
-
-
-						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
-					});
-
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-
-
-				mainGalleryCopy = $w('#gallery1').items;
-			}
-			else if(wixWindow.formFactor === "Desktop"){
-
-				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Recently Added'){
-
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
-
-						console.log('here: Recently Added');
-
-						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
-
-
-						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
-					});
-
-					$w('#gallery1').items = orderProducts(productsInFocusSortedByRelevanceDesktop, 'ACCESSORIES', 3);
-				}
-
-			}
-
-
-
-		}
-		else if (currentProductCategory == 'Gifts For Him'){
-
-			var productsInFocusSortedByRelevanceMobile = orderProducts(giftsForHim, 'WATCHES', 2);
-			var productsInFocusSortedByRelevanceDesktop = orderProducts(giftsForHim, 'WATCHES', 3);
-
-			var productsInFocusSortedByRelevanceMobile = [];
-			var productsInFocusSortedByRelevanceDesktop = [];
-
-			if (hideAmazonButtonValue == 'Show Amazon Products'){
-				var productsInFocusSortedByRelevanceMobile = orderProducts(giftsForHimAmazonless, 'WATCHES', 2);
-				var productsInFocusSortedByRelevanceDesktop = orderProducts(giftsForHimAmazonless, 'WATCHES', 3);
-			}
-			else if (hideAmazonButtonValue == 'Hide Amazon Products'){
-				var productsInFocusSortedByRelevanceMobile = orderProducts(giftsForHim, 'WATCHES', 2);
-				var productsInFocusSortedByRelevanceDesktop = orderProducts(giftsForHim, 'WATCHES', 3);
-			}
-
-			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
-
-
-				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Recently Added'){
-
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => {
-
-						console.log('here: Recently Added');
-
-						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
-
-						console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
-
-
-						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
-					});
-
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-
-
-				mainGalleryCopy = $w('#gallery1').items;
-			}
-			else if(wixWindow.formFactor === "Desktop"){
-
-				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Recently Added'){
-
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
-
-						console.log('here: Recently Added');
-
-						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
-
-
-						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
-					});
-
-					$w('#gallery1').items = orderProducts(productsInFocusSortedByRelevanceDesktop, 'WATCHES', 3);
-				}
-			}
-
-
-		}
 	}
+	else if (isRecommendedGalleryForDesktop == false){
 
-	else if (gender == 'Men'){
+		// setting main gallery
+		if (gender == 'Women'){
 
-		if (currentProductCategory == 'Shoes & Watches'){
+			// product categories that pertain to women
+			if (currentProductCategory == 'Recommended'){
 
-			// var productsInFocusSortedByRelevanceMobile = orderProducts(shoesAndWatchesMen, 'SHOE', 1);
-			// var productsInFocusSortedByRelevanceDesktop = orderProducts(shoesAndWatchesMen, 'SHOE', 1);
+				// console.log('within recommended:');
 
-			var productsInFocusSortedByRelevanceMobile = [];
-			var productsInFocusSortedByRelevanceDesktop = [];
+				// var productsInFocusSortedByRelevanceMobile = orderProducts(handbagsAndMoreWomen, 'HANDBAG', 2);
+				// var productsInFocusSortedByRelevanceDesktop = orderProducts(handbagsAndMoreWomen, 'HANDBAG', 3);
 
-			if (hideAmazonButtonValue == 'Show Amazon Products'){
-				var productsInFocusSortedByRelevanceMobile = orderProducts(shoesAndWatchesMenAmazonless, 'SHOE', 1);
-				var productsInFocusSortedByRelevanceDesktop = orderProducts(shoesAndWatchesMenAmazonless, 'SHOE', 1);
+				var productsInFocusSortedByRelevanceMobile = [];
+				var productsInFocusSortedByRelevanceDesktop = [];
+
+				if (hideAmazonButtonValue == 'Show Amazon Products'){
+					// console.log('here hideAmazonButtonValue1start');
+					var productsInFocusSortedByRelevanceMobile = orderProducts(recommendedForWomenAmazonless, 'None', 3, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(recommendedForWomenAmazonless, 'None', 3, isShowLinks);
+					// console.log('here hideAmazonButtonValue1end');
+				}
+				else if (hideAmazonButtonValue == 'Hide Amazon Products'){
+					// console.log('here hideAmazonButtonValue2start');
+					var productsInFocusSortedByRelevanceMobile = orderProducts(recommendedForWomen, 'None', 3, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(recommendedForWomen, 'None', 3, isShowLinks);
+					// console.log('here hideAmazonButtonValue1end');
+				}
+
+				// console.log('recommended gallery length: ' + productsInFocusSortedByRelevanceMobile);
+
+				// filtering by brand name or product name..
+				if ((userInput != '' && userInput != ' ' && typeof(userInput) != 'undefined')){
+
+					if (!userInput.includes('$') && !userInput.includes('#') && !userInput.includes('.')
+					&& !userInput.includes('%') && !userInput.includes('+') && !userInput.includes('-') && !userInput.includes('/')
+					&& !userInput.includes('\\') && !userInput.includes('=')
+					&& !userInput.includes('==')){
+
+						var itemCounter = 0;
+						var productsListInFocus = [];
+
+						if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+							productsListInFocus = productsInFocusSortedByRelevanceMobile;
+						}
+						else if (wixWindow.formFactor === "Desktop"){
+							productsListInFocus = productsInFocusSortedByRelevanceDesktop;
+						}
+
+						var lengthOfProductListInFocus =  JSON.parse(JSON.stringify(productsListInFocus.length));
+
+						while (itemCounter < lengthOfProductListInFocus){
+
+
+							var currentItem = productsListInFocus[0];
+
+							// console.log('currentItem: ' + currentItem);
+							// console.log('itemCounter: ' + itemCounter);
+
+
+							var currentItemsTitle = currentItem.title;
+							var currentItemsLink = currentItem.link;
+							// console.log('currentItemsLink: ' + currentItemsLink)
+
+							// var indexOfCurrentItem = productsListInFocus.indexOf(currentItem);
+
+							// console.log('indexOfCurrentItem: ' + indexOfCurrentItem);
+							// console.log('productsListInFocus length: ' + productsListInFocus.length);
+							// console.log('original length of productsInFocus: ' + lengthOfProductListInFocus);
+
+							if ((currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) || (currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								productsListInFocus.push(currentItem);
+								productsListInFocus.splice(0, 1);
+
+								console.log(currentItemsLink + ' includes ' + userInput);
+
+							}
+
+							if (!(currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) && !(currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								console.log(currentItemsLink + ' does not includes ' + userInput);
+								productsListInFocus.splice(0, 1);
+
+							}
+
+							itemCounter += 1;
+
+						}
+
+						// if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+						// 	productsInFocusSortedByRelevanceMobile = productsListInFocus;
+						// }
+						// else if (wixWindow.formFactor === "Desktop"){
+						// 	productsInFocusSortedByRelevanceDesktop = productsListInFocus;
+						// }
+
+						console.log(productsListInFocus.length);
+
+
+						}
+
+				}
+
+
+				// fixing display by sort value
+				if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+
+
+					if (currentSortValue == 'Relevance'){
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+							console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile; //
+					}
+
+
+					mainGalleryCopy = $w('#gallery1').items;
+				}
+				else if(wixWindow.formFactor === "Desktop"){
+
+					if (currentSortValue == 'Relevance'){
+						// if (isShowLinks == true){
+						// 	$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop; //
+						// }
+						// else{
+						// 	$w('#gallery1').items = handbagsAndMoreWomen; //
+						// }
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+				}
+
+
+
+
+
 			}
-			else if (hideAmazonButtonValue == 'Hide Amazon Products'){
-				var productsInFocusSortedByRelevanceMobile = orderProducts(shoesAndWatchesMen, 'SHOE', 1);
-				var productsInFocusSortedByRelevanceDesktop = orderProducts(shoesAndWatchesMen, 'SHOE', 1);
+
+			// product categories that pertain to women
+			else if (currentProductCategory == 'Bags & Jewelleries'){
+
+				// var productsInFocusSortedByRelevanceMobile = orderProducts(handbagsAndMoreWomen, 'HANDBAG', 2);
+				// var productsInFocusSortedByRelevanceDesktop = orderProducts(handbagsAndMoreWomen, 'HANDBAG', 3);
+
+				var productsInFocusSortedByRelevanceMobile = [];
+				var productsInFocusSortedByRelevanceDesktop = [];
+
+				if (hideAmazonButtonValue == 'Show Amazon Products'){
+					var productsInFocusSortedByRelevanceMobile = orderProducts(handbagsAndMoreWomenAmazonless, 'HANDBAG', 2, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(handbagsAndMoreWomenAmazonless, 'HANDBAG', 3, isShowLinks);
+				}
+				else if (hideAmazonButtonValue == 'Hide Amazon Products'){
+					var productsInFocusSortedByRelevanceMobile = orderProducts(handbagsAndMoreWomen, 'HANDBAG', 2, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(handbagsAndMoreWomen, 'HANDBAG', 3, isShowLinks);
+				}
+
+				// filtering by brand name or product name..
+				if ((userInput != '' && userInput != ' ' && typeof(userInput) != 'undefined')){
+
+					if (!userInput.includes('$') && !userInput.includes('#') && !userInput.includes('.')
+					&& !userInput.includes('%') && !userInput.includes('+') && !userInput.includes('-') && !userInput.includes('/')
+					&& !userInput.includes('\\') && !userInput.includes('=')
+					&& !userInput.includes('==')){
+
+						var itemCounter = 0;
+						var productsListInFocus = [];
+
+						if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+							productsListInFocus = productsInFocusSortedByRelevanceMobile;
+						}
+						else if (wixWindow.formFactor === "Desktop"){
+							productsListInFocus = productsInFocusSortedByRelevanceDesktop;
+						}
+
+						var lengthOfProductListInFocus =  JSON.parse(JSON.stringify(productsListInFocus.length));
+
+						while (itemCounter < lengthOfProductListInFocus){
+
+
+							var currentItem = productsListInFocus[0];
+
+							// console.log('currentItem: ' + currentItem);
+							// console.log('itemCounter: ' + itemCounter);
+
+
+							var currentItemsTitle = currentItem.title;
+							var currentItemsLink = currentItem.link;
+							// console.log('currentItemsLink: ' + currentItemsLink)
+
+							// var indexOfCurrentItem = productsListInFocus.indexOf(currentItem);
+
+							// console.log('indexOfCurrentItem: ' + indexOfCurrentItem);
+							// console.log('productsListInFocus length: ' + productsListInFocus.length);
+							// console.log('original length of productsInFocus: ' + lengthOfProductListInFocus);
+
+							if ((currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) || (currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								productsListInFocus.push(currentItem);
+								productsListInFocus.splice(0, 1);
+
+								console.log(currentItemsLink + ' includes ' + userInput);
+
+							}
+
+							if (!(currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) && !(currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								console.log(currentItemsLink + ' does not includes ' + userInput);
+								productsListInFocus.splice(0, 1);
+
+							}
+
+							itemCounter += 1;
+
+						}
+
+						// if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+						// 	productsInFocusSortedByRelevanceMobile = productsListInFocus;
+						// }
+						// else if (wixWindow.formFactor === "Desktop"){
+						// 	productsInFocusSortedByRelevanceDesktop = productsListInFocus;
+						// }
+
+						console.log(productsListInFocus.length);
+
+
+						}
+
+				}
+
+
+				// fixing display by sort value
+				if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+
+
+					if (currentSortValue == 'Relevance'){
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+							console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile; //
+					}
+
+
+					mainGalleryCopy = $w('#gallery1').items;
+				}
+				else if(wixWindow.formFactor === "Desktop"){
+
+					if (currentSortValue == 'Relevance'){
+						// if (isShowLinks == true){
+						// 	$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop; //
+						// }
+						// else{
+						// 	$w('#gallery1').items = handbagsAndMoreWomen; //
+						// }
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+				}
+
+
+
+
+
+			}
+			else if (currentProductCategory == 'Shoes & Jewelleries'){
+
+				// var productsInFocusSortedByRelevanceMobile = orderProducts(handbagsAndMoreWomen, 'HANDBAG', 2);
+				// var productsInFocusSortedByRelevanceDesktop = orderProducts(handbagsAndMoreWomen, 'HANDBAG', 3);
+
+				var productsInFocusSortedByRelevanceMobile = [];
+				var productsInFocusSortedByRelevanceDesktop = [];
+
+				if (hideAmazonButtonValue == 'Show Amazon Products'){
+					var productsInFocusSortedByRelevanceMobile = orderProducts(shoesAndMoreWomenAmazonless, 'SHOE', 2, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(shoesAndMoreWomenAmazonless, 'SHOE', 3, isShowLinks);
+				}
+				else if (hideAmazonButtonValue == 'Hide Amazon Products'){
+					var productsInFocusSortedByRelevanceMobile = orderProducts(shoesAndMoreWomen, 'SHOE', 2, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(shoesAndMoreWomen, 'SHOE', 3, isShowLinks);
+				}
+
+				// filtering by brand name or product name..
+				if ((userInput != '' && userInput != ' ' && typeof(userInput) != 'undefined')){
+
+					if (!userInput.includes('$') && !userInput.includes('#') && !userInput.includes('.')
+					&& !userInput.includes('%') && !userInput.includes('+') && !userInput.includes('-') && !userInput.includes('/')
+					&& !userInput.includes('\\') && !userInput.includes('=')
+					&& !userInput.includes('==')){
+
+						var itemCounter = 0;
+						var productsListInFocus = [];
+
+						if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+							productsListInFocus = productsInFocusSortedByRelevanceMobile;
+						}
+						else if (wixWindow.formFactor === "Desktop"){
+							productsListInFocus = productsInFocusSortedByRelevanceDesktop;
+						}
+
+						var lengthOfProductListInFocus =  JSON.parse(JSON.stringify(productsListInFocus.length));
+
+						while (itemCounter < lengthOfProductListInFocus){
+
+
+							var currentItem = productsListInFocus[0];
+
+							// console.log('currentItem: ' + currentItem);
+							// console.log('itemCounter: ' + itemCounter);
+
+
+							var currentItemsTitle = currentItem.title;
+							var currentItemsLink = currentItem.link;
+							// console.log('currentItemsLink: ' + currentItemsLink)
+
+							// var indexOfCurrentItem = productsListInFocus.indexOf(currentItem);
+
+							// console.log('indexOfCurrentItem: ' + indexOfCurrentItem);
+							// console.log('productsListInFocus length: ' + productsListInFocus.length);
+							// console.log('original length of productsInFocus: ' + lengthOfProductListInFocus);
+
+							if ((currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) || (currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								productsListInFocus.push(currentItem);
+								productsListInFocus.splice(0, 1);
+
+								console.log(currentItemsLink + ' includes ' + userInput);
+
+							}
+
+							if (!(currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) && !(currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								console.log(currentItemsLink + ' does not includes ' + userInput);
+								productsListInFocus.splice(0, 1);
+
+							}
+
+							itemCounter += 1;
+						}
+
+						// if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+						// 	productsInFocusSortedByRelevanceMobile = productsListInFocus;
+						// }
+						// else if (wixWindow.formFactor === "Desktop"){
+						// 	productsInFocusSortedByRelevanceDesktop = productsListInFocus;
+						// }
+
+						console.log(productsListInFocus.length);
+
+
+						}
+
+				}
+
+
+				// fixing display by sort value
+				if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+
+
+					if (currentSortValue == 'Relevance'){
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+							console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile; //
+					}
+
+
+					mainGalleryCopy = $w('#gallery1').items;
+				}
+				else if(wixWindow.formFactor === "Desktop"){
+
+					if (currentSortValue == 'Relevance'){
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+				}
+
+
+
+
+
+			}
+			else if (currentProductCategory == 'Furnitures'){
+
+				// var productsInFocusSortedByRelevanceMobile = orderProducts(furnituresMenAndWomen, 'FURNITURE', 2);
+				// var productsInFocusSortedByRelevanceDesktop = orderProducts(furnituresMenAndWomen, 'FURNITURE', 2);
+
+				var productsInFocusSortedByRelevanceMobile = [];
+				var productsInFocusSortedByRelevanceDesktop = [];
+
+				if (hideAmazonButtonValue == 'Show Amazon Products'){
+					var productsInFocusSortedByRelevanceMobile = orderProducts(furnituresMenAndWomenAmazonless, 'FURNITURE', 2, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(furnituresMenAndWomenAmazonless, 'FURNITURE', 2, isShowLinks);
+				}
+				else if (hideAmazonButtonValue == 'Hide Amazon Products'){
+					var productsInFocusSortedByRelevanceMobile = orderProducts(furnituresMenAndWomen, 'FURNITURE', 2, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(furnituresMenAndWomen, 'FURNITURE', 2, isShowLinks);
+				}
+
+				// filtering by brand name or product name..
+				if ((userInput != '' && userInput != ' ' && typeof(userInput) != 'undefined')){
+
+					if (!userInput.includes('$') && !userInput.includes('#') && !userInput.includes('.')
+					&& !userInput.includes('%') && !userInput.includes('+') && !userInput.includes('-') && !userInput.includes('/')
+					&& !userInput.includes('\\') && !userInput.includes('=')
+					&& !userInput.includes('==')){
+
+						var itemCounter = 0;
+						var productsListInFocus = [];
+
+						if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+							productsListInFocus = productsInFocusSortedByRelevanceMobile;
+						}
+						else if (wixWindow.formFactor === "Desktop"){
+							productsListInFocus = productsInFocusSortedByRelevanceDesktop;
+						}
+
+						var lengthOfProductListInFocus =  JSON.parse(JSON.stringify(productsListInFocus.length));
+
+						while (itemCounter < lengthOfProductListInFocus){
+
+
+							var currentItem = productsListInFocus[0];
+
+							// console.log('currentItem: ' + currentItem);
+							// console.log('itemCounter: ' + itemCounter);
+
+
+							var currentItemsTitle = currentItem.title;
+							var currentItemsLink = currentItem.link;
+							// console.log('currentItemsLink: ' + currentItemsLink)
+
+							// var indexOfCurrentItem = productsListInFocus.indexOf(currentItem);
+
+							// console.log('indexOfCurrentItem: ' + indexOfCurrentItem);
+							// console.log('productsListInFocus length: ' + productsListInFocus.length);
+							// console.log('original length of productsInFocus: ' + lengthOfProductListInFocus);
+
+							if ((currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) || (currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								productsListInFocus.push(currentItem);
+								productsListInFocus.splice(0, 1);
+
+								console.log(currentItemsLink + ' includes ' + userInput);
+
+							}
+
+							if (!(currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) && !(currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								console.log(currentItemsLink + ' does not includes ' + userInput);
+								productsListInFocus.splice(0, 1);
+
+							}
+
+							itemCounter += 1;
+						}
+
+						// if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+						// 	productsInFocusSortedByRelevanceMobile = productsListInFocus;
+						// }
+						// else if (wixWindow.formFactor === "Desktop"){
+						// 	productsInFocusSortedByRelevanceDesktop = productsListInFocus;
+						// }
+
+						console.log(productsListInFocus.length);
+
+
+						}
+
+				}
+
+
+				// fixing display by sort value
+				if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+
+
+					if (currentSortValue == 'Relevance'){
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+							console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+
+
+					mainGalleryCopy = $w('#gallery1').items;
+				}
+				else if(wixWindow.formFactor === "Desktop"){
+
+					if (currentSortValue == 'Relevance'){
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+				}
+
+
+
+			}
+			else if (currentProductCategory == 'Clothes & Perfumes'){
+
+				// var productsInFocusSortedByRelevanceMobile = orderProducts(clothesAndPerfumesWomen, 'CLOTHING', 2, isShowLinks);
+				// var productsInFocusSortedByRelevanceDesktop = orderProducts(clothesAndPerfumesWomen, 'CLOTHING', 3, isShowLinks);
+
+				var productsInFocusSortedByRelevanceMobile = [];
+				var productsInFocusSortedByRelevanceDesktop = [];
+
+				if (hideAmazonButtonValue == 'Show Amazon Products'){
+					var productsInFocusSortedByRelevanceMobile = orderProducts(clothesAndPerfumesWomenAmazonless, 'CLOTHING', 2, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(clothesAndPerfumesWomenAmazonless, 'CLOTHING', 3, isShowLinks);
+				}
+				else if (hideAmazonButtonValue == 'Hide Amazon Products'){
+					var productsInFocusSortedByRelevanceMobile = orderProducts(clothesAndPerfumesWomen, 'CLOTHING', 2, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(clothesAndPerfumesWomen, 'CLOTHING', 3, isShowLinks);
+				}
+
+				// filtering by brand name or product name..
+				if ((userInput != '' && userInput != ' ' && typeof(userInput) != 'undefined')){
+
+					if (!userInput.includes('$') && !userInput.includes('#') && !userInput.includes('.')
+					&& !userInput.includes('%') && !userInput.includes('+') && !userInput.includes('-') && !userInput.includes('/')
+					&& !userInput.includes('\\') && !userInput.includes('=')
+					&& !userInput.includes('==')){
+
+						var itemCounter = 0;
+						var productsListInFocus = [];
+
+						if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+							productsListInFocus = productsInFocusSortedByRelevanceMobile;
+						}
+						else if (wixWindow.formFactor === "Desktop"){
+							productsListInFocus = productsInFocusSortedByRelevanceDesktop;
+						}
+
+						var lengthOfProductListInFocus =  JSON.parse(JSON.stringify(productsListInFocus.length));
+
+						while (itemCounter < lengthOfProductListInFocus){
+
+
+							var currentItem = productsListInFocus[0];
+
+							// console.log('currentItem: ' + currentItem);
+							// console.log('itemCounter: ' + itemCounter);
+
+
+							var currentItemsTitle = currentItem.title;
+							var currentItemsLink = currentItem.link;
+							// console.log('currentItemsLink: ' + currentItemsLink)
+
+							// var indexOfCurrentItem = productsListInFocus.indexOf(currentItem);
+
+							// console.log('indexOfCurrentItem: ' + indexOfCurrentItem);
+							// console.log('productsListInFocus length: ' + productsListInFocus.length);
+							// console.log('original length of productsInFocus: ' + lengthOfProductListInFocus);
+
+							if ((currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) || (currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								productsListInFocus.push(currentItem);
+								productsListInFocus.splice(0, 1);
+
+								console.log(currentItemsLink + ' includes ' + userInput);
+
+							}
+
+							if (!(currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) && !(currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								console.log(currentItemsLink + ' does not includes ' + userInput);
+								productsListInFocus.splice(0, 1);
+
+							}
+
+							itemCounter += 1;
+						}
+
+						// if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+						// 	productsInFocusSortedByRelevanceMobile = productsListInFocus;
+						// }
+						// else if (wixWindow.formFactor === "Desktop"){
+						// 	productsInFocusSortedByRelevanceDesktop = productsListInFocus;
+						// }
+
+						console.log(productsListInFocus.length);
+
+
+						}
+
+				}
+
+
+				// fixing display by sort value
+				if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+
+
+					if (currentSortValue == 'Relevance'){
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+							console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+
+
+					mainGalleryCopy = $w('#gallery1').items;
+				}
+				else if(wixWindow.formFactor === "Desktop"){
+
+					if (currentSortValue == 'Relevance'){
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+				}
+
+
+			}
+			else if (currentProductCategory == 'Flowers & Rings'){
+
+				// var productsInFocusSortedByRelevanceMobile = orderProducts(flowersAndRingsWomen, 'RING', 2, isShowLinks);
+				// var productsInFocusSortedByRelevanceDesktop = orderProducts(flowersAndRingsWomen, 'RING', 3, isShowLinks);
+
+				var productsInFocusSortedByRelevanceMobile = [];
+				var productsInFocusSortedByRelevanceDesktop = [];
+
+				if (hideAmazonButtonValue == 'Show Amazon Products'){
+					var productsInFocusSortedByRelevanceMobile = orderProducts(flowersAndRingsWomenAmazonless, 'RING', 2, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(flowersAndRingsWomenAmazonless, 'RING', 3, isShowLinks);
+				}
+				else if (hideAmazonButtonValue == 'Hide Amazon Products'){
+					var productsInFocusSortedByRelevanceMobile = orderProducts(flowersAndRingsWomen, 'RING', 2, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(flowersAndRingsWomen, 'RING', 3, isShowLinks);
+				}
+
+				// filtering by brand name or product name..
+				if ((userInput != '' && userInput != ' ' && typeof(userInput) != 'undefined')){
+
+					if (!userInput.includes('$') && !userInput.includes('#') && !userInput.includes('.')
+					&& !userInput.includes('%') && !userInput.includes('+') && !userInput.includes('-') && !userInput.includes('/')
+					&& !userInput.includes('\\') && !userInput.includes('=')
+					&& !userInput.includes('==')){
+
+						var itemCounter = 0;
+						var productsListInFocus = [];
+
+						if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+							productsListInFocus = productsInFocusSortedByRelevanceMobile;
+						}
+						else if (wixWindow.formFactor === "Desktop"){
+							productsListInFocus = productsInFocusSortedByRelevanceDesktop;
+						}
+
+						var lengthOfProductListInFocus =  JSON.parse(JSON.stringify(productsListInFocus.length));
+
+						while (itemCounter < lengthOfProductListInFocus){
+
+
+							var currentItem = productsListInFocus[0];
+
+							// console.log('currentItem: ' + currentItem);
+							// console.log('itemCounter: ' + itemCounter);
+
+
+							var currentItemsTitle = currentItem.title;
+							var currentItemsLink = currentItem.link;
+							// console.log('currentItemsLink: ' + currentItemsLink)
+
+							// var indexOfCurrentItem = productsListInFocus.indexOf(currentItem);
+
+							// console.log('indexOfCurrentItem: ' + indexOfCurrentItem);
+							// console.log('productsListInFocus length: ' + productsListInFocus.length);
+							// console.log('original length of productsInFocus: ' + lengthOfProductListInFocus);
+
+							if ((currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) || (currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								productsListInFocus.push(currentItem);
+								productsListInFocus.splice(0, 1);
+
+								console.log(currentItemsLink + ' includes ' + userInput);
+
+							}
+
+							if (!(currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) && !(currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								console.log(currentItemsLink + ' does not includes ' + userInput);
+								productsListInFocus.splice(0, 1);
+
+							}
+
+							itemCounter += 1;
+						}
+
+						// if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+						// 	productsInFocusSortedByRelevanceMobile = productsListInFocus;
+						// }
+						// else if (wixWindow.formFactor === "Desktop"){
+						// 	productsInFocusSortedByRelevanceDesktop = productsListInFocus;
+						// }
+
+						console.log(productsListInFocus.length);
+
+
+						}
+
+				}
+
+
+				// fixing display by sort value
+				if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+
+
+					if (currentSortValue == 'Relevance'){
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+							console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+
+
+					mainGalleryCopy = $w('#gallery1').items;
+				}
+				else if(wixWindow.formFactor === "Desktop"){
+
+					if (currentSortValue == 'Relevance'){
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+				}
+
+			}
+			else if (currentProductCategory == 'Travel Bags & Other Bags'){
+
+				// var productsInFocusSortedByRelevanceMobile = orderProducts(travelBagsAndOtherBagsWomen, 'TRAVEL BAG', 2);
+				// var productsInFocusSortedByRelevanceDesktop = orderProducts(travelBagsAndOtherBagsWomen, 'TRAVEL BAG', 3);
+
+				var productsInFocusSortedByRelevanceMobile = [];
+				var productsInFocusSortedByRelevanceDesktop = [];
+
+				if (hideAmazonButtonValue == 'Show Amazon Products'){
+					var productsInFocusSortedByRelevanceMobile = orderProducts(travelBagsAndOtherBagsWomenAmazonless, 'TRAVEL BAG', 2, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(travelBagsAndOtherBagsWomenAmazonless, 'TRAVEL BAG', 3, isShowLinks);
+				}
+				else if (hideAmazonButtonValue == 'Hide Amazon Products'){
+					var productsInFocusSortedByRelevanceMobile = orderProducts(travelBagsAndOtherBagsWomen, 'TRAVEL BAG', 2, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(travelBagsAndOtherBagsWomen, 'TRAVEL BAG', 3, isShowLinks);
+				}
+
+				// filtering by brand name or product name..
+				if ((userInput != '' && userInput != ' ' && typeof(userInput) != 'undefined')){
+
+					if (!userInput.includes('$') && !userInput.includes('#') && !userInput.includes('.')
+					&& !userInput.includes('%') && !userInput.includes('+') && !userInput.includes('-') && !userInput.includes('/')
+					&& !userInput.includes('\\') && !userInput.includes('=')
+					&& !userInput.includes('==')){
+
+						var itemCounter = 0;
+						var productsListInFocus = [];
+
+						if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+							productsListInFocus = productsInFocusSortedByRelevanceMobile;
+						}
+						else if (wixWindow.formFactor === "Desktop"){
+							productsListInFocus = productsInFocusSortedByRelevanceDesktop;
+						}
+
+						var lengthOfProductListInFocus =  JSON.parse(JSON.stringify(productsListInFocus.length));
+
+						while (itemCounter < lengthOfProductListInFocus){
+
+
+							var currentItem = productsListInFocus[0];
+
+							// console.log('currentItem: ' + currentItem);
+							// console.log('itemCounter: ' + itemCounter);
+
+
+							var currentItemsTitle = currentItem.title;
+							var currentItemsLink = currentItem.link;
+							// console.log('currentItemsLink: ' + currentItemsLink)
+
+							// var indexOfCurrentItem = productsListInFocus.indexOf(currentItem);
+
+							// console.log('indexOfCurrentItem: ' + indexOfCurrentItem);
+							// console.log('productsListInFocus length: ' + productsListInFocus.length);
+							// console.log('original length of productsInFocus: ' + lengthOfProductListInFocus);
+
+							if ((currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) || (currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								productsListInFocus.push(currentItem);
+								productsListInFocus.splice(0, 1);
+
+								console.log(currentItemsLink + ' includes ' + userInput);
+
+							}
+
+							if (!(currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) && !(currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								console.log(currentItemsLink + ' does not includes ' + userInput);
+								productsListInFocus.splice(0, 1);
+
+							}
+
+							itemCounter += 1;
+						}
+
+						// if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+						// 	productsInFocusSortedByRelevanceMobile = productsListInFocus;
+						// }
+						// else if (wixWindow.formFactor === "Desktop"){
+						// 	productsInFocusSortedByRelevanceDesktop = productsListInFocus;
+						// }
+
+						console.log(productsListInFocus.length);
+
+
+						}
+
+				}
+
+
+				// fixing display by sort value
+				if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+
+
+					if (currentSortValue == 'Relevance'){
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+							console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+
+
+					mainGalleryCopy = $w('#gallery1').items;
+				}
+				else if(wixWindow.formFactor === "Desktop"){
+
+					if (currentSortValue == 'Relevance'){
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+				}
+
+			}
+			else if (currentProductCategory == 'Other Accessories'){
+
+				// var productsInFocusSortedByRelevanceMobile = orderProducts(otherAccessoriesWomen, 'ACCESSORIES', 2);
+				// var productsInFocusSortedByRelevanceDesktop = orderProducts(otherAccessoriesWomen, 'ACCESSORIES', 3);
+
+				var productsInFocusSortedByRelevanceMobile = [];
+				var productsInFocusSortedByRelevanceDesktop = [];
+
+				if (hideAmazonButtonValue == 'Show Amazon Products'){
+					var productsInFocusSortedByRelevanceMobile = orderProducts(otherAccessoriesWomenAmazonless, 'ACCESSORIES', 2, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(otherAccessoriesWomenAmazonless, 'ACCESSORIES', 3, isShowLinks);
+				}
+				else if (hideAmazonButtonValue == 'Hide Amazon Products'){
+					var productsInFocusSortedByRelevanceMobile = orderProducts(otherAccessoriesWomen, 'ACCESSORIES', 2, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(otherAccessoriesWomen, 'ACCESSORIES', 3, isShowLinks);
+				}
+
+				// filtering by brand name or product name..
+				if ((userInput != '' && userInput != ' ' && typeof(userInput) != 'undefined')){
+
+					if (!userInput.includes('$') && !userInput.includes('#') && !userInput.includes('.')
+					&& !userInput.includes('%') && !userInput.includes('+') && !userInput.includes('-') && !userInput.includes('/')
+					&& !userInput.includes('\\') && !userInput.includes('=')
+					&& !userInput.includes('==')){
+
+						var itemCounter = 0;
+						var productsListInFocus = [];
+
+						if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+							productsListInFocus = productsInFocusSortedByRelevanceMobile;
+						}
+						else if (wixWindow.formFactor === "Desktop"){
+							productsListInFocus = productsInFocusSortedByRelevanceDesktop;
+						}
+
+						var lengthOfProductListInFocus =  JSON.parse(JSON.stringify(productsListInFocus.length));
+
+						while (itemCounter < lengthOfProductListInFocus){
+
+
+							var currentItem = productsListInFocus[0];
+
+							// console.log('currentItem: ' + currentItem);
+							// console.log('itemCounter: ' + itemCounter);
+
+
+							var currentItemsTitle = currentItem.title;
+							var currentItemsLink = currentItem.link;
+							// console.log('currentItemsLink: ' + currentItemsLink)
+
+							// var indexOfCurrentItem = productsListInFocus.indexOf(currentItem);
+
+							// console.log('indexOfCurrentItem: ' + indexOfCurrentItem);
+							// console.log('productsListInFocus length: ' + productsListInFocus.length);
+							// console.log('original length of productsInFocus: ' + lengthOfProductListInFocus);
+
+							if ((currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) || (currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								productsListInFocus.push(currentItem);
+								productsListInFocus.splice(0, 1);
+
+								console.log(currentItemsLink + ' includes ' + userInput);
+
+							}
+
+							if (!(currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) && !(currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								console.log(currentItemsLink + ' does not includes ' + userInput);
+								productsListInFocus.splice(0, 1);
+
+							}
+
+							itemCounter += 1;
+						}
+
+						// if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+						// 	productsInFocusSortedByRelevanceMobile = productsListInFocus;
+						// }
+						// else if (wixWindow.formFactor === "Desktop"){
+						// 	productsInFocusSortedByRelevanceDesktop = productsListInFocus;
+						// }
+
+						console.log(productsListInFocus.length);
+
+
+						}
+
+				}
+
+
+				// fixing display by sort value
+				if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+
+
+					if (currentSortValue == 'Relevance'){
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+							console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+
+
+					mainGalleryCopy = $w('#gallery1').items;
+				}
+				else if(wixWindow.formFactor === "Desktop"){
+
+					if (currentSortValue == 'Relevance'){
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+
+				}
+
+
+
+			}
+			else if (currentProductCategory == 'Gifts For Him'){
+
+				// var productsInFocusSortedByRelevanceMobile = orderProducts(giftsForHim, 'WATCHES', 2);
+				// var productsInFocusSortedByRelevanceDesktop = orderProducts(giftsForHim, 'WATCHES', 3);
+
+				var productsInFocusSortedByRelevanceMobile = [];
+				var productsInFocusSortedByRelevanceDesktop = [];
+
+				if (hideAmazonButtonValue == 'Show Amazon Products'){
+					var productsInFocusSortedByRelevanceMobile = orderProducts(giftsForHimAmazonless, 'WATCHES', 2, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(giftsForHimAmazonless, 'WATCHES', 3, isShowLinks);
+				}
+				else if (hideAmazonButtonValue == 'Hide Amazon Products'){
+					console.log('in gifts for him amazon');
+					var productsInFocusSortedByRelevanceMobile = orderProducts(giftsForHim, 'WATCHES', 2, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(giftsForHim, 'WATCHES', 3, isShowLinks);
+				}
+
+				// filtering by brand name or product name..
+				if ((userInput != '' && userInput != ' ' && typeof(userInput) != 'undefined')){
+
+					if (!userInput.includes('$') && !userInput.includes('#') && !userInput.includes('.')
+					&& !userInput.includes('%') && !userInput.includes('+') && !userInput.includes('-') && !userInput.includes('/')
+					&& !userInput.includes('\\') && !userInput.includes('=')
+					&& !userInput.includes('==')){
+
+						var itemCounter = 0;
+						var productsListInFocus = [];
+
+						if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+							productsListInFocus = productsInFocusSortedByRelevanceMobile;
+						}
+						else if (wixWindow.formFactor === "Desktop"){
+							productsListInFocus = productsInFocusSortedByRelevanceDesktop;
+						}
+
+						var lengthOfProductListInFocus =  JSON.parse(JSON.stringify(productsListInFocus.length));
+
+						while (itemCounter < lengthOfProductListInFocus){
+
+
+							var currentItem = productsListInFocus[0];
+
+							// console.log('currentItem: ' + currentItem);
+							// console.log('itemCounter: ' + itemCounter);
+
+
+							var currentItemsTitle = currentItem.title;
+							var currentItemsLink = currentItem.link;
+							// console.log('currentItemsLink: ' + currentItemsLink)
+
+							// var indexOfCurrentItem = productsListInFocus.indexOf(currentItem);
+
+							// console.log('indexOfCurrentItem: ' + indexOfCurrentItem);
+							// console.log('productsListInFocus length: ' + productsListInFocus.length);
+							// console.log('original length of productsInFocus: ' + lengthOfProductListInFocus);
+
+							if ((currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) || (currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								productsListInFocus.push(currentItem);
+								productsListInFocus.splice(0, 1);
+
+								console.log(currentItemsLink + ' includes ' + userInput);
+
+							}
+
+							if (!(currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) && !(currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								console.log(currentItemsLink + ' does not includes ' + userInput);
+								productsListInFocus.splice(0, 1);
+
+							}
+
+							itemCounter += 1;
+						}
+
+						// if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+						// 	productsInFocusSortedByRelevanceMobile = productsListInFocus;
+						// }
+						// else if (wixWindow.formFactor === "Desktop"){
+						// 	productsInFocusSortedByRelevanceDesktop = productsListInFocus;
+						// }
+
+						console.log(productsListInFocus.length);
+
+
+						}
+
+				}
+
+
+				// fixing display by sort value
+				if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+
+
+					if (currentSortValue == 'Relevance'){
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+							console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+
+
+					mainGalleryCopy = $w('#gallery1').items;
+				}
+				else if(wixWindow.formFactor === "Desktop"){
+
+					if (currentSortValue == 'Relevance'){
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+				}
+
+
+			}
+		}
+
+		else if (gender == 'Men'){
+
+			if (currentProductCategory == 'Shoes & Watches'){
+
+				// var productsInFocusSortedByRelevanceMobile = orderProducts(shoesAndWatchesMen, 'SHOE', 1);
+				// var productsInFocusSortedByRelevanceDesktop = orderProducts(shoesAndWatchesMen, 'SHOE', 1);
+
+				var productsInFocusSortedByRelevanceMobile = [];
+				var productsInFocusSortedByRelevanceDesktop = [];
+
+				if (hideAmazonButtonValue == 'Show Amazon Products'){
+					var productsInFocusSortedByRelevanceMobile = orderProducts(shoesAndWatchesMenAmazonless, 'SHOE', 1, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(shoesAndWatchesMenAmazonless, 'SHOE', 1, isShowLinks);
+				}
+				else if (hideAmazonButtonValue == 'Hide Amazon Products'){
+					var productsInFocusSortedByRelevanceMobile = orderProducts(shoesAndWatchesMen, 'SHOE', 1, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(shoesAndWatchesMen, 'SHOE', 1, isShowLinks);
+				}
+
+				// filtering by brand name or product name..
+				if ((userInput != '' && userInput != ' ' && typeof(userInput) != 'undefined')){
+
+					if (!userInput.includes('$') && !userInput.includes('#') && !userInput.includes('.')
+					&& !userInput.includes('%') && !userInput.includes('+') && !userInput.includes('-') && !userInput.includes('/')
+					&& !userInput.includes('\\') && !userInput.includes('=')
+					&& !userInput.includes('==')){
+
+						var itemCounter = 0;
+						var productsListInFocus = [];
+
+						if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+							productsListInFocus = productsInFocusSortedByRelevanceMobile;
+						}
+						else if (wixWindow.formFactor === "Desktop"){
+							productsListInFocus = productsInFocusSortedByRelevanceDesktop;
+						}
+
+						var lengthOfProductListInFocus =  JSON.parse(JSON.stringify(productsListInFocus.length));
+
+						while (itemCounter < lengthOfProductListInFocus){
+
+
+							var currentItem = productsListInFocus[0];
+
+							// console.log('currentItem: ' + currentItem);
+							// console.log('itemCounter: ' + itemCounter);
+
+
+							var currentItemsTitle = currentItem.title;
+							var currentItemsLink = currentItem.link;
+							// console.log('currentItemsLink: ' + currentItemsLink)
+
+							// var indexOfCurrentItem = productsListInFocus.indexOf(currentItem);
+
+							// console.log('indexOfCurrentItem: ' + indexOfCurrentItem);
+							// console.log('productsListInFocus length: ' + productsListInFocus.length);
+							// console.log('original length of productsInFocus: ' + lengthOfProductListInFocus);
+
+							if ((currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) || (currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								productsListInFocus.push(currentItem);
+								productsListInFocus.splice(0, 1);
+
+								console.log(currentItemsLink + ' includes ' + userInput);
+
+							}
+
+							if (!(currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) && !(currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								console.log(currentItemsLink + ' does not includes ' + userInput);
+								productsListInFocus.splice(0, 1);
+
+							}
+
+							itemCounter += 1;
+						}
+
+						// if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+						// 	productsInFocusSortedByRelevanceMobile = productsListInFocus;
+						// }
+						// else if (wixWindow.formFactor === "Desktop"){
+						// 	productsInFocusSortedByRelevanceDesktop = productsListInFocus;
+						// }
+
+						console.log(productsListInFocus.length);
+
+
+						}
+
+				}
+
+
+				// fixing display by sort value
+				if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+
+
+					if (currentSortValue == 'Relevance'){
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+							console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+
+
+					mainGalleryCopy = $w('#gallery1').items;
+				}
+				else if(wixWindow.formFactor === "Desktop"){
+
+					if (currentSortValue == 'Relevance'){
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+				}
+
+			}
+			else if (currentProductCategory == 'Necklaces & Bracelets'){
+
+
+				// var productsInFocusSortedByRelevanceMobile = orderProducts(necklacesAndBraceletsMen, 'NECKLACE', 2);
+				// var productsInFocusSortedByRelevanceDesktop = orderProducts(necklacesAndBraceletsMen, 'NECKLACE', 3);
+
+				var productsInFocusSortedByRelevanceMobile = [];
+				var productsInFocusSortedByRelevanceDesktop = [];
+
+				if (hideAmazonButtonValue == 'Show Amazon Products'){
+					var productsInFocusSortedByRelevanceMobile = orderProducts(necklacesAndBraceletsMenAmazonless, 'NECKLACE', 2, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(necklacesAndBraceletsMenAmazonless, 'NECKLACE', 3, isShowLinks);
+				}
+				else if (hideAmazonButtonValue == 'Hide Amazon Products'){
+					var productsInFocusSortedByRelevanceMobile = orderProducts(necklacesAndBraceletsMen, 'NECKLACE', 2, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(necklacesAndBraceletsMen, 'NECKLACE', 3, isShowLinks);
+				}
+
+				// filtering by brand name or product name..
+				if ((userInput != '' && userInput != ' ' && typeof(userInput) != 'undefined')){
+
+					if (!userInput.includes('$') && !userInput.includes('#') && !userInput.includes('.')
+					&& !userInput.includes('%') && !userInput.includes('+') && !userInput.includes('-') && !userInput.includes('/')
+					&& !userInput.includes('\\') && !userInput.includes('=')
+					&& !userInput.includes('==')){
+
+						var itemCounter = 0;
+						var productsListInFocus = [];
+
+						if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+							productsListInFocus = productsInFocusSortedByRelevanceMobile;
+						}
+						else if (wixWindow.formFactor === "Desktop"){
+							productsListInFocus = productsInFocusSortedByRelevanceDesktop;
+						}
+
+						var lengthOfProductListInFocus =  JSON.parse(JSON.stringify(productsListInFocus.length));
+
+						while (itemCounter < lengthOfProductListInFocus){
+
+
+							var currentItem = productsListInFocus[0];
+
+							// console.log('currentItem: ' + currentItem);
+							// console.log('itemCounter: ' + itemCounter);
+
+
+							var currentItemsTitle = currentItem.title;
+							var currentItemsLink = currentItem.link;
+							// console.log('currentItemsLink: ' + currentItemsLink)
+
+							// var indexOfCurrentItem = productsListInFocus.indexOf(currentItem);
+
+							// console.log('indexOfCurrentItem: ' + indexOfCurrentItem);
+							// console.log('productsListInFocus length: ' + productsListInFocus.length);
+							// console.log('original length of productsInFocus: ' + lengthOfProductListInFocus);
+
+							if ((currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) || (currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								productsListInFocus.push(currentItem);
+								productsListInFocus.splice(0, 1);
+
+								console.log(currentItemsLink + ' includes ' + userInput);
+
+							}
+
+							if (!(currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) && !(currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								console.log(currentItemsLink + ' does not includes ' + userInput);
+								productsListInFocus.splice(0, 1);
+
+							}
+
+							itemCounter += 1;
+						}
+
+						// if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+						// 	productsInFocusSortedByRelevanceMobile = productsListInFocus;
+						// }
+						// else if (wixWindow.formFactor === "Desktop"){
+						// 	productsInFocusSortedByRelevanceDesktop = productsListInFocus;
+						// }
+
+						console.log(productsListInFocus.length);
+
+
+						}
+
+				}
+
+
+				// fixing display by sort value
+				if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+
+
+					if (currentSortValue == 'Relevance'){
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+							console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+
+
+					mainGalleryCopy = $w('#gallery1').items;
+				}
+				else if(wixWindow.formFactor === "Desktop"){
+
+					if (currentSortValue == 'Relevance'){
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+				}
+
+
+			}
+			else if (currentProductCategory == 'Furnitures'){
+
+				// var productsInFocusSortedByRelevanceMobile = orderProducts(furnituresMenAndWomen, 'FURNITURE', 2);
+				// var productsInFocusSortedByRelevanceDesktop = orderProducts(furnituresMenAndWomen, 'FURNITURE', 3);
+
+				var productsInFocusSortedByRelevanceMobile = [];
+				var productsInFocusSortedByRelevanceDesktop = [];
+
+				if (hideAmazonButtonValue == 'Show Amazon Products'){
+					var productsInFocusSortedByRelevanceMobile = orderProducts(furnituresMenAndWomenAmazonless, 'FURNITURE', 2, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(furnituresMenAndWomenAmazonless, 'FURNITURE', 3, isShowLinks);
+				}
+				else if (hideAmazonButtonValue == 'Hide Amazon Products'){
+					var productsInFocusSortedByRelevanceMobile = orderProducts(furnituresMenAndWomen, 'FURNITURE', 2, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(furnituresMenAndWomen, 'FURNITURE', 3, isShowLinks);
+				}
+
+				// filtering by brand name or product name..
+				if ((userInput != '' && userInput != ' ' && typeof(userInput) != 'undefined')){
+
+					if (!userInput.includes('$') && !userInput.includes('#') && !userInput.includes('.')
+					&& !userInput.includes('%') && !userInput.includes('+') && !userInput.includes('-') && !userInput.includes('/')
+					&& !userInput.includes('\\') && !userInput.includes('=')
+					&& !userInput.includes('==')){
+
+						var itemCounter = 0;
+						var productsListInFocus = [];
+
+						if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+							productsListInFocus = productsInFocusSortedByRelevanceMobile;
+						}
+						else if (wixWindow.formFactor === "Desktop"){
+							productsListInFocus = productsInFocusSortedByRelevanceDesktop;
+						}
+
+						var lengthOfProductListInFocus =  JSON.parse(JSON.stringify(productsListInFocus.length));
+
+						while (itemCounter < lengthOfProductListInFocus){
+
+
+							var currentItem = productsListInFocus[0];
+
+							// console.log('currentItem: ' + currentItem);
+							// console.log('itemCounter: ' + itemCounter);
+
+
+							var currentItemsTitle = currentItem.title;
+							var currentItemsLink = currentItem.link;
+							// console.log('currentItemsLink: ' + currentItemsLink)
+
+							// var indexOfCurrentItem = productsListInFocus.indexOf(currentItem);
+
+							// console.log('indexOfCurrentItem: ' + indexOfCurrentItem);
+							// console.log('productsListInFocus length: ' + productsListInFocus.length);
+							// console.log('original length of productsInFocus: ' + lengthOfProductListInFocus);
+
+							if ((currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) || (currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								productsListInFocus.push(currentItem);
+								productsListInFocus.splice(0, 1);
+
+								console.log(currentItemsLink + ' includes ' + userInput);
+
+							}
+
+							if (!(currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) && !(currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								console.log(currentItemsLink + ' does not includes ' + userInput);
+								productsListInFocus.splice(0, 1);
+
+							}
+
+							itemCounter += 1;
+						}
+
+						// if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+						// 	productsInFocusSortedByRelevanceMobile = productsListInFocus;
+						// }
+						// else if (wixWindow.formFactor === "Desktop"){
+						// 	productsInFocusSortedByRelevanceDesktop = productsListInFocus;
+						// }
+
+						console.log(productsListInFocus.length);
+
+
+						}
+
+				}
+
+
+				// fixing display by sort value
+				if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+
+
+					if (currentSortValue == 'Relevance'){
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+							console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+
+
+					mainGalleryCopy = $w('#gallery1').items;
+				}
+				else if(wixWindow.formFactor === "Desktop"){
+
+					if (currentSortValue == 'Relevance'){
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+				}
+			}
+			else if (currentProductCategory == 'Clothes & Perfumes'){
+
+				// var productsInFocusSortedByRelevanceMobile = orderProducts(clothesAndPerfumesMen, 'CLOTHING', 2);
+				// var productsInFocusSortedByRelevanceDesktop = orderProducts(clothesAndPerfumesMen, 'CLOTHING', 3);
+
+				var productsInFocusSortedByRelevanceMobile = [];
+				var productsInFocusSortedByRelevanceDesktop = [];
+
+				if (hideAmazonButtonValue == 'Show Amazon Products'){
+					var productsInFocusSortedByRelevanceMobile = orderProducts(clothesAndPerfumesMenAmazonless, 'CLOTHING', 2, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(clothesAndPerfumesMenAmazonless, 'CLOTHING', 3, isShowLinks);
+				}
+				else if (hideAmazonButtonValue == 'Hide Amazon Products'){
+					var productsInFocusSortedByRelevanceMobile = orderProducts(clothesAndPerfumesMen, 'CLOTHING', 2, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(clothesAndPerfumesMen, 'CLOTHING', 3, isShowLinks);
+				}
+
+				// filtering by brand name or product name..
+				if ((userInput != '' && userInput != ' ' && typeof(userInput) != 'undefined')){
+
+					if (!userInput.includes('$') && !userInput.includes('#') && !userInput.includes('.')
+					&& !userInput.includes('%') && !userInput.includes('+') && !userInput.includes('-') && !userInput.includes('/')
+					&& !userInput.includes('\\') && !userInput.includes('=')
+					&& !userInput.includes('==')){
+
+						var itemCounter = 0;
+						var productsListInFocus = [];
+
+						if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+							productsListInFocus = productsInFocusSortedByRelevanceMobile;
+						}
+						else if (wixWindow.formFactor === "Desktop"){
+							productsListInFocus = productsInFocusSortedByRelevanceDesktop;
+						}
+
+						var lengthOfProductListInFocus =  JSON.parse(JSON.stringify(productsListInFocus.length));
+
+						while (itemCounter < lengthOfProductListInFocus){
+
+
+							var currentItem = productsListInFocus[0];
+
+							// console.log('currentItem: ' + currentItem);
+							// console.log('itemCounter: ' + itemCounter);
+
+
+							var currentItemsTitle = currentItem.title;
+							var currentItemsLink = currentItem.link;
+							// console.log('currentItemsLink: ' + currentItemsLink)
+
+							// var indexOfCurrentItem = productsListInFocus.indexOf(currentItem);
+
+							// console.log('indexOfCurrentItem: ' + indexOfCurrentItem);
+							// console.log('productsListInFocus length: ' + productsListInFocus.length);
+							// console.log('original length of productsInFocus: ' + lengthOfProductListInFocus);
+
+							if ((currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) || (currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								productsListInFocus.push(currentItem);
+								productsListInFocus.splice(0, 1);
+
+								console.log(currentItemsLink + ' includes ' + userInput);
+
+							}
+
+							if (!(currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) && !(currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								console.log(currentItemsLink + ' does not includes ' + userInput);
+								productsListInFocus.splice(0, 1);
+
+							}
+
+							itemCounter += 1;
+						}
+
+						// if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+						// 	productsInFocusSortedByRelevanceMobile = productsListInFocus;
+						// }
+						// else if (wixWindow.formFactor === "Desktop"){
+						// 	productsInFocusSortedByRelevanceDesktop = productsListInFocus;
+						// }
+
+						console.log(productsListInFocus.length);
+
+
+						}
+
+				}
+
+
+				// fixing display by sort value
+				if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+
+
+					if (currentSortValue == 'Relevance'){
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+							console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+
+
+					mainGalleryCopy = $w('#gallery1').items;
+				}
+				else if(wixWindow.formFactor === "Desktop"){
+
+					if (currentSortValue == 'Relevance'){
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+				}
+			}
+			else if (currentProductCategory == 'Flowers & Rings'){
+
+				// var productsInFocusSortedByRelevanceMobile = orderProducts(flowersAndRingsMen, 'RING', 2);
+				// var productsInFocusSortedByRelevanceDesktop = orderProducts(flowersAndRingsMen, 'RING', 3);
+
+				var productsInFocusSortedByRelevanceMobile = [];
+				var productsInFocusSortedByRelevanceDesktop = [];
+
+				if (hideAmazonButtonValue == 'Show Amazon Products'){
+					var productsInFocusSortedByRelevanceMobile = orderProducts(flowersAndRingsMenAmazonless, 'RING', 2, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(flowersAndRingsMenAmazonless, 'RING', 3, isShowLinks);
+				}
+				else if (hideAmazonButtonValue == 'Hide Amazon Products'){
+					var productsInFocusSortedByRelevanceMobile = orderProducts(flowersAndRingsMen, 'RING', 2, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(flowersAndRingsMen, 'RING', 3, isShowLinks);
+				}
+
+				// filtering by brand name or product name..
+				if ((userInput != '' && userInput != ' ' && typeof(userInput) != 'undefined')){
+
+					if (!userInput.includes('$') && !userInput.includes('#') && !userInput.includes('.')
+					&& !userInput.includes('%') && !userInput.includes('+') && !userInput.includes('-') && !userInput.includes('/')
+					&& !userInput.includes('\\') && !userInput.includes('=')
+					&& !userInput.includes('==')){
+
+						var itemCounter = 0;
+						var productsListInFocus = [];
+
+						if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+							productsListInFocus = productsInFocusSortedByRelevanceMobile;
+						}
+						else if (wixWindow.formFactor === "Desktop"){
+							productsListInFocus = productsInFocusSortedByRelevanceDesktop;
+						}
+
+						var lengthOfProductListInFocus =  JSON.parse(JSON.stringify(productsListInFocus.length));
+
+						while (itemCounter < lengthOfProductListInFocus){
+
+
+							var currentItem = productsListInFocus[0];
+
+							// console.log('currentItem: ' + currentItem);
+							// console.log('itemCounter: ' + itemCounter);
+
+
+							var currentItemsTitle = currentItem.title;
+							var currentItemsLink = currentItem.link;
+							// console.log('currentItemsLink: ' + currentItemsLink)
+
+							// var indexOfCurrentItem = productsListInFocus.indexOf(currentItem);
+
+							// console.log('indexOfCurrentItem: ' + indexOfCurrentItem);
+							// console.log('productsListInFocus length: ' + productsListInFocus.length);
+							// console.log('original length of productsInFocus: ' + lengthOfProductListInFocus);
+
+							if ((currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) || (currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								productsListInFocus.push(currentItem);
+								productsListInFocus.splice(0, 1);
+
+								console.log(currentItemsLink + ' includes ' + userInput);
+
+							}
+
+							if (!(currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) && !(currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								console.log(currentItemsLink + ' does not includes ' + userInput);
+								productsListInFocus.splice(0, 1);
+
+							}
+
+							itemCounter += 1;
+						}
+
+						// if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+						// 	productsInFocusSortedByRelevanceMobile = productsListInFocus;
+						// }
+						// else if (wixWindow.formFactor === "Desktop"){
+						// 	productsInFocusSortedByRelevanceDesktop = productsListInFocus;
+						// }
+
+						console.log(productsListInFocus.length);
+
+
+						}
+
+				}
+
+
+				// fixing display by sort value
+				if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+
+
+					if (currentSortValue == 'Relevance'){
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+							console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+
+
+					mainGalleryCopy = $w('#gallery1').items;
+				}
+				else if(wixWindow.formFactor === "Desktop"){
+
+					if (currentSortValue == 'Relevance'){
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+				}
+			}
+			else if (currentProductCategory == 'Travel Bags & Other Bags'){
+
+				// var productsInFocusSortedByRelevanceMobile = orderProducts(travelBagsAndOtherBagsMen, 'TRAVEL BAG', 2);
+				// var productsInFocusSortedByRelevanceDesktop = orderProducts(travelBagsAndOtherBagsMen, 'TRAVEL BAG', 3);
+
+				var productsInFocusSortedByRelevanceMobile = [];
+				var productsInFocusSortedByRelevanceDesktop = [];
+
+				if (hideAmazonButtonValue == 'Show Amazon Products'){
+					var productsInFocusSortedByRelevanceMobile = orderProducts(travelBagsAndOtherBagsMenAmazonless, 'TRAVEL BAG', 2, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(travelBagsAndOtherBagsMenAmazonless, 'TRAVEL BAG', 3, isShowLinks);
+				}
+				else if (hideAmazonButtonValue == 'Hide Amazon Products'){
+					var productsInFocusSortedByRelevanceMobile = orderProducts(travelBagsAndOtherBagsMen, 'TRAVEL BAG', 2, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(travelBagsAndOtherBagsMen, 'TRAVEL BAG', 3, isShowLinks);
+				}
+
+				// filtering by brand name or product name..
+				if ((userInput != '' && userInput != ' ' && typeof(userInput) != 'undefined')){
+
+					if (!userInput.includes('$') && !userInput.includes('#') && !userInput.includes('.')
+					&& !userInput.includes('%') && !userInput.includes('+') && !userInput.includes('-') && !userInput.includes('/')
+					&& !userInput.includes('\\') && !userInput.includes('=')
+					&& !userInput.includes('==')){
+
+						var itemCounter = 0;
+						var productsListInFocus = [];
+
+						if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+							productsListInFocus = productsInFocusSortedByRelevanceMobile;
+						}
+						else if (wixWindow.formFactor === "Desktop"){
+							productsListInFocus = productsInFocusSortedByRelevanceDesktop;
+						}
+
+						var lengthOfProductListInFocus =  JSON.parse(JSON.stringify(productsListInFocus.length));
+
+						while (itemCounter < lengthOfProductListInFocus){
+
+
+							var currentItem = productsListInFocus[0];
+
+							// console.log('currentItem: ' + currentItem);
+							// console.log('itemCounter: ' + itemCounter);
+
+
+							var currentItemsTitle = currentItem.title;
+							var currentItemsLink = currentItem.link;
+							// console.log('currentItemsLink: ' + currentItemsLink)
+
+							// var indexOfCurrentItem = productsListInFocus.indexOf(currentItem);
+
+							// console.log('indexOfCurrentItem: ' + indexOfCurrentItem);
+							// console.log('productsListInFocus length: ' + productsListInFocus.length);
+							// console.log('original length of productsInFocus: ' + lengthOfProductListInFocus);
+
+							if ((currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) || (currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								productsListInFocus.push(currentItem);
+								productsListInFocus.splice(0, 1);
+
+								console.log(currentItemsLink + ' includes ' + userInput);
+
+							}
+
+							if (!(currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) && !(currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								console.log(currentItemsLink + ' does not includes ' + userInput);
+								productsListInFocus.splice(0, 1);
+
+							}
+
+							itemCounter += 1;
+						}
+
+						// if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+						// 	productsInFocusSortedByRelevanceMobile = productsListInFocus;
+						// }
+						// else if (wixWindow.formFactor === "Desktop"){
+						// 	productsInFocusSortedByRelevanceDesktop = productsListInFocus;
+						// }
+
+						console.log(productsListInFocus.length);
+
+
+						}
+
+				}
+
+
+				// fixing display by sort value
+				if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+
+
+					if (currentSortValue == 'Relevance'){
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+							console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+
+
+					mainGalleryCopy = $w('#gallery1').items;
+				}
+				else if(wixWindow.formFactor === "Desktop"){
+
+					if (currentSortValue == 'Relevance'){
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+				}
+
+			}
+			else if (currentProductCategory == 'Other Accessories'){
+
+				// var productsInFocusSortedByRelevanceMobile = orderProducts(otherAccessoriesMen, 'ACCESSORIES', 2);
+				// var productsInFocusSortedByRelevanceDesktop = orderProducts(otherAccessoriesMen, 'ACCESSORIES', 3);
+
+				var productsInFocusSortedByRelevanceMobile = [];
+				var productsInFocusSortedByRelevanceDesktop = [];
+
+				if (hideAmazonButtonValue == 'Show Amazon Products'){
+					var productsInFocusSortedByRelevanceMobile = orderProducts(otherAccessoriesMenAmazonless, 'ACCESSORIES', 2, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(otherAccessoriesMenAmazonless, 'ACCESSORIES', 3, isShowLinks);
+				}
+				else if (hideAmazonButtonValue == 'Hide Amazon Products'){
+					var productsInFocusSortedByRelevanceMobile = orderProducts(otherAccessoriesMen, 'ACCESSORIES', 2, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(otherAccessoriesMen, 'ACCESSORIES', 3, isShowLinks);
+				}
+
+
+				// filtering by brand name or product name..
+				if ((userInput != '' && userInput != ' ' && typeof(userInput) != 'undefined')){
+
+					if (!userInput.includes('$') && !userInput.includes('#') && !userInput.includes('.')
+					&& !userInput.includes('%') && !userInput.includes('+') && !userInput.includes('-') && !userInput.includes('/')
+					&& !userInput.includes('\\') && !userInput.includes('=')
+					&& !userInput.includes('==')){
+
+						var itemCounter = 0;
+						var productsListInFocus = [];
+
+						if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+							productsListInFocus = productsInFocusSortedByRelevanceMobile;
+						}
+						else if (wixWindow.formFactor === "Desktop"){
+							productsListInFocus = productsInFocusSortedByRelevanceDesktop;
+						}
+
+						var lengthOfProductListInFocus =  JSON.parse(JSON.stringify(productsListInFocus.length));
+
+						while (itemCounter < lengthOfProductListInFocus){
+
+
+							var currentItem = productsListInFocus[0];
+
+							// console.log('currentItem: ' + currentItem);
+							// console.log('itemCounter: ' + itemCounter);
+
+
+							var currentItemsTitle = currentItem.title;
+							var currentItemsLink = currentItem.link;
+							// console.log('currentItemsLink: ' + currentItemsLink)
+
+							// var indexOfCurrentItem = productsListInFocus.indexOf(currentItem);
+
+							// console.log('indexOfCurrentItem: ' + indexOfCurrentItem);
+							// console.log('productsListInFocus length: ' + productsListInFocus.length);
+							// console.log('original length of productsInFocus: ' + lengthOfProductListInFocus);
+
+							if ((currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) || (currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								productsListInFocus.push(currentItem);
+								productsListInFocus.splice(0, 1);
+
+								console.log(currentItemsLink + ' includes ' + userInput);
+
+							}
+
+							if (!(currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) && !(currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								console.log(currentItemsLink + ' does not includes ' + userInput);
+								productsListInFocus.splice(0, 1);
+
+							}
+
+							itemCounter += 1;
+						}
+
+						// if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+						// 	productsInFocusSortedByRelevanceMobile = productsListInFocus;
+						// }
+						// else if (wixWindow.formFactor === "Desktop"){
+						// 	productsInFocusSortedByRelevanceDesktop = productsListInFocus;
+						// }
+
+						console.log(productsListInFocus.length);
+
+
+						}
+
+				}
+
+
+				// fixing display by sort value
+				if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+
+
+					if (currentSortValue == 'Relevance'){
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+							console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+
+
+					mainGalleryCopy = $w('#gallery1').items;
+				}
+				else if(wixWindow.formFactor === "Desktop"){
+
+					if (currentSortValue == 'Relevance'){
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+				}
+			}
+			else if (currentProductCategory == 'Gifts For Her'){
+
+				// var productsInFocusSortedByRelevanceMobile = orderProducts(giftForHer, 'NECKLACE', 1);
+				// var productsInFocusSortedByRelevanceDesktop = orderProducts(giftForHer, 'NECKLACE', 1);
+
+				var productsInFocusSortedByRelevanceMobile = [];
+				var productsInFocusSortedByRelevanceDesktop = [];
+
+				if (hideAmazonButtonValue == 'Show Amazon Products'){
+					var productsInFocusSortedByRelevanceMobile = orderProducts(giftForHerAmazonless, 'NECKLACE', 1, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(giftForHerAmazonless, 'NECKLACE', 1, isShowLinks);
+				}
+				else if (hideAmazonButtonValue == 'Hide Amazon Products'){
+					var productsInFocusSortedByRelevanceMobile = orderProducts(giftForHer, 'NECKLACE', 1, isShowLinks);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(giftForHer, 'NECKLACE', 1, isShowLinks);
+				}
+
+				// filtering by brand name or product name..
+				if ((userInput != '' && userInput != ' ' && typeof(userInput) != 'undefined')){
+
+					if (!userInput.includes('$') && !userInput.includes('#') && !userInput.includes('.')
+					&& !userInput.includes('%') && !userInput.includes('+') && !userInput.includes('-') && !userInput.includes('/')
+					&& !userInput.includes('\\') && !userInput.includes('=')
+					&& !userInput.includes('==')){
+
+						var itemCounter = 0;
+						var productsListInFocus = [];
+
+						if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+							productsListInFocus = productsInFocusSortedByRelevanceMobile;
+						}
+						else if (wixWindow.formFactor === "Desktop"){
+							productsListInFocus = productsInFocusSortedByRelevanceDesktop;
+						}
+
+						var lengthOfProductListInFocus =  JSON.parse(JSON.stringify(productsListInFocus.length));
+
+						while (itemCounter < lengthOfProductListInFocus){
+
+
+							var currentItem = productsListInFocus[0];
+
+							// console.log('currentItem: ' + currentItem);
+							// console.log('itemCounter: ' + itemCounter);
+
+
+							var currentItemsTitle = currentItem.title;
+							var currentItemsLink = currentItem.link;
+							// console.log('currentItemsLink: ' + currentItemsLink)
+
+							// var indexOfCurrentItem = productsListInFocus.indexOf(currentItem);
+
+							// console.log('indexOfCurrentItem: ' + indexOfCurrentItem);
+							// console.log('productsListInFocus length: ' + productsListInFocus.length);
+							// console.log('original length of productsInFocus: ' + lengthOfProductListInFocus);
+
+							if ((currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) || (currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								productsListInFocus.push(currentItem);
+								productsListInFocus.splice(0, 1);
+
+								console.log(currentItemsLink + ' includes ' + userInput);
+
+							}
+
+							if (!(currentItemsLink.toLowerCase()).includes(userInput.toLowerCase()) && !(currentItemsTitle.toLowerCase()).includes(userInput.toLowerCase())){
+
+								console.log(currentItemsLink + ' does not includes ' + userInput);
+								productsListInFocus.splice(0, 1);
+
+							}
+
+							itemCounter += 1;
+						}
+
+						// if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+						// 	productsInFocusSortedByRelevanceMobile = productsListInFocus;
+						// }
+						// else if (wixWindow.formFactor === "Desktop"){
+						// 	productsInFocusSortedByRelevanceDesktop = productsListInFocus;
+						// }
+
+						console.log(productsListInFocus.length);
+
+
+						}
+
+				}
+
+
+				// fixing display by sort value
+				if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+
+
+					if (currentSortValue == 'Relevance'){
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceMobile.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+							console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
+					}
+
+
+					mainGalleryCopy = $w('#gallery1').items;
+				}
+				else if(wixWindow.formFactor === "Desktop"){
+
+					if (currentSortValue == 'Relevance'){
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Ascending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Price Descending'){
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
+					}
+					else if (currentSortValue == 'Recently Added'){
+
+						productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
+
+							console.log('here: Recently Added');
+
+							var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
+							var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
+
+
+							return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
+						});
+
+						$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop ;
+					}
+				}
 			}
 
-
-			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
-
-
-				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Recently Added'){
-
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => {
-
-						console.log('here: Recently Added');
-
-						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
-
-						console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
-
-
-						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
-					});
-
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-
-
-				mainGalleryCopy = $w('#gallery1').items;
-			}
-			else if(wixWindow.formFactor === "Desktop"){
-
-				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Recently Added'){
-
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
-
-						console.log('here: Recently Added');
-
-						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
-
-
-						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
-					});
-
-					$w('#gallery1').items = orderProducts(productsInFocusSortedByRelevanceDesktop, 'SHOE', 3);
-				}
-			}
 
 		}
-		else if (currentProductCategory == 'Necklaces & Bracelets'){
-
-
-			// var productsInFocusSortedByRelevanceMobile = orderProducts(necklacesAndBraceletsMen, 'NECKLACE', 2);
-			// var productsInFocusSortedByRelevanceDesktop = orderProducts(necklacesAndBraceletsMen, 'NECKLACE', 3);
-
-			var productsInFocusSortedByRelevanceMobile = [];
-			var productsInFocusSortedByRelevanceDesktop = [];
-
-			if (hideAmazonButtonValue == 'Show Amazon Products'){
-				var productsInFocusSortedByRelevanceMobile = orderProducts(necklacesAndBraceletsMenAmazonless, 'NECKLACE', 2);
-				var productsInFocusSortedByRelevanceDesktop = orderProducts(necklacesAndBraceletsMenAmazonless, 'NECKLACE', 3);
-			}
-			else if (hideAmazonButtonValue == 'Hide Amazon Products'){
-				var productsInFocusSortedByRelevanceMobile = orderProducts(necklacesAndBraceletsMen, 'NECKLACE', 2);
-				var productsInFocusSortedByRelevanceDesktop = orderProducts(necklacesAndBraceletsMen, 'NECKLACE', 3);
-			}
-
-
-			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
-
-
-				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Recently Added'){
-
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => {
-
-						console.log('here: Recently Added');
-
-						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
-
-						console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
-
-
-						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
-					});
-
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-
-
-				mainGalleryCopy = $w('#gallery1').items;
-			}
-			else if(wixWindow.formFactor === "Desktop"){
-
-				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Recently Added'){
-
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
-
-						console.log('here: Recently Added');
-
-						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
-
-
-						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
-					});
-
-					$w('#gallery1').items = orderProducts(productsInFocusSortedByRelevanceDesktop, 'NECKLACE', 3);
-				}
-			}
-
-
-		}
-		else if (currentProductCategory == 'Furnitures'){
-
-			// var productsInFocusSortedByRelevanceMobile = orderProducts(furnituresMenAndWomen, 'FURNITURE', 2);
-			// var productsInFocusSortedByRelevanceDesktop = orderProducts(furnituresMenAndWomen, 'FURNITURE', 3);
-
-			var productsInFocusSortedByRelevanceMobile = [];
-			var productsInFocusSortedByRelevanceDesktop = [];
-
-			if (hideAmazonButtonValue == 'Show Amazon Products'){
-				var productsInFocusSortedByRelevanceMobile = orderProducts(furnituresMenAndWomenAmazonless, 'FURNITURE', 2);
-				var productsInFocusSortedByRelevanceDesktop = orderProducts(furnituresMenAndWomenAmazonless, 'FURNITURE', 3);
-			}
-			else if (hideAmazonButtonValue == 'Hide Amazon Products'){
-				var productsInFocusSortedByRelevanceMobile = orderProducts(furnituresMenAndWomen, 'FURNITURE', 2);
-				var productsInFocusSortedByRelevanceDesktop = orderProducts(furnituresMenAndWomen, 'FURNITURE', 3);
-			}
-
-			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
-
-
-				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Recently Added'){
-
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => {
-
-						console.log('here: Recently Added');
-
-						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
-
-						console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
-
-
-						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
-					});
-
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-
-
-				mainGalleryCopy = $w('#gallery1').items;
-			}
-			else if(wixWindow.formFactor === "Desktop"){
-
-				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Recently Added'){
-
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
-
-						console.log('here: Recently Added');
-
-						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
-
-
-						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
-					});
-
-					$w('#gallery1').items = orderProducts(productsInFocusSortedByRelevanceDesktop, 'FURNITURE', 3);
-				}
-			}
-		}
-		else if (currentProductCategory == 'Clothes & Perfumes'){
-
-			// var productsInFocusSortedByRelevanceMobile = orderProducts(clothesAndPerfumesMen, 'CLOTHING', 2);
-			// var productsInFocusSortedByRelevanceDesktop = orderProducts(clothesAndPerfumesMen, 'CLOTHING', 3);
-
-			var productsInFocusSortedByRelevanceMobile = [];
-			var productsInFocusSortedByRelevanceDesktop = [];
-
-			if (hideAmazonButtonValue == 'Show Amazon Products'){
-				var productsInFocusSortedByRelevanceMobile = orderProducts(clothesAndPerfumesMenAmazonless, 'CLOTHING', 2);
-				var productsInFocusSortedByRelevanceDesktop = orderProducts(clothesAndPerfumesMenAmazonless, 'CLOTHING', 3);
-			}
-			else if (hideAmazonButtonValue == 'Hide Amazon Products'){
-				var productsInFocusSortedByRelevanceMobile = orderProducts(clothesAndPerfumesMen, 'CLOTHING', 2);
-				var productsInFocusSortedByRelevanceDesktop = orderProducts(clothesAndPerfumesMen, 'CLOTHING', 3);
-			}
-
-			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
-
-
-				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Recently Added'){
-
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => {
-
-						console.log('here: Recently Added');
-
-						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
-
-						console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
-
-
-						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
-					});
-
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-
-
-				mainGalleryCopy = $w('#gallery1').items;
-			}
-			else if(wixWindow.formFactor === "Desktop"){
-
-				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Recently Added'){
-
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
-
-						console.log('here: Recently Added');
-
-						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
-
-
-						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
-					});
-
-					$w('#gallery1').items = orderProducts(productsInFocusSortedByRelevanceDesktop, 'CLOTHING', 3);
-				}
-			}
-		}
-		else if (currentProductCategory == 'Flowers & Rings'){
-
-			// var productsInFocusSortedByRelevanceMobile = orderProducts(flowersAndRingsMen, 'RING', 2);
-			// var productsInFocusSortedByRelevanceDesktop = orderProducts(flowersAndRingsMen, 'RING', 3);
-
-			var productsInFocusSortedByRelevanceMobile = [];
-			var productsInFocusSortedByRelevanceDesktop = [];
-
-			if (hideAmazonButtonValue == 'Show Amazon Products'){
-				var productsInFocusSortedByRelevanceMobile = orderProducts(flowersAndRingsMenAmazonless, 'RING', 2);
-				var productsInFocusSortedByRelevanceDesktop = orderProducts(flowersAndRingsMenAmazonless, 'RING', 3);
-			}
-			else if (hideAmazonButtonValue == 'Hide Amazon Products'){
-				var productsInFocusSortedByRelevanceMobile = orderProducts(flowersAndRingsMen, 'RING', 2);
-				var productsInFocusSortedByRelevanceDesktop = orderProducts(flowersAndRingsMen, 'RING', 3);
-			}
-
-
-			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
-
-
-				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Recently Added'){
-
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => {
-
-						console.log('here: Recently Added');
-
-						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
-
-						console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
-
-
-						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
-					});
-
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-
-
-				mainGalleryCopy = $w('#gallery1').items;
-			}
-			else if(wixWindow.formFactor === "Desktop"){
-
-				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Recently Added'){
-
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
-
-						console.log('here: Recently Added');
-
-						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
-
-
-						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
-					});
-
-					$w('#gallery1').items = orderProducts(productsInFocusSortedByRelevanceDesktop, 'RING', 3);
-				}
-			}
-		}
-		else if (currentProductCategory == 'Travel Bags & Other Bags'){
-
-			// var productsInFocusSortedByRelevanceMobile = orderProducts(travelBagsAndOtherBagsMen, 'TRAVEL BAG', 2);
-			// var productsInFocusSortedByRelevanceDesktop = orderProducts(travelBagsAndOtherBagsMen, 'TRAVEL BAG', 3);
-
-			var productsInFocusSortedByRelevanceMobile = [];
-			var productsInFocusSortedByRelevanceDesktop = [];
-
-			if (hideAmazonButtonValue == 'Show Amazon Products'){
-				var productsInFocusSortedByRelevanceMobile = orderProducts(travelBagsAndOtherBagsMenAmazonless, 'TRAVEL BAG', 2);
-				var productsInFocusSortedByRelevanceDesktop = orderProducts(travelBagsAndOtherBagsMenAmazonless, 'TRAVEL BAG', 3);
-			}
-			else if (hideAmazonButtonValue == 'Hide Amazon Products'){
-				var productsInFocusSortedByRelevanceMobile = orderProducts(travelBagsAndOtherBagsMen, 'TRAVEL BAG', 2);
-				var productsInFocusSortedByRelevanceDesktop = orderProducts(travelBagsAndOtherBagsMen, 'TRAVEL BAG', 3);
-			}
-
-			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
-
-
-				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Recently Added'){
-
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => {
-
-						console.log('here: Recently Added');
-
-						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
-
-						console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
-
-
-						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
-					});
-
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-
-
-				mainGalleryCopy = $w('#gallery1').items;
-			}
-			else if(wixWindow.formFactor === "Desktop"){
-
-				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Recently Added'){
-
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
-
-						console.log('here: Recently Added');
-
-						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
-
-
-						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
-					});
-
-					$w('#gallery1').items = orderProducts(productsInFocusSortedByRelevanceDesktop, 'TRAVEL BAG', 3);
-				}
-			}
-
-		}
-		else if (currentProductCategory == 'Other Accessories'){
-
-			// var productsInFocusSortedByRelevanceMobile = orderProducts(otherAccessoriesMen, 'ACCESSORIES', 2);
-			// var productsInFocusSortedByRelevanceDesktop = orderProducts(otherAccessoriesMen, 'ACCESSORIES', 3);
-
-			var productsInFocusSortedByRelevanceMobile = [];
-			var productsInFocusSortedByRelevanceDesktop = [];
-
-			if (hideAmazonButtonValue == 'Show Amazon Products'){
-				var productsInFocusSortedByRelevanceMobile = orderProducts(otherAccessoriesMenAmazonless, 'ACCESSORIES', 2);
-				var productsInFocusSortedByRelevanceDesktop = orderProducts(otherAccessoriesMenAmazonless, 'ACCESSORIES', 3);
-			}
-			else if (hideAmazonButtonValue == 'Hide Amazon Products'){
-				var productsInFocusSortedByRelevanceMobile = orderProducts(otherAccessoriesMen, 'ACCESSORIES', 2);
-				var productsInFocusSortedByRelevanceDesktop = orderProducts(otherAccessoriesMen, 'ACCESSORIES', 3);
-			}
-
-			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
-
-
-				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Recently Added'){
-
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => {
-
-						console.log('here: Recently Added');
-
-						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
-
-						console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
-
-
-						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
-					});
-
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-
-
-				mainGalleryCopy = $w('#gallery1').items;
-			}
-			else if(wixWindow.formFactor === "Desktop"){
-
-				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Recently Added'){
-
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
-
-						console.log('here: Recently Added');
-
-						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
-
-
-						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
-					});
-
-					$w('#gallery1').items = orderProducts(productsInFocusSortedByRelevanceDesktop, 'ACCESSORIES', 3);
-				}
-			}
-		}
-		else if (currentProductCategory == 'Gifts For Her'){
-
-			// var productsInFocusSortedByRelevanceMobile = orderProducts(giftForHer, 'NECKLACE', 1);
-			// var productsInFocusSortedByRelevanceDesktop = orderProducts(giftForHer, 'NECKLACE', 1);
-
-			var productsInFocusSortedByRelevanceMobile = [];
-			var productsInFocusSortedByRelevanceDesktop = [];
-
-			if (hideAmazonButtonValue == 'Show Amazon Products'){
-				var productsInFocusSortedByRelevanceMobile = orderProducts(giftForHerAmazonless, 'NECKLACE', 1);
-				var productsInFocusSortedByRelevanceDesktop = orderProducts(giftForHerAmazonless, 'NECKLACE', 1);
-			}
-			else if (hideAmazonButtonValue == 'Hide Amazon Products'){
-				var productsInFocusSortedByRelevanceMobile = orderProducts(giftForHer, 'NECKLACE', 1);
-				var productsInFocusSortedByRelevanceDesktop = orderProducts(giftForHer, 'NECKLACE', 1);
-			}
-
-			if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
-
-
-				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-				else if (currentSortValue == 'Recently Added'){
-
-					productsInFocusSortedByRelevanceMobile.sort((a, b) => {
-
-						console.log('here: Recently Added');
-
-						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
-
-						console.log('first and second creation time' + firstItemsCreationDate, secondItemsCreationDate);
-
-
-						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
-					});
-
-					$w('#gallery1').items = productsInFocusSortedByRelevanceMobile;
-				}
-
-
-				mainGalleryCopy = $w('#gallery1').items;
-			}
-			else if(wixWindow.formFactor === "Desktop"){
-
-				if (currentSortValue == 'Relevance'){
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Price Ascending'){
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? 0 : -1))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Price Descending'){
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => (stripP(a.description) > stripP(b.description) ? -1 : 0))
-					$w('#gallery1').items = productsInFocusSortedByRelevanceDesktop;
-				}
-				else if (currentSortValue == 'Recently Added'){
-
-					productsInFocusSortedByRelevanceDesktop.sort((a, b) => {
-
-						console.log('here: Recently Added');
-
-						var firstItemsCreationDate = dbQueryAllResponseItems[Number(a.slug)]['_createdDate'];
-						var secondItemsCreationDate = dbQueryAllResponseItems[Number(b.slug)]['_createdDate'];
-
-
-						return firstItemsCreationDate > secondItemsCreationDate ? -1 : 0;
-					});
-
-					$w('#gallery1').items = orderProducts(productsInFocusSortedByRelevanceDesktop, 'NECKLACE', 3);
-				}
-			}
-		}
-
 
 	}
 
@@ -3082,29 +4529,67 @@ function orderProducts(
 	listOfCategoryOptionsProducts,
 	mainCategoryName,
 	positionOfSubcategoryFromMainCategory = 4,
+	isShowLinks = false,
 	subcategoryOneName = 'None', // for future 'improve'
 	subcategoryTwoName = 'None', // for future 'improve'
+	currentItemIndexString = 'None'
 ){
 
 	var orderedContent = [];
 
-	var initialValueofPositionOfSubcategoryFrommainCategoryVariable = positionOfSubcategoryFromMainCategory;
+	// var initialValueofPositionOfSubcategoryFrommainCategoryVariable = positionOfSubcategoryFromMainCategory;
 	var nonMainCategoryProductInsertIndex = positionOfSubcategoryFromMainCategory;
+
+	// console.log('in order Products');
+	// console.log('listOfCategoryOptionsProducts' + listOfCategoryOptionsProducts, listOfCategoryOptionsProducts[0]);
 
 	// include the mainCategory in the orderedContent list first..
 	for (var productIndex in listOfCategoryOptionsProducts){
 
-		var currentProduct = listOfCategoryOptionsProducts[productIndex];
+
+
+		var originalCurrentProduct = listOfCategoryOptionsProducts[Number(productIndex)];
+		var currentProduct = JSON.parse(JSON.stringify(originalCurrentProduct));
+		var currentProductsSlug = currentProduct.slug;
+
+		// console.log('in order Products, slug detected main category');
 
 		if (currentProduct.link == mainCategoryName){
-			orderedContent.push(currentProduct)
+
+			if (isShowLinks == true){
+				var  currentProductEncodedLink = dbQueryAllResponseItems[Number(currentProductsSlug)].productLink;
+				currentProduct.link = decodeCodifiedUrl(currentProductEncodedLink);
+
+				// console.log('');
+				// console.log('orderProducts - Added Product name:' + currentProduct.title);
+				// console.log('orderProducts - Added Product link:' + currentProduct.link);
+				// console.log('');
+			}
+			else if (isShowLinks == false){
+					currentProduct.link = 'https://www.gotquestions.org/personal-Savior.html?=READ-JOHN-3-16&ROMANS-10-9&10-SAY-THESE-WORDS?=LORD-JESUS-I-INVITE-YOU-INTO-MY-LIFE/BE-THE-LORD-OF-MY-LIFE/I-ACCEPT-YOU-AS-MY-LORD-AND-PERSONAL-SAVIOR/I-BELIEVE-THAT-YOU-DIED-ON-THE-CROSS-AND-ROSE-UP-FROM-THE-DEAD/LEAD-ME-AND-DIRECT-MY-PATH-IN-YOUR-PRECIOUS-NAME/AMEN?=IF-YOU-SAID-THESE-WORDS-WELCOME-TO-ETERNAL-LIFE/HALLELUYAH/REMAIN-CONSCIOUS-AND-MINDFUL-OF-THE-ETERNAL-LIFE-AND-THE-RIGHTEOUSNESS-OF-GOD-THAT-YOU-JUST-RECIEVED/WALK-IN-IT-AND-REMAIN-BLESSED?=LEARN&WALK-IN-HIS-COMMANDMENTS-AND-POWER/AMEN'
+				}
+			// else{
+			// 	// console.log('');
+			// 	// console.log('orderProducts - Added Product name:' + currentProduct.title);
+			// 	// console.log('orderProducts - Added Product link:' + currentProduct.link);
+			// 	// console.log('');
+			// 	// console.log('else -> currentProduct.link: ' + currentProduct.link);
+			// }
+
+			// console.log('orderProducts: Pushed Product - ' + currentProduct.title, currentProduct.link);
+
+			orderedContent.push(currentProduct);
 		}
 	}
+
+	// console.log('');
 
 	// include every other product whose category is not the main category..
 	for (var productIndex in listOfCategoryOptionsProducts){
 
-		var currentProduct = listOfCategoryOptionsProducts[productIndex];
+		var originalCurrentProduct = listOfCategoryOptionsProducts[Number(productIndex)];
+		var currentProduct = JSON.parse(JSON.stringify(originalCurrentProduct));
+		var currentProductsSlug = currentProduct.slug;
 
 		// if the value that indicates where non main category products should be positioned
 		// has not changed, insert the current non main category product at the 'positionOfSubcategoryFromMainCategory'
@@ -3112,20 +4597,38 @@ function orderProducts(
 		// positioned evenly..
 		// if (nonMainCategoryProductInsertIndex == initialValueofPositionOfSubcategoryFrommainCategoryVariable){
 
+			// console.log('in order Products, slug detected subcategory');
+
 			if (currentProduct.link != mainCategoryName){
+
+				if (isShowLinks == true){
+					// console.log('?error1');
+					// console.log('slug: ' + currentProductsSlug);
+					var  currentProductEncodedLink = dbQueryAllResponseItems[Number(currentProductsSlug)].productLink;
+					// console.log('?error2');
+					currentProduct.link = decodeCodifiedUrl(currentProductEncodedLink);
+				}
+				else if (isShowLinks == false){
+					currentProduct.link = 'https://www.gotquestions.org/personal-Savior.html?=READ-JOHN-3-16&ROMANS-10-9&10-SAY-THESE-WORDS?=LORD-JESUS-I-INVITE-YOU-INTO-MY-LIFE/BE-THE-LORD-OF-MY-LIFE/I-ACCEPT-YOU-AS-MY-LORD-AND-PERSONAL-SAVIOR/I-BELIEVE-THAT-YOU-DIED-ON-THE-CROSS-AND-ROSE-UP-FROM-THE-DEAD/LEAD-ME-AND-DIRECT-MY-PATH-IN-YOUR-PRECIOUS-NAME/AMEN?=IF-YOU-SAID-THESE-WORDS-WELCOME-TO-ETERNAL-LIFE/HALLELUYAH/REMAIN-CONSCIOUS-AND-MINDFUL-OF-THE-ETERNAL-LIFE-AND-THE-RIGHTEOUSNESS-OF-GOD-THAT-YOU-JUST-RECIEVED/WALK-IN-IT-AND-REMAIN-BLESSED?=LEARN&WALK-IN-HIS-COMMANDMENTS-AND-POWER/AMEN'
+				}
+
+				// console.log('?error3');
 				orderedContent.splice(nonMainCategoryProductInsertIndex, 0, currentProduct);
+				// console.log('?error4');
 				nonMainCategoryProductInsertIndex += positionOfSubcategoryFromMainCategory + 1;
+
+				// console.log('orderProducts: Pushed Product - ' + currentProduct.title, + ' , ' + currentProduct.link);
 			}
 		// }
 		// else if (nonMainCategoryProductInsertIndex == initialValueofPositionOfSubcategoryFrommainCategoryVariable * 2){
-//
+		//
 		// 	if (currentProduct.link != mainCategoryName){
 		// 		orderedContent.splice(nonMainCategoryProductInsertIndex - 1, 0, currentProduct);
 		// 		nonMainCategoryProductInsertIndex += positionOfSubcategoryFromMainCategory;
 		// 	}
 		// }
 		// else{
-//
+		//
 		// 	if (currentProduct.link != mainCategoryName){
 		// 		orderedContent.splice(nonMainCategoryProductInsertIndex, 0, currentProduct);
 		// 		nonMainCategoryProductInsertIndex += positionOfSubcategoryFromMainCategory;
@@ -3133,6 +4636,8 @@ function orderProducts(
 		// }
 
 	}
+
+	console.log('final orderedContent link: ' + orderedContent[0].link);
 
 	return orderedContent;
 
