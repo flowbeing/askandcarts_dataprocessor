@@ -224,10 +224,25 @@ async function resolveGalleryItems(){
 
 $w.onReady(function () {
 
+    // about us button
+	$w('#text19').onClick((event) => {
+		wixLocation.to('https://www.askandcarts.com/about-us');
+	});
+
+	// terms and conditions button
+	$w('#text32').onClick((event) => {
+		wixLocation.to('https://www.askandcarts.com/store-policy');
+	});
+
+	// store policy button
+	$w('#text33').onClick((event) => {
+		wixLocation.to('https://www.askandcarts.com/store-policy');
+	});
+
 	if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
 		$w('#section5').hide();
 		$w('#recommendedForWomenGallery').hide();
-		$w('#gallery1').scrollTo()
+		$w('#gallery1').scrollTo();
 
 	}
 
@@ -237,6 +252,12 @@ $w.onReady(function () {
 
 
 	setTimeout(() => {
+
+	    // redirect to not available
+		if (usersCountryCode != 'AE' && usersCountryCode != 'US' && usersCountryCode != 'SG'){
+			wixLocation.to('https://askandcarts.com/not-available');
+			close();
+		}
 
 
 		console.log('items length: ' + dbQueryAllResponseItems.length);
