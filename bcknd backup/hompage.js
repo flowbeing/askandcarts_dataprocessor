@@ -231,12 +231,12 @@ $w.onReady(function () {
 
 	// terms and conditions button
 	$w('#text32').onClick((event) => {
-		wixLocation.to('https://www.askandcarts.com/store-policy');
+		wixLocation.to('https://www.askandcarts.com/terms-and-conditions-and-privacy-policy#privacy-policy');
 	});
 
 	// store policy button
 	$w('#text33').onClick((event) => {
-		wixLocation.to('https://www.askandcarts.com/store-policy');
+		wixLocation.to('https://www.askandcarts.com/terms-and-conditions-and-privacy-policy#privacy-policy');
 	});
 
 	if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
