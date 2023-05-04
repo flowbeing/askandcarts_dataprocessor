@@ -19,6 +19,10 @@ watches_com_scraped_data_folder = '/Users/admin/OneDrive/docs/affiliate/scraped_
 
 # FOLDERS -> FILTERED DATA
 all_filtered_data_folder = '/Users/admin/OneDrive/docs/affiliate/filtered_data/'
+all_filtered_data_folder_cj = '/Users/admin/OneDrive/docs/affiliate/filtered_data/CJ/obtained_data/'
+
+# FILENAMES -> FILTERED DATA -> CJ
+
 
 # FOLDERS AND FILENAMES-> OTHER SETTINGS
 other_settings_data_folder = '/Users/admin/OneDrive/docs/affiliate/other_settings_data/'
@@ -30,6 +34,7 @@ all_log_files_folder = '/Users/admin/OneDrive/docs/affiliate/logs/'
 
 wx_upload_error_log_filename = 'data_to_wx_upload_error_log.json'
 filter_error_log_filename = 'filter_errors_log.txt'
+shorts_progress_log = 'shorts_progress_log.txt'
 
 # WX UPLOAD TASK COMPLETION LOG
 wx_upload_tasks_status_log_file = 'wx_upload_task_completion_log.json'

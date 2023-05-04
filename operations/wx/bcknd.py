@@ -10,7 +10,7 @@ from settings.productCategory import productCategories
 from settings.site_names import site_names
 
 from settings.q.default_folder_and_filename_settings \
-    import all_scraped_data_folder, all_filtered_data_folder,all_log_files_folder, wx_upload_error_log_filename
+    import all_scraped_data_folder, all_filtered_data_folder, all_filtered_data_folder_cj, all_log_files_folder, wx_upload_error_log_filename
 
 def extract_elements_per_row_from_dataframe(
         file_name,
@@ -39,53 +39,90 @@ def extract_elements_per_row_from_dataframe(
         current_row_data = dataframe.loc[index]
 
         # current row's title
-        current_row_title =  current_row_data['Title']
+        current_row_title = ''
+
+        if 'Title' in list_of_columns:
+            current_row_title =  current_row_data['Title']
+        elif 'title' in list_of_columns: # to account for 'title' in CJ's products feed data
+            current_row_title = current_row_data['title']
+
 
         # current row's brandname if brand name's has been included in the data set
         current_row_brandname = current_row_data['brandName'] if 'brandName' in list_of_columns else ''
 
         # obtaining product category and if product category contains 'BAG', remove the category that irrelevant as per
         # the file name..
-        current_row_product_category_list = [
-            productCategory for productCategory in productCategories if productCategory in file_name
-        ]
-        [
-            current_row_product_category_list.remove(i)
-            for i in current_row_product_category_list
-            for ii in current_row_product_category_list
-            if i in ii and ii != i # this line eliminates 'BAG' where 'TRAVEL BAG' is the current product category..
-         ]
-        current_row_product_category = current_row_product_category_list[0].replace('_', ' ')
+        current_row_product_category = ''
+
+        if '_CJ_' in file_name:
+            current_row_product_category = current_row_data['productCategory']
+        else:
+            current_row_product_category_list = [
+                productCategory for productCategory in productCategories if productCategory in file_name
+            ]
+            [
+                current_row_product_category_list.remove(i)
+                for i in current_row_product_category_list
+                for ii in current_row_product_category_list
+                if i in ii and ii != i
+                # this line eliminates 'BAG' where 'TRAVEL BAG' is the current product category..
+            ]
+            current_row_product_category = current_row_product_category_list[0].replace('_', ' ')
+
 
         # current row's applicable gender
-        current_row_gender_list = [gender for gender in list_of_genders if gender in file_name]
-        # print(f'current_row_gender_list: {current_row_gender_list}')
+        current_row_gender = ''
 
-        current_row_gender = \
-            'UNISEX' if len(current_row_gender_list) > 1 else current_row_gender_list[0].replace('_', '')
+        if '_CJ_' in file_name:
+            current_row_gender = current_row_data['gender']
+        else:
+            current_row_gender_list = [gender for gender in list_of_genders if gender in file_name]
+            # print(f'current_row_gender_list: {current_row_gender_list}')
+
+            current_row_gender = \
+                'UNISEX' if len(current_row_gender_list) > 1 else current_row_gender_list[0].replace('_', '')
 
         # current row's price
-        current_row_price = current_row_data['Price']
+        current_row_price = ''
+
+        if '_CJ_' in file_name:
+            current_row_price = current_row_data['price']
+        else:
+            current_row_price = current_row_data['Price']
 
         # current row's product link
-        current_row_product_link = current_row_data['productLink']
+        current_row_product_link = current_row_data['productLink'] # works for CJ product feed data as well
 
         # current row's image link
-        current_row_image_link = current_row_data['Image Src']
+        current_row_image_link = ''
+
+        if '_CJ_' in file_name:
+            current_row_image_link = current_row_data['imageSrc']
+        else:
+            current_row_image_link = current_row_data['Image Src']
 
         # current row's site name
-        current_row_site_name = [site_name for site_name in site_names if site_name in file_name][0]
+        current_row_site_name = ''
+
+        if '_CJ_' in file_name:
+            current_row_site_name = current_row_data['siteName']
+        else:
+            current_row_site_name = [site_name for site_name in site_names if site_name in file_name][0]
 
         # obtaining collection name that's associated with the current row's data
         # current row's country name
-        current_row_country_name = \
-            [country for country in list_of_countries if country in file_name]
+        current_row_country_name = ''
 
-        current_row_country_name = \
-            'USA' if '_US_' in file_name or '_USA_' in file_name else current_row_country_name[0].replace('_', '')
+        if '_CJ_' in file_name:
+            current_row_country_name = 'UAE'
+        else:
+            current_row_country_name = \
+                [country for country in list_of_countries if country in file_name]
+
+            current_row_country_name = \
+                'USA' if '_US_' in file_name or '_USA_' in file_name else current_row_country_name[0].replace('_', '')
 
         current_rows_relevant_collection = f'{current_row_country_name.lower()}Products'
-
 
 
 
@@ -104,8 +141,8 @@ def extract_elements_per_row_from_dataframe(
         # UPLOAD ROW DATA TO IT'S RELEVANT WIX DATABASE..
         try:
 
-            watches_com_fwrd_jimmy_choo_relative_extra_collections_name = ['uaeProducts', 'usaProducts', 'singaporeProducts']
-            watches_com_fwrd_jimmy_choo_relative_extra_countries_name = ['UAE', 'USA', 'SINGAPORE']
+            watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_collections_name = ['uaeProducts', 'usaProducts', 'singaporeProducts']
+            watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_countries_name = ['UAE', 'USA', 'SINGAPORE']
 
             number_of_times_to_upload_products_to_databases = 0
 
@@ -114,7 +151,7 @@ def extract_elements_per_row_from_dataframe(
             if 'WATCHES_COM' in file_name:
                 number_of_times_to_upload_products_to_databases = 2
 
-            elif 'FWRD' in file_name or 'JIMMY_CHOO' in file_name:
+            elif 'THE_LUXURY_CLOSET' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name:
                 number_of_times_to_upload_products_to_databases = 3
 
 
@@ -133,8 +170,8 @@ def extract_elements_per_row_from_dataframe(
                     for index in range(2):
 
                         upload_data_operation_status_code = populate_site_db(
-                            collection_name= watches_com_fwrd_jimmy_choo_relative_extra_collections_name[i]
-                            if 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
+                            collection_name= watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_collections_name[i]
+                            if 'THE_LUXURY_CLOSET' in file_name or 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
                             else current_rows_relevant_collection, #
 
                             title=current_row_title,
@@ -146,8 +183,8 @@ def extract_elements_per_row_from_dataframe(
                             image_src=current_row_image_link,
                             site_name=current_row_site_name,
 
-                            country= watches_com_fwrd_jimmy_choo_relative_extra_countries_name[i]
-                            if 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
+                            country= watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_countries_name[i]
+                            if 'THE_LUXURY_CLOSET' in file_name or 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
                             else current_row_country_name, #
                             is_continue_from_previous_stop_csv = is_continue_from_previous_stop_csv
                         )
@@ -181,8 +218,8 @@ def extract_elements_per_row_from_dataframe(
                 else:
 
                     upload_data_operation_status_code = populate_site_db(
-                        collection_name=watches_com_fwrd_jimmy_choo_relative_extra_collections_name[i]
-                        if 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
+                        collection_name=watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_collections_name[i]
+                        if 'THE_LUXURY_CLOSET' in file_name or 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
                         else current_rows_relevant_collection,  #
 
                         title=current_row_title,
@@ -194,8 +231,8 @@ def extract_elements_per_row_from_dataframe(
                         image_src=current_row_image_link,
                         site_name=current_row_site_name,
 
-                        country=watches_com_fwrd_jimmy_choo_relative_extra_countries_name[i]
-                        if 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
+                        country=watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_countries_name[i]
+                        if 'THE_LUXURY_CLOSET' in file_name or 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
                         else current_row_country_name, #
                         is_continue_from_previous_stop_csv=is_continue_from_previous_stop_csv
                     )
@@ -257,9 +294,13 @@ def upload_skipped_csv_rows(
 
     for file_name in skipped_csv_rows_dict:
 
-
-        current_csv_file_path = f'{all_filtered_data_folder}{file_name}_FILTERED.csv'
+        current_csv_file_path = ''
         current_CSVs_ignored_rows_during_wx_upload_list = skipped_csv_rows_dict[file_name]
+
+        if '_CJ_' in file_name:
+            current_csv_file_path = f'{all_filtered_data_folder_cj}{file_name}_CJ_.csv'
+        else:
+            current_csv_file_path = f'{all_filtered_data_folder}{file_name}_FILTERED.csv'
 
         current_csv_as_dataframe = pd.read_csv(current_csv_file_path)
         list_of_columns = current_csv_as_dataframe.columns
@@ -274,50 +315,88 @@ def upload_skipped_csv_rows(
             current_row_data = current_csv_as_dataframe.loc[index]
 
             # current row's title
-            current_row_title = current_row_data['Title']
+            current_row_title = ''
+
+            if 'Title' in list_of_columns:
+                current_row_title = current_row_data['Title']
+            elif 'title' in list_of_columns:  # to account for 'title' in CJ's products feed data
+                current_row_title = current_row_data['title']
 
             # current row's brandname if brand name's has been included in the data set
+            # work for CJ products feed data as well
             current_row_brandname = current_row_data['brandName'] if 'brandName' in list_of_columns else ''
 
             # obtaining product category and if product category contains 'BAG', remove the category that irrelevant as per
             # the file name..
-            current_row_product_category_list = [
-                productCategory for productCategory in productCategories if productCategory in file_name
-            ]
-            [
-                current_row_product_category_list.remove(i)
-                for i in current_row_product_category_list
-                for ii in current_row_product_category_list
-                if i in ii and ii != i
-            ]
-            current_row_product_category = current_row_product_category_list[0].replace('_', ' ')
+            current_row_product_category = ''
+
+            if '_CJ_' in file_name:
+                current_row_product_category = current_row_data['productCategory']
+            else:
+                current_row_product_category_list = [
+                    productCategory for productCategory in productCategories if productCategory in file_name
+                ]
+                [
+                    current_row_product_category_list.remove(i)
+                    for i in current_row_product_category_list
+                    for ii in current_row_product_category_list
+                    if i in ii and ii != i
+                    # this line eliminates 'BAG' where 'TRAVEL BAG' is the current product category..
+                ]
+                current_row_product_category = current_row_product_category_list[0].replace('_', ' ')
 
             # current row's applicable gender
-            current_row_gender_list = [gender for gender in list_of_genders if gender in file_name]
-            # print(f'current_row_gender_list: {current_row_gender_list}')
+            current_row_gender = ''
 
-            current_row_gender = \
-                'UNISEX' if len(current_row_gender_list) > 1 else current_row_gender_list[0].replace('_', '')
+            if '_CJ_' in file_name:
+                current_row_gender = current_row_data['gender']
+            else:
+                current_row_gender_list = [gender for gender in list_of_genders if gender in file_name]
+                # print(f'current_row_gender_list: {current_row_gender_list}')
+
+                current_row_gender = \
+                    'UNISEX' if len(current_row_gender_list) > 1 else current_row_gender_list[0].replace('_', '')
 
             # current row's price
-            current_row_price = current_row_data['Price']
+            current_row_price = ''
+
+            if '_CJ_' in file_name:
+                current_row_price = current_row_data['price']
+            else:
+                current_row_price = current_row_data['Price']
 
             # current row's product link
-            current_row_product_link = current_row_data['productLink']
+            current_row_product_link = current_row_data['productLink']  # works for CJ product feed data as well
 
             # current row's image link
-            current_row_image_link = current_row_data['Image Src']
+            current_row_image_link = ''
+
+            if '_CJ_' in file_name:
+                current_row_image_link = current_row_data['imageSrc']
+            else:
+                current_row_image_link = current_row_data['Image Src']
 
             # current row's site name
-            current_row_site_name = [site_name for site_name in site_names if site_name in file_name][0]
+            current_row_site_name = ''
+
+            if '_CJ_' in file_name:
+                current_row_site_name = current_row_data['siteName']
+            else:
+                current_row_site_name = [site_name for site_name in site_names if site_name in file_name][0]
 
             # obtaining collection name that's associated with the current row's data
             # current row's country name
-            current_row_country_name = \
-                [country for country in list_of_countries if country in file_name]
+            current_row_country_name = ''
 
-            current_row_country_name = \
-                'USA' if '_US_' in file_name or '_USA_' in file_name else current_row_country_name[0].replace('_', '')
+            if '_CJ_' in file_name:
+                current_row_country_name = 'UAE'
+            else:
+                current_row_country_name = \
+                    [country for country in list_of_countries if country in file_name]
+
+                current_row_country_name = \
+                    'USA' if '_US_' in file_name or '_USA_' in file_name else current_row_country_name[0].replace('_',
+                                                                                                                  '')
 
             current_rows_relevant_collection = f'{current_row_country_name.lower()}Products'
 
@@ -336,10 +415,10 @@ def upload_skipped_csv_rows(
             # UPLOAD ROW DATA TO IT'S RELEVANT WIX DATABASE..
             try:
 
-                # ---
-                watches_com_fwrd_jimmy_choo_relative_extra_collections_name = ['uaeProducts', 'usaProducts',
-                                                                               'singaporeProducts']
-                watches_com_fwrd_jimmy_choo_relative_extra_countries_name = ['UAE', 'USA', 'SINGAPORE']
+                watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_collections_name = ['uaeProducts',
+                                                                                               'usaProducts',
+                                                                                               'singaporeProducts']
+                watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_countries_name = ['UAE', 'USA', 'SINGAPORE']
 
                 number_of_times_to_upload_products_to_databases = 0
 
@@ -348,13 +427,12 @@ def upload_skipped_csv_rows(
                 if 'WATCHES_COM' in file_name:
                     number_of_times_to_upload_products_to_databases = 2
 
-                elif 'FWRD' in file_name or 'JIMMY_CHOO' in file_name:
+                elif 'THE_LUXURY_CLOSET' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name:
                     number_of_times_to_upload_products_to_databases = 3
 
 
                 else:
                     number_of_times_to_upload_products_to_databases = 1
-
 
                 for i in range(number_of_times_to_upload_products_to_databases):
 
@@ -365,8 +443,9 @@ def upload_skipped_csv_rows(
                         for index in range(2):
 
                             upload_data_operation_status_code = populate_site_db(
-                                collection_name=watches_com_fwrd_jimmy_choo_relative_extra_collections_name[i]
-                                if 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
+                                collection_name=
+                                watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_collections_name[i]
+                                if 'THE_LUXURY_CLOSET' in file_name or 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
                                 else current_rows_relevant_collection,  #
 
                                 title=current_row_title,
@@ -378,10 +457,10 @@ def upload_skipped_csv_rows(
                                 image_src=current_row_image_link,
                                 site_name=current_row_site_name,
 
-                                country=watches_com_fwrd_jimmy_choo_relative_extra_countries_name[i]
-                                if 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
-                                else current_row_country_name , #
-                                is_continue_from_previous_stop_csv= True
+                                country=watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_countries_name[i]
+                                if 'THE_LUXURY_CLOSET' in file_name or 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
+                                else current_row_country_name,  #
+                                is_continue_from_previous_stop_csv=True
                             )
 
                             if upload_data_operation_status_code == 200:
@@ -390,8 +469,9 @@ def upload_skipped_csv_rows(
                     else:
 
                         upload_data_operation_status_code = populate_site_db(
-                            collection_name=watches_com_fwrd_jimmy_choo_relative_extra_collections_name[i]
-                            if 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
+                            collection_name=watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_collections_name[
+                                i]
+                            if 'THE_LUXURY_CLOSET' in file_name or 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
                             else current_rows_relevant_collection,  #
 
                             title=current_row_title,
@@ -403,10 +483,10 @@ def upload_skipped_csv_rows(
                             image_src=current_row_image_link,
                             site_name=current_row_site_name,
 
-                            country=watches_com_fwrd_jimmy_choo_relative_extra_countries_name[i]
-                            if 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
-                            else current_row_country_name, #
-                            is_continue_from_previous_stop_csv= True
+                            country=watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_countries_name[i]
+                            if 'THE_LUXURY_CLOSET' in file_name or 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
+                            else current_row_country_name,  #
+                            is_continue_from_previous_stop_csv=True
                         )
 
                         if upload_data_operation_status_code == 200:

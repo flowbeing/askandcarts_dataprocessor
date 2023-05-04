@@ -13,6 +13,5 @@ productCategories = {
     "TRAVEL_BAG",
     "RING",
     "BAG",
-    "SHOE",
     "ACCESSORIES"
 }

@@ -9,6 +9,7 @@ from settings.q.other_settings import api_key_fxr
 def convert_minimum_profit(
         is_usd_to_sgd = False,
         is_usd_to_aed = False,
+        minimum_commission_target_usd = 200,
         is_get_eur_to_sgd_exchange_rate = False
 ):
 
@@ -22,7 +23,7 @@ def convert_minimum_profit(
                         '2. is_usd_to_aed')
 
 
-    minimum_profit_target_usd = 150
+    minimum_commission_target_usd = minimum_commission_target_usd
 
     # minimum_profit_target_conversion_dict = {
     #     'minimum_profit_target_usd_to_sgd': 0,
@@ -44,8 +45,8 @@ def convert_minimum_profit(
 
     minimum_profit_target_conversion_dict = json.loads(minimum_profit_target_conversion_json)
 
-    print()
-    print(minimum_profit_target_conversion_dict)
+    #* print()
+    #* print(minimum_profit_target_conversion_dict)
 
     time_last_update = datetime.datetime.strptime(
         minimum_profit_target_conversion_dict['last_update_time'],
@@ -67,9 +68,9 @@ def convert_minimum_profit(
 
     twenty_four_hours_minus_a_micro_second = twenty_four_hours_minus_a_micro_second - unecessary_extra_year
 
-    print(f'time_diff_last_update: {time_from_last_update}')
-    print(f'twenty_four_hours: {twenty_four_hours_minus_a_micro_second}')
-    print()
+    #* print(f'time_diff_last_update: {time_from_last_update}')
+    #* print(f'twenty_four_hours: {twenty_four_hours_minus_a_micro_second}')
+    #* print()
 
     # print(twenty_four_hours_as_seconds  - time_from_last_update_as_seconds)
 
@@ -99,13 +100,13 @@ def convert_minimum_profit(
     # if the last exchange rate info retrieval was performed a day ago, update it..
     if time_from_last_update > twenty_four_hours_minus_a_micro_second:
         minimum_profit_target_usd_to_sgd = convert_currency(
-            amount=minimum_profit_target_usd,
+            amount=minimum_commission_target_usd,
             from_currency='USD',
             to_currency='SGD'
         )
 
         minimum_profit_target_usd_to_aed = convert_currency(
-            amount=minimum_profit_target_usd,
+            amount=minimum_commission_target_usd,
             from_currency='USD',
             to_currency='AED'
         )
