@@ -29,12 +29,14 @@ other_settings_data_folder = '/Users/admin/OneDrive/docs/affiliate/other_setting
 
 filename_last_serviced_sitemap_folder_dict_as_json = 'last_serviced_sitemap_folder_data'
 
-# FOLDERS AND FILENAMES -> ERROR LOG
+# FOLDERS AND FILENAMES -> LOG
 all_log_files_folder = '/Users/admin/OneDrive/docs/affiliate/logs/'
 
 wx_upload_error_log_filename = 'data_to_wx_upload_error_log.json'
 filter_error_log_filename = 'filter_errors_log.txt'
 shorts_progress_log = 'shorts_progress_log.txt'
+retrieved_links_log = 'retrieved_links_log.txt'
+
 
 # WX UPLOAD TASK COMPLETION LOG
 wx_upload_tasks_status_log_file = 'wx_upload_task_completion_log.json'

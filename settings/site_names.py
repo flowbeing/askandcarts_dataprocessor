@@ -10,6 +10,7 @@ site_names = {
     'NANUSHKA',
     'RADO',
     'RIMOWA',
+    'SAMSUNG_UAE',
     'THE_LUXURY_CLOSET', # ✔✔ 7 days cookie, 60 days locking period, direct linking allowed
     'WATCHES_COM' # ✔✔
 

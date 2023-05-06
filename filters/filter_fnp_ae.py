@@ -1,8 +1,15 @@
+import json
+import random
+import urllib.parse
+
+from operations.short.shorten_url import shorten_url_filters
 from settings.q.pd_settings import *
+
 
 from operations.wx.bcknd import extract_elements_per_row_from_dataframe
 
-from settings.q.default_folder_and_filename_settings import all_filtered_data_folder
+from settings.q.default_folder_and_filename_settings import \
+    all_filtered_data_folder, all_scraped_data_folder, all_log_files_folder, shorts_progress_log
 
 
 '''productLink, image, name, brandname, description, currentprice'''
@@ -12,7 +19,7 @@ def filter_fnp_ae_scraped_data(
         file_address,
         minimum_profit_target,
         commission_per_sale,
-        is_continue_from_previous_stop_csv,
+        is_continue_from_previous_stop_csv = False,
         starting_index=0,
         ref_link = '',
         is_wx_upload=False
@@ -164,19 +171,73 @@ def filter_fnp_ae_scraped_data(
 
         countLinkNumber += 1
 
+    # adding new columns - (with existing columns values)
+    fnp_ae_scrapped_data['productLinkScraped'] = product_link
+    fnp_ae_scrapped_data['productLinkCJ'] = product_link
+
+    fnp_ae_scrapped_data['Image Src Scraped'] = image_link
+    fnp_ae_scrapped_data['image Src With Affiliate Link'] = image_link
+
+
+
     fnp_ae_scrapped_data.columns = \
-        ['productLink', 'Image Src', 'Title', 'currency', 'Price']
+        ['productLinkScraped', 'productLinkCJ', 'productLink', 'Image Src Scraped', 'image Src With Affiliate Link', 'Image Src', 'Title', 'currency', 'Price']
 
+    # CJ prefix
+    cj_deep_link_fnp = ['https://www.anrdoezrs.net/click-100782564-15115801?url=',
+                        'https://www.kqzyfj.com/click-100782564-15115801?url=',
+                        'https://www.jdoqocy.com/click-100782564-15115801?url=',
+                        'https://www.dpbolvw.net/click-100782564-15115801?url=',
+                        'https://www.tkqlhce.com/click-100782564-15115801?url='
+                        ]
 
-    fnp_ae_scrapped_data['productLink'] = product_link
-    fnp_ae_scrapped_data['Image Src'] = image_link
+    fnp_ae_scrapped_data['productLinkScraped'] = product_link
+    fnp_ae_scrapped_data['productLink With Affiliate Link'] = [f'{cj_deep_link_fnp[random.randint(0, 4)]}{urllib.parse.quote_plus(url)}' for url in product_link]
+    fnp_ae_scrapped_data['Image Src Scraped'] = image_link
+    fnp_ae_scrapped_data['image Src With Affiliate Link'] = [f'{cj_deep_link_fnp[random.randint(0, 4)]}{urllib.parse.quote_plus(url)}' for url in image_link]
+    fnp_ae_scrapped_data['productLink'] = ['yet to be computed' for link in product_link]
+    fnp_ae_scrapped_data['Image Src'] = ['yet to be computed' for link in image_link]
     fnp_ae_scrapped_data['Title'] = product_name
     fnp_ae_scrapped_data['currency'] = current_price
     fnp_ae_scrapped_data['Price'] = current_price
 
+    # scraped data before link shortening
+
     fnp_ae_scrapped_data = fnp_ae_scrapped_data[
-        ['productLink', 'Image Src', 'Title', 'Price']
+        ['productLinkScraped', 'Image Src Scraped',
+         'productLink With Affiliate Link', 'productLink',
+         'image Src With Affiliate Link', 'Image Src',
+         'Title',
+         'Price'
+         ]
     ]
+
+    print('SCRAPPED DATA - PRE LINKS SHORTENING')
+    print(fnp_ae_scrapped_data)
+
+    # SHORTEN LINKS?
+    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    print()
+    is_shorten_link = input(f'Would you like shorten links for the following scraped file:\n'
+                            f'{file_name}? y/n?\n\n')
+
+    if is_shorten_link == 'y':
+
+        shorten_url_filters(
+            file_name= file_name,
+            processed_dataframe_with_affiliate_product_and_image_links=fnp_ae_scrapped_data
+        )
+
+    elif is_shorten_link == 'n':
+
+        pass
+
+    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    print()
+    print()
+    print('SCRAPPED DATA - POST LINKS SHORTENING QUERY')
 
     # DROPPING ALL PRODUCTS THAT DO HAVE a price that's lower than the price required to hit 'minimum_profit_target'
     fnp_ae_scrapped_data.dropna(inplace=True)
@@ -197,23 +258,50 @@ def filter_fnp_ae_scraped_data(
 
     cleaned_up_scraped_data_fnp_ae.to_csv(f'{all_filtered_data_folder}{file_name[:-4]}_FILTERED.csv', index=False)
 
-    # wx upload if cleaned dataframe is not empty and wx upload parameter has been set to true
-    if len_after_filtering > 0 and is_wx_upload == True:
+    # EXTRACT ROWS AND UPLOAD?
+    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-        extract_elements_per_row_from_dataframe(
-            file_name=file_name[:-4], # to remove '.csv'
-            dataframe=cleaned_up_scraped_data_fnp_ae,
-            is_continue_from_previous_stop_csv = is_continue_from_previous_stop_csv
-        )
+    # wx upload if cleaned dataframe is not empty and wx upload parameter has been set to true
+    if is_shorten_link == 'y':
+
+        print()
+        is_extract_and_upload_rows = input(
+            f'Would you like to extract and upload rows for the following scraped file:\n'
+            f'{file_name}? y/n\n\n')
+
+        if is_extract_and_upload_rows == 'y':
+
+            if len_after_filtering > 0 and is_wx_upload == True:
+                extract_elements_per_row_from_dataframe(
+                    file_name=file_name[:-4],  # to remove '.csv'
+                    dataframe=cleaned_up_scraped_data_fnp_ae,
+                    is_continue_from_previous_stop_csv=is_continue_from_previous_stop_csv
+                )
+
+        else:
+
+            print()
+            print(f"UPLOAD OPERATION FOR '{file_name}' WAS NOT ATTEMPTED FROM YOUR CHOICE!")
+
+    else:
+
+        print()
+        print(f"UPLOAD OPERATION FOR '{file_name}' WAS NOT ATTEMPTED BECAUSE LINKS HAVE NOT BEEN SHORTENED!")
+
+    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
     return len(cleaned_up_scraped_data_fnp_ae.index)
 
-# try:
-#     filter_fnp_ae_scraped_data(
-#         file_address=f'{all_scraped_data_folder}fourty_seven_UAE_FLOWER_FNP_AE_MEN_ONLY.csv',
-#         minimum_profit_target=0,
-#         commission_per_sale=.0615,
-#         ref_link='?refs'
-#     )
-# except:
-#     raise Exception('There was an error while trying to filters fnp_ae scrapped data')
+try:
+    filter_fnp_ae_scraped_data(
+        file_name= 'fourty_seven_UAE_FLOWER_FNP_AE_MEN_ONLY',
+        file_address=f'{all_scraped_data_folder}fourty_seven_UAE_FLOWER_FNP_AE_MEN_ONLY.csv',
+        minimum_profit_target=0,
+        commission_per_sale=.0615,
+        ref_link='?refs'
+    )
+except:
+    raise Exception('There was an error while trying to filters fnp_ae scrapped data')
+
+
