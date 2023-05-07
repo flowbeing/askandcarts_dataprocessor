@@ -295,7 +295,7 @@ def add_products_to_table(
                 product_gender = 'UNISEX'
 
             # PRODUCT LINK
-            product_link = product['linkCode']['clickUrl'] + 'added_two'
+            product_link = product['linkCode']['clickUrl']
             # index_of_product_link_less_trigger = product_link.index('url=') + 4
             # product_link_less_cj_trigger = product_link[index_of_product_link_less_trigger:]
             product_link_less_cj_trigger = (product_link.split('url='))[-1]
@@ -380,7 +380,7 @@ def add_products_to_table(
                     if type(shorten_product_link_operation) != str:
                         short_product_link = shorten_product_link_operation['shortened_url']
                         short_product_link_creation_time = shorten_product_link_operation['created_at']
-                        short_product_link_id_string = shorten_product_link_operation['idString']
+                        short_product_link_id_string = shorten_product_link_operation['id_string']
 
                     else:
                         short_product_link = shorten_product_link_operation
@@ -452,7 +452,7 @@ def add_products_to_table(
                         if type(shorten_product_link_operation) != str:
                             short_product_link = shorten_product_link_operation['shortened_url']
                             short_product_link_creation_time = shorten_product_link_operation['created_at']
-                            short_product_link_id_string = shorten_product_link_operation['idString']
+                            short_product_link_id_string = shorten_product_link_operation['id_string']
 
                         else:
                             short_product_link = shorten_product_link_operation
@@ -479,7 +479,7 @@ def add_products_to_table(
 
 
             # IMAGE SRC
-            image_src = product['linkCode']['imageUrl'] + 'added_two'
+            image_src = product['linkCode']['imageUrl']
             # index_of_product_link_less_trigger = product_link.index('imgurl=') + 7
             # image_src_less_cj_trigger = image_src[index_of_product_link_less_trigger:]
             image_src_less_cj_trigger = (image_src.split('imgurl='))[-1]

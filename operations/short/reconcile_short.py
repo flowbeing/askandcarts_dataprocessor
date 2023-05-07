@@ -83,9 +83,10 @@ def retrieve_links_web():
 
 
         retrieved_links_dict = {
+            'idString': [],
             'createdAt': [],
             'updatedAt': [],
-            'isLinkUpdated': [],
+            'isLinkUpdated-ShortsRecords': [],
             'shortURL': [],
             'originalURL': []
         }
@@ -104,15 +105,16 @@ def retrieve_links_web():
             retrieved_links_log_json = retrieved_links_log_file_one.read()
             retrieved_links_log_json_as_dict = json.loads(retrieved_links_log_json)
 
-            retrieved_links_index = 0
+            retrieved_links_index = 1
             
             for retrieved_link in retrieved_links:
-
+                
+                id_string = retrieved_link['idString']
                 short_link = retrieved_link['shortURL']
                 original_link = retrieved_link['originalURL']
                 link_creation_date = retrieved_link['createdAt']
                 link_update_date = retrieved_link['updatedAt']
-                is_link_updated = link_creation_date != link_update_date
+                is_link_updated_shorts_record = link_creation_date != link_update_date
 
                 retrieved_link['createdAt'] = datetime.datetime.strptime(
                     link_creation_date,
@@ -123,12 +125,13 @@ def retrieve_links_web():
                     link_update_date,
                     '%Y-%m-%dT%H:%M:%S.%fZ'
                 )
-
+                
+                retrieved_links_dict['idString'].append(id_string)
                 retrieved_links_dict['createdAt'].append(link_creation_date)
                 retrieved_links_dict['updatedAt'].append(link_update_date)
-                retrieved_links_dict['isLinkUpdated'].append(is_link_updated)
-                retrieved_links_dict['shortURL'].append(retrieved_link['shortURL'])
-                retrieved_links_dict['originalURL'].append(retrieved_link['originalURL'])
+                retrieved_links_dict['isLinkUpdated-ShortsRecords'].append(is_link_updated_shorts_record)
+                retrieved_links_dict['shortURL'].append(short_link)
+                retrieved_links_dict['originalURL'].append(original_link)
 
                 # if the links have been successfully been retrieved, add it to the list of retrieved
                 # urls..
@@ -142,9 +145,10 @@ def retrieve_links_web():
 
                     retrieved_links_log_json_as_dict[retrieved_links_index] = {}
 
+                    retrieved_links_log_json_as_dict[retrieved_links_index]['id_string'] = id_string
                     retrieved_links_log_json_as_dict[retrieved_links_index]['short_link'] = short_link
                     retrieved_links_log_json_as_dict[retrieved_links_index]['original_link'] = original_link
-                    retrieved_links_log_json_as_dict[retrieved_links_index]['is_link_updated'] = is_link_updated
+                    retrieved_links_log_json_as_dict[retrieved_links_index]['is_link_updated_shorts_records'] = is_link_updated_shorts_record
                     retrieved_links_log_json_as_dict[retrieved_links_index]['created_at'] = link_creation_date
                     retrieved_links_log_json_as_dict[retrieved_links_index]['updated_at'] = link_update_date
 
