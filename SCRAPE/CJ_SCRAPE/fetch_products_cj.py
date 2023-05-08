@@ -11,6 +11,7 @@ from operations.other_operations.convert_minimum_profit import convert_minimum_p
 from operations.wx.bcknd import *
 from settings.q.default_folder_and_filename_settings import all_filtered_data_folder_cj, all_log_files_folder, \
     shorts_progress_log
+from settings.productCategory import productCategories
 from operations.short.shorten_url import shorten_url
 
 def retrieve_cj_data(
@@ -132,6 +133,7 @@ def add_products_to_table(
         site_name,
         partners_id,
         ad_id,
+        mininum_commission_target_detected_currency_value,
         is_upload_to_wx = False
 ):
     # RETRIEVING PROGRAM TERMS, INCLUDING COMMISSION RATE
@@ -173,11 +175,18 @@ def add_products_to_table(
         'imageSrc': [],
         # 'imageSrcShortened': [],
         # 'country': [],
-        'siteName': []
+        'siteName': [],
+
+        'isProductLinkUpdated': [],
+        'baseProductLinksId': [],
+        'isImageSrcUpdated': [],
+        'baseImageSrcsId': [],
     }
 
     # products table dataframe index tracker
     current_index = 0
+
+
 
     # list of links for the current site and their shortened form
     link_shortening_progress = {}
@@ -194,17 +203,22 @@ def add_products_to_table(
 
         shorts_progress_log_file.close()
 
+
+
+
     for product in products_feed:
 
         product_condition = product['condition']
         product_availability = product['availability']
         # determining product commission per sale
-        mininum_commission_target_detected_currency = mininimum_commission_as_per_detected_currency(
-            product_currency=product['price']['currency'],
-            mininum_commission_target_usd=200
-        )
-        mininum_commission_target_detected_currency_value = list(mininum_commission_target_detected_currency.values())[0]
-        mininum_commission_target_detected_currency_symbol = list(mininum_commission_target_detected_currency.keys())[0]
+
+        ## mininum_commission_target_detected_currency = mininimum_commission_as_per_detected_currency(
+        ##     product_currency=product['price']['currency'],
+        ##     mininum_commission_target_usd=200
+        ## )
+        ## mininum_commission_target_detected_currency_value = list(mininum_commission_target_detected_currency.values())[0]
+        ## mininum_commission_target_detected_currency_symbol = list(mininum_commission_target_detected_currency.keys())[0]
+
         # print(f'mininum_commission_target_detected_currency: {mininum_commission_target_detected_currency_value}, {mininum_commission_target_detected_currency_symbol}')
 
         # PRODUCT PRICE
@@ -237,65 +251,108 @@ def add_products_to_table(
                 product_category = 'LUXURY TECH'
 
             else:
-                product_category = product['productType']
+                product_category_copy = product['productType']
 
-                if len(product_category) != 0:
-                    product_category = product['productType'][0].upper()
+                if type(product_category_copy) == list and len(product_category_copy) != 0:
 
-                    if 'WATCH' in product_category:
+                    print('here 1')
+
+                    product_category_copy = product['productType'][0].upper()
+
+                    if 'WATCH' in product_category_copy:
                         product_category = 'WATCH'
 
-                    elif 'WALLETS & MONEY CLIPS' in product_category:
+                    elif 'WALLETS & MONEY CLIPS' in product_category_copy:
                         product_category = 'ACCESSORIES'
 
-                    elif 'ACCESSORIES' in product_category:
+                    elif 'ACCESSORIES' in product_category_copy:
                         product_category = 'ACCESSORIES'
 
-                    elif 'SUITCASES' in product_category:
+                    elif 'SUITCASES' in product_category_copy:
                         product_category = 'TRAVEL_BAG'
 
-                    elif 'BRIEFCASES' in product_category or 'HANDBAGS' in product_category or 'BAGS' in product_category:
+                    elif 'BRIEFCASES' in product_category_copy or 'HANDBAGS' in product_category_copy or 'BAGS' in product_category_copy:
                         product_category = 'HANDBAG'
 
-                    elif 'COATS & JACKETS' in product_category or 'CLOTHING' in product_category \
-                            or 'COATS & JACKETS' in product_category \
-                            or 'DRESSES' in product_category:
+                    elif 'COATS & JACKETS' in product_category_copy or 'CLOTHING' in product_category_copy \
+                            or 'COATS & JACKETS' in product_category_copy \
+                            or 'DRESSES' in product_category_copy:
                         product_category = 'CLOTHING'
 
-                    elif 'LOAFERS & SLIP-ONS' in product_category:
+                    elif 'LOAFERS & SLIP-ONS' in product_category_copy:
                         product_category = 'SHOE'
 
-                    elif 'SHOE' in product_category:
+                    elif 'SHOE' in product_category_copy:
                         product_category = 'SHOE'
 
-                    elif 'NECKLACE' in product_category:
+                    elif 'NECKLACE' in product_category_copy:
                         product_category = 'NECKLACE'
 
-                    elif 'BRACELET' in product_category:
+                    elif 'BRACELET' in product_category_copy:
                         product_category = 'BRACELET'
 
-                    elif 'EARRING' in product_category:
+                    elif 'EARRING' in product_category_copy:
                         product_category = 'EARRING'
 
-                    elif 'RING' in product_category:
+                    elif 'RING' in product_category_copy:
                         product_category = 'RING'
 
                     else:
-                        product_category = product_category.upper()
+
+                        # try to deduce the product category from already defined list of product categories and product
+                        # description list
+                        for prod_category in productCategories:
+
+                            product_description = product['description'].lower()
+                            predefined_product_category = prod_category.lower()
+                            print(f'predefined_product_category: {predefined_product_category}')
+                            print(f'product_description: {product_description}')
+
+                            if product_category_copy.count(predefined_product_category) > 0 or \
+                                    product_description.count(predefined_product_category) > 0 or \
+                                    (product_title.lower()).count(predefined_product_category) > 0:
+
+                                print(f'prod_category for loop: {prod_category}')
+
+                                product_category = prod_category
+
+                                print(f'product_category for loop: {product_category}')
+
+                                break
+
+                        # if product_category was not found, make it equal to 'None'
+                        if product_category == '':
+
+                            product_category = product_category_copy.upper()
 
                 else:
-                    product_category = None
 
-            # DEFINING GENDER
-            product_gender = product['gender']
+                    # try to deduce the product category from already defined list of product categories
+                    for prod_category in productCategories:
 
-            if product_gender != None:
-                product_gender = product_gender.upper()
-            else:
-                product_gender = 'UNISEX'
+                        product_description = product['description'].lower()
+                        predefined_product_category = (prod_category.replace('_', ' ')).lower()
+                        # print(f'predefined_product_category: {predefined_product_category}')
+                        # print(f'product_description: {product_description}')
+
+                        if product_description.count(predefined_product_category) > 0 or \
+                                (product_title.lower()).count(predefined_product_category) > 0:
+
+                            # print(f'prod_category for loop: {prod_category}')
+
+                            product_category = prod_category
+
+                            # print(f'product_category for loop: {product_category}')
+
+                            break
+
+                    # if product_category was not found, make it equal to 'None'
+                    if product_category == '':
+                        product_category = 'OTHER_FANCY_ITEMS'
+
 
             # PRODUCT LINK
-            product_link = product['linkCode']['clickUrl']
+            product_link = product['linkCode']['clickUrl'] + 'added2'
             # index_of_product_link_less_trigger = product_link.index('url=') + 4
             # product_link_less_cj_trigger = product_link[index_of_product_link_less_trigger:]
             product_link_less_cj_trigger = (product_link.split('url='))[-1]
@@ -325,6 +382,8 @@ def add_products_to_table(
             short_product_link = ''
             short_product_link_creation_time = ''
             short_product_link_id_string = ''
+            short_product_link_domain_id = ''
+            short_product_link_owner_id = ''
 
             if product_link != '':
 
@@ -381,11 +440,15 @@ def add_products_to_table(
                         short_product_link = shorten_product_link_operation['shortened_url']
                         short_product_link_creation_time = shorten_product_link_operation['created_at']
                         short_product_link_id_string = shorten_product_link_operation['id_string']
+                        short_product_link_domain_id = shorten_product_link_operation['domain_id']
+                        short_product_link_owner_id = shorten_product_link_operation['owner_id']
 
                     else:
                         short_product_link = shorten_product_link_operation
                         short_product_link_creation_time = shorten_product_link_operation
                         short_product_link_id_string = shorten_product_link_operation
+                        short_product_link_domain_id = shorten_product_link_operation
+                        short_product_link_owner_id = shorten_product_link_operation
 
 
 
@@ -453,11 +516,15 @@ def add_products_to_table(
                             short_product_link = shorten_product_link_operation['shortened_url']
                             short_product_link_creation_time = shorten_product_link_operation['created_at']
                             short_product_link_id_string = shorten_product_link_operation['id_string']
+                            short_product_link_domain_id = shorten_product_link_operation['domain_id']
+                            short_product_link_owner_id = shorten_product_link_operation['owner_id']
 
                         else:
                             short_product_link = shorten_product_link_operation
                             short_product_link_creation_time = shorten_product_link_operation
                             short_product_link_id_string = shorten_product_link_operation
+                            short_product_link_domain_id = shorten_product_link_operation
+                            short_product_link_owner_id = shorten_product_link_operation
 
                         # updating product_id to ensure proper registration
                         link_id_incrementor = 0
@@ -479,7 +546,7 @@ def add_products_to_table(
 
 
             # IMAGE SRC
-            image_src = product['linkCode']['imageUrl']
+            image_src = product['linkCode']['imageUrl'] + 'added2'
             # index_of_product_link_less_trigger = product_link.index('imgurl=') + 7
             # image_src_less_cj_trigger = image_src[index_of_product_link_less_trigger:]
             image_src_less_cj_trigger = (image_src.split('imgurl='))[-1]
@@ -488,6 +555,8 @@ def add_products_to_table(
             short_image_link = ''
             short_image_link_creation_time = ''
             short_image_link_id_string = ''
+            short_image_link_domain_id = ''
+            short_image_link_owner_id = ''
 
             if image_src != '':
                 final_is_path = short_product_link.replace('-pl-', '-is-')  # alpha_path + '-is' + f'-{str(link_base_count)}'
@@ -517,11 +586,15 @@ def add_products_to_table(
                         short_image_link = shorten_image_link_operation['shortened_url']
                         short_image_link_creation_time = shorten_image_link_operation['created_at']
                         short_image_link_id_string = shorten_image_link_operation['id_string']
+                        short_image_link_domain_id = shorten_image_link_operation['domain_id']
+                        short_image_link_owner_id = shorten_image_link_operation['owner_id']
 
                     else:
                         short_image_link = shorten_image_link_operation
                         short_image_link_creation_time = shorten_image_link_operation
                         short_image_link_id_string = shorten_image_link_operation
+                        short_image_link_domain_id = shorten_image_link_operation
+                        short_image_link_owner_id = shorten_image_link_operation
 
                 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -586,11 +659,15 @@ def add_products_to_table(
                             short_image_link = shorten_image_link_operation['shortened_url']
                             short_image_link_creation_time = shorten_image_link_operation['created_at']
                             short_image_link_id_string = shorten_image_link_operation['id_string']
+                            short_image_link_domain_id = shorten_image_link_operation['domain_id']
+                            short_image_link_owner_id = shorten_image_link_operation['owner_id']
 
                         else:
                             short_image_link = shorten_image_link_operation
                             short_image_link_creation_time = shorten_image_link_operation
                             short_image_link_id_string = shorten_image_link_operation
+                            short_image_link_domain_id = shorten_image_link_operation
+                            short_image_link_owner_id = shorten_image_link_operation
 
                         # updating image_src_id to ensure proper registration
                         link_id_incrementor = 0
@@ -610,6 +687,65 @@ def add_products_to_table(
                     # code-generated short link..
                     short_image_link = link_shortening_progress[image_src_id]['short_link'] # 'https://shop.askandcarts.com/' + final_is_path
 
+
+            # DEFINING GENDER
+            product_gender = product['gender']
+
+            if product_gender != None:
+                product_gender = product_gender.upper()
+
+            else:
+
+                genders = [' MEN', '-MEN', 'WOMEN', '-WOMEN', 'LADY', 'LADIES']
+
+                for gender in genders:
+
+                    predefined_gender = gender.lower()
+                    product_description = product['description'].lower()
+
+
+                    if product_description.count(predefined_gender) > 0 or \
+                            (product_title.lower()).count(predefined_gender) > 0 or \
+                            (product_link.lower()).count(predefined_gender) > 0 or \
+                            (image_src.lower()).count(predefined_gender) > 0:
+                        # print(f'prod_category for loop: {prod_category}')
+
+                        if gender == 'LADY' or gender == 'LADIES':
+
+                            product_gender = 'WOMEN'
+
+                        else:
+
+                            product_gender = (gender.replace('-', '')).replace(' ', '')
+
+                        # print(f'product_category for loop: {product_category}')
+
+                        break
+
+                # if product gender could not be found, deduce women's product category
+                if product_gender == None:
+
+                    manually_defined_womens_categories = ['BRACELET', 'NECKLACE', 'EARRING', 'RING']
+
+                    print()
+
+                    for manually_defined_womens_category in manually_defined_womens_categories:
+
+                        # predefined_womens_category = manually_defined_category
+
+                        print(f'product_category: {product_category}')
+                        print(f'manually_defined_womens_category: {manually_defined_womens_category}')
+
+                        if product_category.count(manually_defined_womens_category) > 0:
+
+                            product_gender = 'WOMEN'
+
+                            break
+
+
+                ## if product gender still could not be found, deduce women's product category
+                if product_gender == None:
+                    product_gender = None
 
 
 
@@ -638,7 +774,24 @@ def add_products_to_table(
             # products_feed_dict['imageSrcShortened'].append(short_image_link)
 
             # products_feed_dict['country'].append(country)
-            products_feed_dict['siteName'].append(site_name_edited)
+            products_feed_dict['siteName'].append(site_name_edited.replace('CJ',''))
+
+            # base metadata ids
+            products_feed_dict['baseProductLinksId'].append(product_links_id)
+            products_feed_dict['baseImageSrcsId'].append(image_src_id)
+
+            # checker variables to signal whether the current product's links have been updated
+            if len(product_links_id_updated) > 0:
+                products_feed_dict['isProductLinkUpdated'].append('true')
+            elif len(product_links_id_updated) == 0:
+                products_feed_dict['isProductLinkUpdated'].append('false')
+
+            if len(image_src_id_updated) > 0:
+                products_feed_dict['isImageSrcUpdated'].append('true')
+            elif len(image_src_id_updated) == 0:
+                products_feed_dict['isImageSrcUpdated'].append('false')
+
+
 
             current_index += 1
 
@@ -679,6 +832,8 @@ def add_products_to_table(
                         shorts_progress_log_json_as_dict['total_number_of_links'] += 1
                         shorts_progress_log_json_as_dict[site_name][product_links_id]['link_number'] = shorts_progress_log_json_as_dict['total_number_of_links']
                         shorts_progress_log_json_as_dict[site_name][product_links_id]['id_string'] = short_product_link_id_string
+                        shorts_progress_log_json_as_dict[site_name][product_links_id]['domain_id'] = short_product_link_domain_id
+                        shorts_progress_log_json_as_dict[site_name][product_links_id]['owner_id'] = short_product_link_owner_id
                         shorts_progress_log_json_as_dict[site_name][product_links_id]['short_link_creation_time'] = short_product_link_creation_time
 
                     if shorts_progress_log_json_as_dict[site_name].get(product_links_id_updated, None) == None and product_links_id_updated != "":
@@ -690,6 +845,8 @@ def add_products_to_table(
                         shorts_progress_log_json_as_dict['total_number_of_links'] += 1
                         shorts_progress_log_json_as_dict[site_name][product_links_id_updated]['link_number'] = shorts_progress_log_json_as_dict['total_number_of_links']
                         shorts_progress_log_json_as_dict[site_name][product_links_id_updated]['id_string'] = short_product_link_id_string
+                        shorts_progress_log_json_as_dict[site_name][product_links_id_updated]['domain_id'] = short_product_link_domain_id
+                        shorts_progress_log_json_as_dict[site_name][product_links_id_updated]['owner_id'] = short_product_link_owner_id
                         shorts_progress_log_json_as_dict[site_name][product_links_id_updated]['short_link_creation_time'] = short_product_link_creation_time
 
 
@@ -709,6 +866,8 @@ def add_products_to_table(
                         shorts_progress_log_json_as_dict['total_number_of_links'] += 1
                         shorts_progress_log_json_as_dict[site_name][image_src_id]['link_number'] = shorts_progress_log_json_as_dict['total_number_of_links']
                         shorts_progress_log_json_as_dict[site_name][image_src_id]['id_string'] = short_image_link_id_string
+                        shorts_progress_log_json_as_dict[site_name][image_src_id]['domain_id'] = short_image_link_domain_id
+                        shorts_progress_log_json_as_dict[site_name][image_src_id]['owner_id'] = short_image_link_owner_id
                         shorts_progress_log_json_as_dict[site_name][image_src_id]['short_link_creation_time'] = short_image_link_creation_time
 
 
@@ -722,6 +881,8 @@ def add_products_to_table(
                         shorts_progress_log_json_as_dict['total_number_of_links'] += 1
                         shorts_progress_log_json_as_dict[site_name][image_src_id_updated]['link_number'] = shorts_progress_log_json_as_dict['total_number_of_links']
                         shorts_progress_log_json_as_dict[site_name][image_src_id_updated]['id_string'] = short_image_link_id_string
+                        shorts_progress_log_json_as_dict[site_name][image_src_id_updated]['domain_id'] = short_image_link_domain_id
+                        shorts_progress_log_json_as_dict[site_name][image_src_id_updated]['owner_id'] = short_image_link_owner_id
                         shorts_progress_log_json_as_dict[site_name][image_src_id_updated]['short_link_creation_time'] = short_image_link_creation_time
 
 
@@ -830,38 +991,66 @@ def mininimum_commission_as_per_detected_currency(
 # PARTNERS ID
 partners = {
 
-        0: {
-            'partners_company_name': 'FARFETCH_CJ',
-            'partners_company_id': '5172007',
-            'partners_company_ad_id': ''
-            }, #x
-
-        1:{
-            'partners_company_name': 'SAMSUNG_UAE_CJ',
+        0:{
+            'partners_company_name': 'SAMSUNG_UAE_CJ', # ✔ AED
             'partners_company_id': '6123659',
             'partners_company_ad_id': '15245400'
             },
 
-        2: {
-            'partners_company_name': 'THE_LUXURY_CLOSET_CJ',
+        1: {
+            'partners_company_name': 'THE_LUXURY_CLOSET_CJ', # ✔ USD
             'partners_company_id': '5312449',
             'partners_company_ad_id': '15447452'
             },
 
-        3: {
-            'partners_company_name': 'FERNS_N_PETALS_CJ',
-            'partners_company_id': '5763053',
-            'partners_company_ad_id': ''
-            }, #
+        2: {
+            'partners_company_name': 'SHOPWORN_CJ', # ✔ USD
+            'partners_company_id': '5597163',
+            'partners_company_ad_id': '14356060'
+        },
 
-        4: {'partners_company_name': 'HOTELS MIDDLE-EAST_CJ',
-            'partners_company_id': '5275628',
-            'partners_company_ad_id': ''
-            } #
+        #3: {
+        #    'partners_company_name': 'FERNS_N_PETALS_CJ',
+        #    'partners_company_id': '5763053',
+        #    'partners_company_ad_id': ''
+        #    }, # no product feed, no deeplinking, erased clicks -> (potential error) issue
+        #
+        #
+        #
+        #4: {'partners_company_name': 'HOTELS MIDDLE-EAST_CJ',
+        #    'partners_company_id': '5275628',
+        #    'partners_company_ad_id': ''
+        #    } # no product feed, high deeplinking risk, high risk of having clicks erased!
+        #
+        #5: {
+        #    'partners_company_name': 'FARFETCH_CJ',
+        #    'partners_company_id': '5172007',
+        #    'partners_company_ad_id': ''
+        #},  # no product feed -> not worth it .. geographic scraping (potential error) issue
 
 }
 
-partner_to_fetch_num = 1
+partner_to_fetch_num = 0
+
+add_products_to_table(
+
+    site_name=partners[partner_to_fetch_num]['partners_company_name'],
+    partners_id=partners[partner_to_fetch_num]['partners_company_id'],
+    ad_id=partners[partner_to_fetch_num]['partners_company_ad_id'],
+    mininum_commission_target_detected_currency_value= 735, # USD200 TO AED = AED 734.46 => MAY 8
+    is_upload_to_wx=False
+)
+
+
+# retrieve realtime commissions
+# retrieve_cj_data(
+#     company_name= company_name,
+#     is_get_company_commission= True
+# )
+
+# print(f'commission: {commission}')
+
+
 
 # PROCESS, SHORTEN LINKS AND UPLOAD ROW FOR:
 # 1. THE_LUXURY_CLOSET_CJ
@@ -881,21 +1070,3 @@ partner_to_fetch_num = 1
 #         is_upload_to_wx=False
 #
 #     )
-
-add_products_to_table(
-
-    site_name=partners[partner_to_fetch_num]['partners_company_name'],
-    partners_id=partners[partner_to_fetch_num]['partners_company_id'],
-    ad_id=partners[partner_to_fetch_num]['partners_company_ad_id'],
-    is_upload_to_wx=False
-
-)
-
-
-# retrieve realtime commissions
-# retrieve_cj_data(
-#     company_name= company_name,
-#     is_get_company_commission= True
-# )
-
-# print(f'commission: {commission}')

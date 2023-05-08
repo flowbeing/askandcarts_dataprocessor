@@ -80,16 +80,37 @@ def convert_minimum_profit(
             to_currency
     ):
         url = f"https://api.apilayer.com/fixer/convert?to={to_currency}&from={from_currency}&amount={amount}"
+        # url = "https://api.apilayer.com/currency_data/change?start_date=2023-05-08&end_date=2023-05-08"
 
         payload = {}
         headers = {
-            "apikey": api_key_fxr
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36",
+            'referer': 'https://www.google.com/',
+            "apikey": api_key_fxr,
         }
 
         response = requests.request("GET", url, headers=headers, data=payload)
 
         status_code = response.status_code
         result = response.text
+
+        # print(f'CONVERTING: {from_currency}{amount} to {to_currency}')
+        # print()
+        # print(f'req.status_code: {response.status_code}, {type(response.status_code)}')
+        # print()
+        # # print(f'req.content: {req.content}')
+        # print(f'req.text: {response.text}')
+        # print()
+        # print(response.reason)
+#
+        # return_header = response.headers
+        # print()
+        # print('RESPONSE HEADERS')
+        # print('----------------')
+        # for i in return_header:
+        #     print(f'{i}: {return_header[i]}')
+#
+        # print('---------------------------------------------------------------------------------')
 
         return {
             'status_code': status_code,

@@ -61,11 +61,15 @@ def shorten_url(
         shortened_url = response['shortURL']
         created_at = response['createdAt']
         id_string = response['idString']
+        domain_id = response['DomainId']
+        owner_id = response['OwnerId']
 
         shortening_operation_data = {
             'shortened_url': shortened_url,
             'created_at': created_at,
-            'id_string': id_string
+            'id_string': id_string,
+            'domain_id': domain_id,
+            'owner_id': owner_id
         }
 
 

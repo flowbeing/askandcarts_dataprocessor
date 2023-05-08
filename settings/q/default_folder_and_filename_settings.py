@@ -37,6 +37,8 @@ filter_error_log_filename = 'filter_errors_log.txt'
 shorts_progress_log = 'shorts_progress_log.txt'
 retrieved_links_log = 'retrieved_links_log.txt'
 
+row_in_progress_last_extraction_operation_log = 'row_in_progress_last_extraction_operation_log.txt'
+
 
 # WX UPLOAD TASK COMPLETION LOG
 wx_upload_tasks_status_log_file = 'wx_upload_task_completion_log.json'

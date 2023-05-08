@@ -1,4 +1,4 @@
-productCategories = {
+productCategories = [
     "WATCH",
     "HANDBAG",
     "SHOE",
@@ -9,9 +9,10 @@ productCategories = {
     "EARRING",
     "PERFUME",
     "NECKLACE",
-    "FLOWER",
     "TRAVEL_BAG",
     "RING",
     "BAG",
-    "ACCESSORIES"
-}
+    "ACCESSORIES",
+    "FLOWER",
+    'OTHER_FANCY_ITEMS'
+]
