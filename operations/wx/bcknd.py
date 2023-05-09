@@ -57,9 +57,9 @@ def extract_elements_per_row_from_dataframe(
     # if the row that was being extracted previously (if any previous operation exists) is not 0 or the last index in
     # the dataframe, make the extraction (& upload (if true)) operation start from row_in_progress_last_operation
     index_number_to_start_from = 0
-    last_index_in_dataframe = num_of_rows_in_dataframe - 1
 
-    if row_in_progress_last_operation != 0 and is_override_previous_extraction_progress_if_any_and_start_from_scratch == False:
+    if row_in_progress_last_operation != 0 and \
+            is_override_previous_extraction_progress_if_any_and_start_from_scratch == False:
         index_number_to_start_from = row_in_progress_last_operation
 
 
