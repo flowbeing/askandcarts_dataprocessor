@@ -154,7 +154,7 @@ def filter_anthropologie_scraped_data(
         extract_elements_per_row_from_dataframe(
             file_name=file_name[:-4],  # to remove '.csv'
             dataframe=cleaned_up_scraped_data_anthropologie,
-            is_continue_from_previous_stop_csv = is_continue_from_previous_stop_csv
+            is_continue_daily_upload_if_any= is_continue_from_previous_stop_csv
         )
 
     return len(cleaned_up_scraped_data_anthropologie.index)

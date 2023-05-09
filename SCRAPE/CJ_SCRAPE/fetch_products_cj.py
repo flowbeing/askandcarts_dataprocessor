@@ -925,10 +925,30 @@ def add_products_to_table(
 
     if is_extract_and_upload_rows == 'y':
 
+        is_continue_daily_upload_if_any = False
+        is_selection_valid = False
+
+        # confirm whether current extraction and upload operation is for the start of a daily upload to determine if
+        # all p value should be reset
+        while is_selection_valid == False:
+
+            confirm_daily_upload_start = input('Is this the START of a DAILY UPLOAD?\n'
+                                               'Ensure that no previous daily upload has been done if yes?\n'
+                                               'y/n? ')
+            confirm_daily_upload_continuation = input('Is this the CONTINUATION of a DAILY UPLOAD? y/n? ')
+
+            if confirm_daily_upload_start == 'y' and confirm_daily_upload_continuation == 'n':
+                is_continue_daily_upload_if_any = False
+                is_selection_valid = True
+            elif confirm_daily_upload_start == 'n' and confirm_daily_upload_continuation == 'y':
+                is_continue_daily_upload_if_any = True
+                is_selection_valid = True
+
+
         extract_elements_per_row_from_dataframe(
             file_name=site_name,  # to remove '.csv'
             dataframe=product_feed_df,
-            is_continue_from_previous_stop_csv=False
+            is_continue_daily_upload_if_any=is_continue_daily_upload_if_any
         )
 
     else:
@@ -950,7 +970,7 @@ def add_products_to_table(
         extract_elements_per_row_from_dataframe(
             file_name,
             product_feed_df,
-            is_continue_from_previous_stop_csv=False
+            is_continue_daily_upload_if_any=False
         )
 
 

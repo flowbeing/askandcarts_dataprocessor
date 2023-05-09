@@ -1,0 +1,3 @@
+1.
+if products data for a brand have already collected and processed via CJ, don't scrapped and process products data
+for the same brand manually to avoid product(s) duplication on site
