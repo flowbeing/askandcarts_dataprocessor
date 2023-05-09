@@ -23,7 +23,7 @@ def extract_elements_per_row_from_dataframe(
         is_continue_from_previous_stop_csv,
         # useful to state that the dataframe should be processed from scratch even if there exists a previous extraction
         # operation on a current dataframe..
-        is_override_previous_extraction_progress_and_start_from_scratch = False,
+        is_override_previous_extraction_progress_if_any_and_start_from_scratch = False,
 ):
 
     print()
@@ -58,7 +58,7 @@ def extract_elements_per_row_from_dataframe(
     index_number_to_start_from = 0
     last_index_in_dataframe = num_of_rows_in_dataframe - 1
 
-    if row_in_progress_last_operation != 0 and is_override_previous_extraction_progress_and_start_from_scratch == False:
+    if row_in_progress_last_operation != 0 and is_override_previous_extraction_progress_if_any_and_start_from_scratch == False:
         index_number_to_start_from = row_in_progress_last_operation
 
 
