@@ -1,3 +1,4 @@
+import sys
 import requests
 import json
 import datetime
@@ -239,9 +240,15 @@ def add_products_to_table(
             # PRODUCT TITLE
             product_title = product['title']
 
-            if ';' in product_title:
-                index_of_and_quote = product_title.index(';') + 1
+            if '&quot;' in product_title:
+                index_of_and_quote = product_title.index('uot;') + 4
                 product_title = product_title[index_of_and_quote:]
+            elif ';,' in product_title:
+                index_of_semicolon = product_title.index(';')
+                product_title = product_title[:index_of_semicolon]
+            elif ';' in product_title:
+                index_of_semicolon = product_title.index(';') + 1
+                product_title = product_title[index_of_semicolon:]
             # product_brandName x
 
             # DETERMINING PRODUCT CATEGORY
@@ -380,6 +387,8 @@ def add_products_to_table(
             alpha_path = '' # used to decide the product link and image src's final short form (final (pl or is) path)
             link_base_count = 1
             short_product_link = ''
+            version_product_link_change_was_previously_implemented_in = '' # to track whether the current short_product_link has previously been implemented
+
             short_product_link_creation_time = ''
             short_product_link_id_string = ''
             short_product_link_domain_id = ''
@@ -478,6 +487,7 @@ def add_products_to_table(
                                         ['original_link_less_cj_trigger'] == product_link_less_cj_trigger:
 
                                     version_change_was_previously_implemented_in = link_version
+                                    version_product_link_change_was_previously_implemented_in = version_change_was_previously_implemented_in
 
                                 # has sentimental value
                                 else:
@@ -553,6 +563,8 @@ def add_products_to_table(
 
             # IMAGE SRC SHORTENED
             short_image_link = ''
+            version_short_image_link_change_was_previously_implemented_in = '' # to track whether the current short_image_link has previously been implemented
+
             short_image_link_creation_time = ''
             short_image_link_id_string = ''
             short_image_link_domain_id = ''
@@ -622,6 +634,7 @@ def add_products_to_table(
                                         ['original_link_less_cj_trigger'] == image_src_less_cj_trigger:
 
                                     version_change_was_previously_implemented_in = link_version
+                                    version_short_image_link_change_was_previously_implemented_in = version_change_was_previously_implemented_in
 
                                 # has sentimental value
                                 else:
@@ -745,7 +758,21 @@ def add_products_to_table(
 
                 ## if product gender still could not be found, deduce women's product category
                 if product_gender == None:
-                    product_gender = None
+
+                    # if brand is SAMSUNG UAE (electronics) and the product is an airdresser,
+                    # make the product gender 'WOMEN'
+                    if site_name.count('SAMSUNG') > 0 and site_name.count('UAE') > 0 and \
+                            (product_title.lower()).count('airdress') > 0:
+
+                        product_gender = 'WOMEN'
+
+                    # if brand is SAMSUNG UAE (electronics), make the product gender unisex
+                    elif site_name.count('SAMSUNG') > 0 and site_name.count('UAE') > 0:
+
+                        product_gender = 'UNISEX'
+
+                    else:
+                        product_gender = None
 
 
 
@@ -780,13 +807,15 @@ def add_products_to_table(
             products_feed_dict['baseProductLinksId'].append(product_links_id)
             products_feed_dict['baseImageSrcsId'].append(image_src_id)
 
-            # checker variables to signal whether the current product's links have been updated
-            if len(product_links_id_updated) > 0:
+            # determining checker variables to signal whether the current product's links have been updated
+            # if product_links_id or image_src_id have been updated or their previous update version(s) has been
+            # retrieved, inform that a short link(s) has changed
+            if len(product_links_id_updated) > 0 or len(version_product_link_change_was_previously_implemented_in) > 0:
                 products_feed_dict['isProductLinkUpdated'].append('true')
-            elif len(product_links_id_updated) == 0:
+            else:
                 products_feed_dict['isProductLinkUpdated'].append('false')
 
-            if len(image_src_id_updated) > 0:
+            if len(image_src_id_updated) > 0 or len(version_short_image_link_change_was_previously_implemented_in) > 0:
                 products_feed_dict['isImageSrcUpdated'].append('true')
             elif len(image_src_id_updated) == 0:
                 products_feed_dict['isImageSrcUpdated'].append('false')
@@ -914,9 +943,25 @@ def add_products_to_table(
 
     # print(product_feed_df['country'].to_list().count('US'))
 
+    # JUST IN CASE REMINDER
+    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    print()
+    print()
+    confirm_commission_non_error = input("You didn't use the right exchange to calculate minimum commissions - (t)rue/(f)alse: ")
+
+    while confirm_commission_non_error != 't' and confirm_commission_non_error != 'f':
+
+        if confirm_commission_non_error == 't':
+            sys.exit('Operation terminated - YOU WERE NOT PAYING ATTENTION..')
+        elif confirm_commission_non_error == 'f':
+            pass
+        else:
+            confirm_commission_non_error = input(
+                "You didn't use the right exchange to calculate minimum commissions - (t)rue/(f)alse: ")
 
     # EXTRACT AND UPLOAD ROWS?
     # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
     print()
     is_extract_and_upload_rows = input(
@@ -1057,7 +1102,7 @@ add_products_to_table(
     site_name=partners[partner_to_fetch_num]['partners_company_name'],
     partners_id=partners[partner_to_fetch_num]['partners_company_id'],
     ad_id=partners[partner_to_fetch_num]['partners_company_ad_id'],
-    mininum_commission_target_detected_currency_value= 735, # USD200 TO AED = AED 734.46 => MAY 8
+    mininum_commission_target_detected_currency_value= 734.40, # USD200 TO AED = AED 734.46 => MAY 8
     is_upload_to_wx=False
 )
 

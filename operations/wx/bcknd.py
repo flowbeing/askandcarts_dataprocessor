@@ -13,19 +13,27 @@ from settings.q.default_folder_and_filename_settings \
     import all_scraped_data_folder, all_filtered_data_folder, all_filtered_data_folder_cj, \
     all_log_files_folder, wx_upload_error_log_filename, row_in_progress_last_extraction_operation_log
 
+from operations.wx.reset_p import reset_p_all
+
 def extract_elements_per_row_from_dataframe(
         file_name,
         dataframe,
         # boolean -> to determine whether p should be reset..
-        # if true already existing product rows in db will keep their p value i.e useful when a daily upload stopped
+        # if true already existing product rows in db will keep their p values i.e useful when a daily upload stopped
         # abruptly..
-        # if false -> all existing product rows will lose their p value i.e useful when starting a daily upload only
+        # if false -> all existing product rows will lose their p values i.e useful when starting a daily upload only
         is_continue_daily_upload_if_any,
         # useful to state that the dataframe should be processed from scratch even if there exists a previous extraction
         # operation on a current dataframe..
         is_override_previous_extraction_progress_if_any_and_start_from_scratch = False,
 ):
-
+    # value to check whether p values has been set where is_continue_daily_upload_if_any is False
+    is_p_values_reset = {
+        'uaeProducts': False,
+        'usaProducts': False,
+        'singaporeProducts': False
+    }
+    
     print()
     print(f'file_name: {file_name}')
 
@@ -249,6 +257,16 @@ def extract_elements_per_row_from_dataframe(
 
                     for index in range(2):
 
+                        # reset all p values if operation is being performed on a 'the start of daily upload' dataframe (False)
+                        if is_continue_daily_upload_if_any == False:
+
+                            collection_name_reset_p_all = watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_collections_name[i]
+                            # if the p values of the current relevant collection name has not been reset, reset it and
+                            # update that it has been reset
+                            if is_p_values_reset[collection_name_reset_p_all] == False:
+                                reset_p_all(collectionName=current_rows_relevant_collection)
+                                is_p_values_reset[collection_name_reset_p_all] = True
+
                         upload_data_operation_status_code = populate_site_db(
                             collection_name= watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_collections_name[i]
                             if 'THE_LUXURY_CLOSET' in file_name or 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
@@ -329,6 +347,17 @@ def extract_elements_per_row_from_dataframe(
 
 
                 else:
+
+                    # reset all p values if operation is being performed on a 'the start of daily upload' dataframe (False)
+                    if is_continue_daily_upload_if_any == False:
+
+                        collection_name_reset_p_all = \
+                        watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_collections_name[i]
+                        # if the p values of the current relevant collection name has not been reset, reset it and
+                        # update that it has been reset
+                        if is_p_values_reset[collection_name_reset_p_all] == False:
+                            reset_p_all(collectionName=current_rows_relevant_collection)
+                            is_p_values_reset[collection_name_reset_p_all] = True
 
                     upload_data_operation_status_code = populate_site_db(
                         collection_name=watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_collections_name[i]
@@ -774,48 +803,6 @@ def populate_site_db(
     print('---------------------------------------------------------------------------------')
 
     return req.status_code
-
-# resetting p only when daily upload is about to start..
-# clear all p values to ensure that product upload for the day remains..
-def reset_p(
-    is_continue_from_previous_stop_csv
-):
-    print('---------------------------------------------------------------------------------')
-
-    if is_continue_from_previous_stop_csv == False:
-
-        site_url = 'https://flowbeing.wixsite.com/my-site-1/_functions-dev/resetP'
-
-        # body = {}
-
-        # body = json.dumps(body)
-
-        req = requests.get(
-            site_url,
-            headers={
-                'auth': api_key_wx,
-                'wix-site-id': '9cf6f443-4ee4-4c04-bf19-38759205c05d',
-                # 'body': body,
-                # 'is_reset_p': is_reset_p,
-            },
-
-        )
-
-        print(f'req.status_code: {req.status_code}, {type(req.status_code)}')
-        # print(f'req.content: {req.content}')
-        print(f'req.text: {req.text}')
-        print(req.reason)
-
-        return_header = req.headers
-        print()
-        print('RESPONSE HEADERS')
-        print('----------------')
-        for i in return_header:
-            print(f'{i}: {return_header[i]}')
-
-        print('---------------------------------------------------------------------------------')
-
-        return req.status_code
 
 
 

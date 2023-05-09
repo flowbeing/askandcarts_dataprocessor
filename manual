@@ -2,8 +2,17 @@
 if products data for a brand have already collected and processed via CJ, don't scrapped and process products data
 for the same brand manually to avoid product(s) duplication on site
 
-2. Where the daily upload began data collected and processed via CJ, ensure that 'is_continue_daily_upload_if_any' is
-set to 'True' for all relevant (or concerned) brands' filter
+2. Where a daily upload:
+    a. began with data collected and processed via CJ,
+    b. consists of manually scrapped data that is being processed immediately after a CJ (or other relevant network's)
+       data collection and processing has happened in this current day..
+
+    ensure that 'is_continue_daily_upload_if_any' is set to 'True' for all relevant (or concerned) brands' filter to
+    avoid having all p value from being reset and consequently leading to disastrous deletion  of
+    (CJ or other relevant Network's data) daily upload progress..
+
+3. Otherwise, if the daily upload began with manually scraped 'and processed' data, ensure that
+    'is_continue_daily_upload_if_any' is set to 'is_continue_from_previous_stop_csv'
 
 Also, note: The idea is to have only profitable products for the day on the site. Consequently, yesterday's (uploaded)
 product data is obsolete today. Hence, should be cleared..
