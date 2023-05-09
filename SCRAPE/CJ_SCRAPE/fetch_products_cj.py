@@ -350,7 +350,7 @@ def add_products_to_table(
                     if product_category == '':
                         product_category = 'OTHER_FANCY_ITEMS'
 
-
+            #
             # PRODUCT LINK
             product_link = product['linkCode']['clickUrl']
             # index_of_product_link_less_trigger = product_link.index('url=') + 4

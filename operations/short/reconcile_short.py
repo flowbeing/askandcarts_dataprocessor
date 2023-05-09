@@ -141,7 +141,7 @@ def reconcile_shorts(
             reconciliation_dict['Was Link Data Ever Updated? (Short.io - Short.io)'].append(is_link_updated_shorts_records)
 
 
-
+    #
     # personal_records_of_short_links_df = pd.DataFrame.from_dict(personal_records_of_short_links)
     # print(personal_records_of_short_links_df.head(10000))
 

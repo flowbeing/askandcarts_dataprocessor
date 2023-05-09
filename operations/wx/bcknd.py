@@ -37,7 +37,8 @@ def extract_elements_per_row_from_dataframe(
 
     list_of_countries = ['_UAE_', '_SINGAPORE_', '_USA_', '_US_']
     list_of_genders = ['_MEN', '_WOMEN']
-    
+
+    #
     # GETTING PREVIOUS EXTRACTION AND WX UPLOAD PROGRESS OF THE CURRENT DATAFRAME
     row_in_progress_last_operation = 0
 
