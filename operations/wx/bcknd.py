@@ -16,10 +16,16 @@ from settings.q.default_folder_and_filename_settings \
 def extract_elements_per_row_from_dataframe(
         file_name,
         dataframe,
+        # boolean -> to determine whether p should be reset..
+        # if true already existing product rows in db will keep their p value i.e useful when a daily upload stopped
+        # abruptly..
+        # if false -> all existing product rows will lose their p value i.e useful when starting a daily upload only
         is_continue_from_previous_stop_csv,
-        # useful for when upload stops at an index within a file; when there's no more internet connection for instance
-        index_number_to_start_from=0,
+        # useful to state that the dataframe should be processed from scratch even if there exists a previous extraction
+        # operation on a current dataframe..
+        is_override_previous_extraction_progress_and_start_from_scratch = False,
 ):
+
     print()
     print(f'file_name: {file_name}')
 
@@ -47,9 +53,12 @@ def extract_elements_per_row_from_dataframe(
 
         row_in_progress_last_operation_file.close()
 
-    # if the row that was being extracted previously (if any previous operation exists) is not 0, update the row to
-    # start from as row_in_progress_last_operation
-    if row_in_progress_last_operation != 0:
+    # if the row that was being extracted previously (if any previous operation exists) is not 0 or the last index in
+    # the dataframe, make the extraction (& upload (if true)) operation start from row_in_progress_last_operation
+    index_number_to_start_from = 0
+    last_index_in_dataframe = num_of_rows_in_dataframe - 1
+
+    if row_in_progress_last_operation != 0 and is_override_previous_extraction_progress_and_start_from_scratch == False:
         index_number_to_start_from = row_in_progress_last_operation
 
 
@@ -265,6 +274,7 @@ def extract_elements_per_row_from_dataframe(
                             is_continue_from_previous_stop_csv = is_continue_from_previous_stop_csv
                         )
 
+                        # register row if wx upload was unsuccessful
                         if upload_data_operation_status_code != 200:
                             with open(f'{all_log_files_folder}{wx_upload_error_log_filename}',
                                       'r+') as wx_upload_error_log_file_i:
@@ -290,6 +300,32 @@ def extract_elements_per_row_from_dataframe(
                                     wx_upload_error_log_file_ii.close()
 
                                 wx_upload_error_log_file_i.close()
+
+                        # if wx upload was successful and the current row is the last row in the dataframe,
+                        # reset the index to start from in the future for the current file..
+                        elif upload_data_operation_status_code == 200:
+
+                            with open(f'{all_log_files_folder}{row_in_progress_last_extraction_operation_log}',
+                                      'r+') as row_in_progress_last_operation_file_one:
+                                row_in_progress_last_operation_log_json = row_in_progress_last_operation_file_one.read()
+                                row_in_progress_last_operation_json_as_dict = json.loads(
+                                    row_in_progress_last_operation_log_json)
+
+                                row_in_progress_last_operation_json_as_dict[file_name] = 0
+
+                                row_in_progress_last_operation_dict_as_json = json.dumps(
+                                    row_in_progress_last_operation_json_as_dict)
+
+                                with open(f'{all_log_files_folder}{row_in_progress_last_extraction_operation_log}',
+                                          'w') as row_in_progress_last_operation_file_two:
+                                    row_in_progress_last_operation_file_two.write(
+                                        row_in_progress_last_operation_dict_as_json)
+
+                                    row_in_progress_last_operation_file_two.close()
+
+                                row_in_progress_last_operation_file_one.close()
+
+
 
                 else:
 
@@ -320,8 +356,7 @@ def extract_elements_per_row_from_dataframe(
                     )
 
                     if upload_data_operation_status_code != 200:
-                        with open(f'{all_log_files_folder}{wx_upload_error_log_filename}',
-                                  'r+') as wx_upload_error_log_file_i:
+                        with open(f'{all_log_files_folder}{wx_upload_error_log_filename}', 'r+') as wx_upload_error_log_file_i:
                             wix_upload_errors_dict_as_json = wx_upload_error_log_file_i.read()
                             print(f"wix_upload_errors_dict_as_json: {wix_upload_errors_dict_as_json}")
 
@@ -344,7 +379,29 @@ def extract_elements_per_row_from_dataframe(
 
                             wx_upload_error_log_file_i.close()
 
+                    # if wx upload was successful and the current row is the last row in the dataframe,
+                    # reset the index to start from in the future for the current file..
+                    elif upload_data_operation_status_code == 200:
 
+                        with open(f'{all_log_files_folder}{row_in_progress_last_extraction_operation_log}', 'r+') as row_in_progress_last_operation_file_one:
+
+                            row_in_progress_last_operation_log_json = row_in_progress_last_operation_file_one.read()
+                            row_in_progress_last_operation_json_as_dict = json.loads(
+                                row_in_progress_last_operation_log_json)
+
+                            row_in_progress_last_operation_json_as_dict[file_name] = 0
+
+                            row_in_progress_last_operation_dict_as_json = json.dumps(
+                                row_in_progress_last_operation_json_as_dict)
+
+                            with open(f'{all_log_files_folder}{row_in_progress_last_extraction_operation_log}',
+                                      'w') as row_in_progress_last_operation_file_two:
+                                row_in_progress_last_operation_file_two.write(
+                                    row_in_progress_last_operation_dict_as_json)
+
+                                row_in_progress_last_operation_file_two.close()
+
+                            row_in_progress_last_operation_file_one.close()
 
 
         except:
@@ -613,7 +670,7 @@ def upload_skipped_csv_rows(
                         if upload_data_operation_status_code == 200:
                             current_csv_files_list_of_successfully_reuploaded_rows.append(index)
 
-                    
+
             except:
                 traceback.print_exc()
 
@@ -672,9 +729,7 @@ def populate_site_db(
             'siteName': site_name, #
             'country': country,
 
-            'isProductLinkUpdated': isProductLinkUpdated,
             'baseProductLinksId': baseProductLinksId,
-            'isImageSrcUpdated': isImageSrcUpdated,
             'baseImageSrcsId': baseImageSrcsId,
         }
     }
@@ -696,7 +751,9 @@ def populate_site_db(
             'auth': api_key_wx,
             'wix-site-id': '9cf6f443-4ee4-4c04-bf19-38759205c05d',
             'body': body,
-            'is_reset_p': is_reset_p
+            'is_reset_p': is_reset_p,
+            'is_product_link_updated': isProductLinkUpdated,
+            'is_image_src_updated': isImageSrcUpdated
         },
 
     )

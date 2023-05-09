@@ -8,7 +8,7 @@ from settings.q.pd_settings import *
 from settings.q.other_settings import short
 
 from settings.q.default_folder_and_filename_settings import all_filtered_data_folder_cj, all_log_files_folder, \
-    shorts_progress_log, retrieved_links_log
+    shorts_progress_log, retrieved_links_log, links_reconciliation_folder
 
 def reconcile_shorts(
         # KEY to short's metadata (includes id, short and original links)
@@ -156,6 +156,12 @@ def reconcile_shorts(
     print(f"OriginalURL Changed? (Personal - Short.io): {reconciliation_dict['OriginalURL Changed? (Personal - Short.io)'].count(True) > 0}")
     print(f"Was Link Data Ever Updated? (Personal - Short.io): {reconciliation_dict['Was Link Data Ever Updated? (Personal - Short.io)'].count(True) > 0}")
     print(f"Was Link Data Ever Updated? (Short.io - Short.io): {reconciliation_dict['Was Link Data Ever Updated? (Short.io - Short.io)'].count(True) > 0}")
+
+    file = f'{links_reconciliation_folder}links_reconciliation-{datetime.datetime.now()}.csv'
+    reconciliation_df.to_csv(file)
+    print()
+    print()
+    print(f'Saved Reconciliation File: {file}')
 
 
     # links_data_local = [link_shortening_progress[id].keys() for id in link_shortening_progress]
