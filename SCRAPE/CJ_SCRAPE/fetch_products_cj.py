@@ -977,7 +977,7 @@ def add_products_to_table(
             confirm_daily_upload_start = input('Is this the START of a DAILY UPLOAD?\n'
                                                'Ensure that no previous daily upload has been done if yes?\n'
                                                'y/n? ')
-            confirm_daily_upload_continuation = input('Is this the CONTINUATION of a DAILY UPLOAD? y/n? ')
+            confirm_daily_upload_continuation = input('Is this a dataframe CONTINUATION of a DAILY UPLOAD? y/n? ')
 
             if confirm_daily_upload_start == 'y' and confirm_daily_upload_continuation == 'n':
                 is_continue_daily_upload_if_any = False
