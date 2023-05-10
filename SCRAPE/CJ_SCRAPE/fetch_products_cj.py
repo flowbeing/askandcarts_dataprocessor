@@ -359,15 +359,12 @@ def add_products_to_table(
 
             #
             # PRODUCT LINK
-            product_link = product['linkCode']['clickUrl']
+            product_link = product['linkCode']['clickUrl'] + 'added'
             # index_of_product_link_less_trigger = product_link.index('url=') + 4
             # product_link_less_cj_trigger = product_link[index_of_product_link_less_trigger:]
             product_link_less_cj_trigger = (product_link.split('url='))[-1]
 
             # calculating product link's clean link
-
-
-
             # PRODUCT LINK SHORTENED
             # first - retrieving shortened links id, their relative shorts, and originals (short form)
             # print(f'link_shortening_progress: {link_shortening_progress}')
@@ -556,7 +553,7 @@ def add_products_to_table(
 
 
             # IMAGE SRC
-            image_src = product['linkCode']['imageUrl']
+            image_src = product['linkCode']['imageUrl'] + 'added'
             # index_of_product_link_less_trigger = product_link.index('imgurl=') + 7
             # image_src_less_cj_trigger = image_src[index_of_product_link_less_trigger:]
             image_src_less_cj_trigger = (image_src.split('imgurl='))[-1]
@@ -989,11 +986,33 @@ def add_products_to_table(
                 is_continue_daily_upload_if_any = True
                 is_selection_valid = True
 
+        is_clear_previous_progress = False
+        is_selection_valid = False
+
+        # confirm whether current extraction and upload operation is for the start of a daily upload to determine if
+        # all p value should be reset
+        while is_selection_valid == False:
+
+            print()
+            print()
+            confirm_start_from_first_row = input("Should operation continue from this dataframe's saved progress?\n"
+                                               'y/n? ')
+
+            if confirm_start_from_first_row == 'y':
+                is_clear_previous_progress = False
+                is_selection_valid = True
+            elif confirm_start_from_first_row == 'n':
+                is_clear_previous_progress = True
+                is_selection_valid = True
+
+
+
 
         extract_elements_per_row_from_dataframe(
             file_name=site_name,  # to remove '.csv'
             dataframe=product_feed_df,
-            is_continue_daily_upload_if_any=is_continue_daily_upload_if_any
+            is_continue_daily_upload_if_any=is_continue_daily_upload_if_any,
+            is_override_previous_extraction_progress_if_any_and_start_from_scratch=is_clear_previous_progress
         )
 
     else:
