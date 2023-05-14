@@ -2,6 +2,7 @@ import sys
 import requests
 import json
 import datetime
+import urllib.parse
 
 import pandas as pd
 
@@ -137,6 +138,27 @@ def add_products_to_table(
         mininum_commission_target_detected_currency_value,
         is_upload_to_wx = False
 ):
+
+    # JUST IN CASE REMINDER
+    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    print()
+    print()
+    confirm_commission_non_error = input("1. You didn't use the right exchange to calculate minimum commissions\n"
+                                         "2. You included 'added' in imageUrl and clickUrl:\n"
+                                         "(t)rue/(f)alse: ")
+
+    while confirm_commission_non_error != 't' and confirm_commission_non_error != 'f':
+
+        if confirm_commission_non_error == 't':
+            sys.exit('Operation terminated - YOU WERE NOT PAYING ATTENTION..')
+        elif confirm_commission_non_error == 'f':
+            pass
+        else:
+            confirm_commission_non_error = input(
+                "You didn't use the right exchange to calculate minimum commissions - (t)rue/(f)alse: ")
+
+    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
     # RETRIEVING PROGRAM TERMS, INCLUDING COMMISSION RATE
     program_terms = retrieve_cj_data(
         partner_company_name=site_name,
@@ -240,15 +262,79 @@ def add_products_to_table(
             # PRODUCT TITLE
             product_title = product['title']
 
-            if '&quot;' in product_title:
-                index_of_and_quote = product_title.index('uot;') + 4
-                product_title = product_title[index_of_and_quote:]
-            elif ';,' in product_title:
-                index_of_semicolon = product_title.index(';')
-                product_title = product_title[:index_of_semicolon]
-            elif ';' in product_title:
-                index_of_semicolon = product_title.index(';') + 1
-                product_title = product_title[index_of_semicolon:]
+            product_title_split = product_title.split(' ')
+
+            # detect and delete redundant 'words' in product_title
+            current_word_count = 0
+            for word in product_title_split:
+
+                if word.count('&') > 0 and word.count(';') > 0: # and word.count(',')
+                    index_of_and = word.index('&')
+                    chars_before_and = word[:index_of_and]
+
+                    # extract non-numeric characters from all characters before '&'
+                    non_numeric_chars_before_and = []
+                    for char in chars_before_and:
+
+                        if '0123456789'.count(char) == 0:
+                            non_numeric_chars_before_and.append(char)
+
+                    # if characters before '&' do not contain a non-numeric character, delete the current (redundant)
+                    # word from product title..
+                    if len(non_numeric_chars_before_and) == 0:
+                        product_title_split.remove(word)
+                    # otherwise, remove the current word and replace it with non-numeric characters
+                    # that exist before '&'
+                    else:
+                        word_replacement = ''.join(non_numeric_char for non_numeric_char in non_numeric_chars_before_and)
+                        product_title_split.remove(word)
+                        product_title_split.insert(current_word_count, word_replacement)
+
+                elif word.count('&') > 0 and word.count(';,'):
+                    index_of_and = word.index('&')
+                    chars_before_and = word[:index_of_and]
+
+                    index_of_semicolon_and_comma = word.index(';,') + 2
+                    chars_after_semicolon_and_comma = word[index_of_semicolon_and_comma:]
+
+                    # extract non-numeric characters from all characters before '&'
+                    non_numeric_chars_before_and = []
+                    for char in chars_before_and:
+
+                        if '0123456789'.count(char) == 0:
+                            non_numeric_chars_before_and.append(char)
+
+                    # determining word replacement
+                    non_numeric_chars_before_and = \
+                        ''.join(non_numeric_char for non_numeric_char in non_numeric_chars_before_and)
+
+                    word_replacement = ''
+                    if len(non_numeric_chars_before_and) != 0:
+                        word_replacement = non_numeric_chars_before_and + chars_after_semicolon_and_comma
+                    else:
+                        word_replacement = chars_after_semicolon_and_comma
+
+                    product_title_split.remove(word)
+                    product_title_split.insert(current_word_count, word_replacement)
+
+
+                current_word_count += 1
+
+                product_title = ' '.join(word for word in product_title_split)
+
+
+            # if '&sup2;' in product_title:
+            #     index_of_and_quote = product_title.index('&sup2;') + 5
+            #     product_title = product_title[index_of_and_quote:]
+            # elif '&quot;' in product_title:
+            #     index_of_and_quote = product_title.index('uot;') + 4
+            #     product_title = product_title[index_of_and_quote:]
+            # elif ';,' in product_title:
+            #     index_of_semicolon = product_title.index(';')
+            #     product_title = product_title[:index_of_semicolon]
+            # elif ';' in product_title:
+            #     index_of_semicolon = product_title.index(';') + 1
+            #     product_title = product_title[index_of_semicolon:]
             # product_brandName x
 
             # DETERMINING PRODUCT CATEGORY
@@ -368,9 +454,10 @@ def add_products_to_table(
             # PRODUCT LINK SHORTENED
             # first - retrieving shortened links id, their relative shorts, and originals (short form)
             # print(f'link_shortening_progress: {link_shortening_progress}')
-            list_of_short_links_id = list(link_shortening_progress.keys())
-            short_links_metadata = link_shortening_progress.values() # a dictionary containing short and original links
-            list_of_short_links = [metadata['short_link'] for metadata in short_links_metadata]
+            list_of_links_metadata_id = list(link_shortening_progress.keys()) # id of all links data (includes long and short links data)
+            links_metadata = link_shortening_progress.values() # a dictionary containing short and original links
+            list_of_short_links = [metadata['short_link'] for metadata in links_metadata]
+            list_of_original_links = [metadata['original_link'] for metadata in links_metadata]
 
             # deriving product link id and image src's id from product id
             product_id = product['id']
@@ -417,7 +504,7 @@ def add_products_to_table(
                 # generated..
                 # 2. have a path to use where short will later be api-generated
 
-                print(f'list_of_short_links_id: {list_of_short_links_id}')
+                print(f'list_of_short_links_id: {list_of_links_metadata_id}')
                 print(f'list_of_short_links: {list_of_short_links}')
 
                 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -434,12 +521,13 @@ def add_products_to_table(
                 # if product link's id is (?and not short link, because short link are auto generated and a product
                 # link could already have a different short link*) not in the list of already shortened product links
                 # id, api-shorten it with the (new) code generated path..
-                if list_of_short_links_id.count(product_links_id) < 1:
+                if list_of_links_metadata_id.count(product_links_id) < 1:
 
                     shorten_product_link_operation = shorten_url(
                         product_title=product_title,
                         product_or_image_link_to_shorten=product_link,
-                        path_to_save_shortened_link_to=final_pl_path
+                        path_to_save_shortened_link_to=final_pl_path,
+                        links_title=product_title
                     )
 
                     if type(shorten_product_link_operation) != str:
@@ -460,7 +548,7 @@ def add_products_to_table(
 
                 # else if the cj affiliate link has changed without considering the affiliate tracking link or trigger,
                 # create a short link for the updated product link..
-                elif list_of_short_links_id.count(product_links_id) > 0 and \
+                elif list_of_links_metadata_id.count(product_links_id) > 0 and \
                         link_shortening_progress[product_links_id][
                             'original_link_less_cj_trigger'] != product_link_less_cj_trigger:
 
@@ -516,7 +604,8 @@ def add_products_to_table(
                         shorten_product_link_operation = shorten_url(
                             product_title=product_title,
                             product_or_image_link_to_shorten=product_link,
-                            path_to_save_shortened_link_to=final_pl_path
+                            path_to_save_shortened_link_to=final_pl_path,
+                            links_title=product_title
                         )
 
                         if type(shorten_product_link_operation) != str:
@@ -537,7 +626,7 @@ def add_products_to_table(
                         link_id_incrementor = 0
                         product_links_id_updated = product_links_id
 
-                        while list_of_short_links_id.count(product_links_id_updated) > 0:
+                        while list_of_links_metadata_id.count(product_links_id_updated) > 0:
 
                             link_id_incrementor += 1
                             product_links_id_updated = product_links_id + '-update-' + f'{link_id_incrementor}'
@@ -557,8 +646,10 @@ def add_products_to_table(
             # index_of_product_link_less_trigger = product_link.index('imgurl=') + 7
             # image_src_less_cj_trigger = image_src[index_of_product_link_less_trigger:]
             image_src_less_cj_trigger = (image_src.split('imgurl='))[-1]
+            image_src_less_cj_trigger_unquoted = urllib.parse.unquote(image_src_less_cj_trigger).replace('http://', 'https://')
+            image_src_updated = False
 
-            # IMAGE SRC SHORTENED
+            # IMAGE SRC SHORTENED -> PAUSED (REPLACED WITH ORIGINAL IMAGE LINK REPRESENTATION AND CHANGE IDENTIFICATION)
             short_image_link = ''
             version_short_image_link_change_was_previously_implemented_in = '' # to track whether the current short_image_link has previously been implemented
 
@@ -568,141 +659,262 @@ def add_products_to_table(
             short_image_link_owner_id = ''
 
             if image_src != '':
-                final_is_path = short_product_link.replace('-pl-', '-is-')  # alpha_path + '-is' + f'-{str(link_base_count)}'
-                final_is_path_copy = f'{final_is_path}'
-                final_is_path = final_is_path.replace('https://shop.askandcarts.com/', '')
+                # final_is_path = short_product_link.replace('-pl-', '-is-')  # alpha_path + '-is' + f'-{str(link_base_count)}' -> PAUSED IMAGE LINK SHORTENING
+                # final_is_path_copy = f'{final_is_path}'  -> PAUSED IMAGE LINK SHORTENING
+                # final_is_path = final_is_path.replace('https://shop.askandcarts.com/', '') -> PAUSED IMAGE LINK SHORTENING
 
                 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
                 # if image (src) link's not in the list of already shortened links, api shorten it
-                if final_is_path.count('failed_to_shorten') > 0:
-                    # skip if the product link shortening above 'failed_to_shorten' to avoid 'failed_to_shorten' dominos errors
-                    pass
+                # if final_is_path.count('failed_to_shorten') > 0: -> PAUSED IMAGE LINK SHORTENING
+                #     # skip if the product link shortening above 'failed_to_shorten' to avoid 'failed_to_shorten' dominos errors  -> PAUSED IMAGE LINK SHORTENING
+                #     pass -> PAUSED IMAGE LINK SHORTENING
 
                 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-                elif list_of_short_links_id.count(image_src_id) < 1 and list_of_short_links.count(final_is_path_copy) < 1:
-
-                    shorten_image_link_operation = shorten_url(
-                        product_title=product_title,
-                        product_or_image_link_to_shorten=image_src,
-                        path_to_save_shortened_link_to=final_is_path
-                    )
-
-                    if type(shorten_image_link_operation) != str:
-                        short_image_link = shorten_image_link_operation['shortened_url']
-                        short_image_link_creation_time = shorten_image_link_operation['created_at']
-                        short_image_link_id_string = shorten_image_link_operation['id_string']
-                        short_image_link_domain_id = shorten_image_link_operation['domain_id']
-                        short_image_link_owner_id = shorten_image_link_operation['owner_id']
-
-                    else:
-                        short_image_link = shorten_image_link_operation
-                        short_image_link_creation_time = shorten_image_link_operation
-                        short_image_link_id_string = shorten_image_link_operation
-                        short_image_link_domain_id = shorten_image_link_operation
-                        short_image_link_owner_id = shorten_image_link_operation
+                # elif list_of_short_links_id.count(image_src_id) < 1 and list_of_short_links.count(final_is_path_copy) < 1:  -> PAUSED IMAGE LINK SHORTENING
+                #
+                #     shorten_image_link_operation = shorten_url(
+                #         product_title=product_title,
+                #         product_or_image_link_to_shorten=image_src,
+                #         path_to_save_shortened_link_to=final_is_path
+                #     )
+                #
+                #     if type(shorten_image_link_operation) != str:
+                #         short_image_link = shorten_image_link_operation['shortened_url']
+                #         short_image_link_creation_time = shorten_image_link_operation['created_at']
+                #         short_image_link_id_string = shorten_image_link_operation['id_string']
+                #         short_image_link_domain_id = shorten_image_link_operation['domain_id']
+                #         short_image_link_owner_id = shorten_image_link_operation['owner_id']
+                #
+                #     else:
+                #         short_image_link = shorten_image_link_operation
+                #         short_image_link_creation_time = shorten_image_link_operation
+                #         short_image_link_id_string = shorten_image_link_operation
+                #         short_image_link_domain_id = shorten_image_link_operation
+                #         short_image_link_owner_id = shorten_image_link_operation
 
                 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 
                 # else if the cj affiliate link has changed without considering the affiliate tracking link or trigger,
                 # create a short link for the updated product link..
-                elif list_of_short_links_id.count(image_src_id) > 0 and \
-                        link_shortening_progress[image_src_id]['original_link_less_cj_trigger'] != image_src_less_cj_trigger:
+                # elif list_of_short_links_id.count(image_src_id) > 0 and \
+                #         link_shortening_progress[image_src_id]['original_link_less_cj_trigger'] != image_src_less_cj_trigger:
+                #
+                #     version_change_was_previously_implemented_in = ''
+                #     number_of_existing_versions_change_does_not_exist_in = 0
+                #
+                #     if link_shortening_progress[image_src_id].get('current_links_updates_ids') != None:
+                #
+                #         current_image_links_versions = link_shortening_progress[image_src_id]['current_links_updates_ids']
+                #
+                #         # if there's been previous update(s) to the current image src, register the version the
+                #         # current change was implemented in (if any), otherwise register the number of times the change
+                #         # was not registered
+                #         if len(current_image_links_versions) > 0:
+                #
+                #             for link_version in current_image_links_versions:
+                #
+                #                 if link_shortening_progress[link_version] \
+                #                         ['original_link_less_cj_trigger'] == image_src_less_cj_trigger:
+                #
+                #                     version_change_was_previously_implemented_in = link_version
+                #                     version_short_image_link_change_was_previously_implemented_in = version_change_was_previously_implemented_in
+                #
+                #                 # has sentimental value
+                #                 else:
+                #
+                #                     number_of_existing_versions_change_does_not_exist_in += 1
+                #
+                #         # if the detected change has been implemented in an existing version, extract short_link's value
+                #         # from there..
+                #         if (len(current_image_links_versions) > 0 and version_change_was_previously_implemented_in != ""):
+                #
+                #             short_image_link = link_shortening_progress[
+                #                 version_change_was_previously_implemented_in]['short_link']
+                #
+                #     # if there's been no previous update to the current image src or detected change has not been
+                #     # implemented in any existing update or link version, implement an update
+                #     if version_change_was_previously_implemented_in == "":
+                #
+                #         print()
+                #         print('Image src (without trigger) has changed')
+                #
+                #         old_original_link_less_cj_trigger = link_shortening_progress[image_src_id][
+                #             'original_link_less_cj_trigger']
+                #         print()
+                #
+                #         print(f'old original_link_less_cj_trigger: {old_original_link_less_cj_trigger}')
+                #         print(f'new original_link_less_cj_trigger: {image_src_less_cj_trigger}')
+                #
+                #         shorten_image_link_operation = shorten_url(
+                #             product_title=product_title,
+                #             product_or_image_link_to_shorten=image_src,
+                #             path_to_save_shortened_link_to=final_is_path
+                #         )
+                #
+                #         if type(shorten_image_link_operation) != str:
+                #             short_image_link = shorten_image_link_operation['shortened_url']
+                #             short_image_link_creation_time = shorten_image_link_operation['created_at']
+                #             short_image_link_id_string = shorten_image_link_operation['id_string']
+                #             short_image_link_domain_id = shorten_image_link_operation['domain_id']
+                #             short_image_link_owner_id = shorten_image_link_operation['owner_id']
+                #
+                #         else:
+                #             short_image_link = shorten_image_link_operation
+                #             short_image_link_creation_time = shorten_image_link_operation
+                #             short_image_link_id_string = shorten_image_link_operation
+                #             short_image_link_domain_id = shorten_image_link_operation
+                #             short_image_link_owner_id = shorten_image_link_operation
+                #
+                #         # updating image_src_id to ensure proper registration
+                #         link_id_incrementor = 0
+                #         image_src_id_updated = image_src_id
+                #
+                #         while list_of_short_links_id.count(image_src_id_updated) > 0:
+                #             link_id_incrementor += 1
+                #             image_src_id_updated = image_src_id + '-update-' + f'{link_id_incrementor}'
+                #
+                #             print()
+                #             print(f'while (image_src_id_updated)-> {image_src_id_updated}')
 
-                    version_change_was_previously_implemented_in = ''
-                    number_of_existing_versions_change_does_not_exist_in = 0
+                ## TO DETERMINE WHETHER OR NOT AN ORIGINAL CJ IMAGE LINK HAS CHANGED -> DELETE WHEN IMAGE LINK SHORTENING GETS RESUMED
+                #if list_of_links_metadata_id.count(image_src_id) > 0 and \
+                #        link_shortening_progress[image_src_id]['original_link_less_cj_trigger'] != image_src_less_cj_trigger:
+                #
+                #    version_change_was_previously_implemented_in = ''
+                #    number_of_existing_versions_change_does_not_exist_in = 0
+                #
+                #    if link_shortening_progress[image_src_id].get('current_links_updates_ids') != None:
+                #
+                #        current_image_links_versions = link_shortening_progress[image_src_id]['current_links_updates_ids']
+                #
+                #        # if there's been previous update(s) to the current image src, register the version the
+                #        # current change was implemented in (if any), otherwise register the number of times the change
+                #        # was not registered
+                #        if len(current_image_links_versions) > 0:
+                #
+                #            for link_version in current_image_links_versions:
+                #
+                #                if link_shortening_progress[link_version] \
+                #                        ['original_link_less_cj_trigger'] == image_src_less_cj_trigger:
+                #
+                #                    version_change_was_previously_implemented_in = link_version
+                #                    version_short_image_link_change_was_previously_implemented_in = version_change_was_previously_implemented_in
+                #
+                #                # has sentimental value
+                #                else:
+                #
+                #                    number_of_existing_versions_change_does_not_exist_in += 1
+                #
+                #        # if the detected change has been implemented in an existing version, extract short_link's value
+                #        # from there..
+                #        if (len(current_image_links_versions) > 0 and version_change_was_previously_implemented_in != ""):
+                #
+                #            short_image_link = link_shortening_progress[
+                #                version_change_was_previously_implemented_in]['short_link']
+                #
+                #    # if there's been no previous update to the current image src or detected change has not been
+                #    # implemented in any existing update or link version, implement an update
+                #    if version_change_was_previously_implemented_in == "":
+                #
+                #        print()
+                #        print('Image src (without trigger) has changed')
+                #
+                #        old_original_link_less_cj_trigger = link_shortening_progress[image_src_id][
+                #            'original_link_less_cj_trigger']
+                #        print()
+                #
+                #        print(f'old original_link_less_cj_trigger: {old_original_link_less_cj_trigger}')
+                #        print(f'new original_link_less_cj_trigger: {image_src_less_cj_trigger}')
+                #
+                #        shorten_image_link_operation = shorten_url(
+                #            product_title=product_title,
+                #            product_or_image_link_to_shorten=image_src,
+                #            path_to_save_shortened_link_to=final_is_path
+                #        )
+                #
+                #        if type(shorten_image_link_operation) != str:
+                #            short_image_link = shorten_image_link_operation['shortened_url']
+                #            short_image_link_creation_time = shorten_image_link_operation['created_at']
+                #            short_image_link_id_string = shorten_image_link_operation['id_string']
+                #            short_image_link_domain_id = shorten_image_link_operation['domain_id']
+                #            short_image_link_owner_id = shorten_image_link_operation['owner_id']
+                #
+                #        else:
+                #            short_image_link = shorten_image_link_operation
+                #            short_image_link_creation_time = shorten_image_link_operation
+                #            short_image_link_id_string = shorten_image_link_operation
+                #            short_image_link_domain_id = shorten_image_link_operation
+                #            short_image_link_owner_id = shorten_image_link_operation
+                #
+                #        # updating image_src_id to ensure proper registration
+                #        link_id_incrementor = 0
+                #        image_src_id_updated = image_src_id
+                #
+                #        while list_of_links_metadata_id.count(image_src_id_updated) > 0:
+                #            link_id_incrementor += 1
+                #            image_src_id_updated = image_src_id + '-update-' + f'{link_id_incrementor}'
+                #
+                #            print()
+                #            print(f'while (image_src_id_updated)-> {image_src_id_updated}')
 
-                    if link_shortening_progress[image_src_id].get('current_links_updates_ids') != None:
+                # else:
+                #     # use the already existing short value that's associated with the image src rather than the
+                #     # code-generated short link..
+                #     short_image_link = link_shortening_progress[image_src_id]['short_link'] # 'https://shop.askandcarts.com/' + final_is_path
 
-                        current_image_links_versions = link_shortening_progress[image_src_id]['current_links_updates_ids']
+                # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                # DELETE -> WHEN IMAGE LINK SHORTENING GETS RESUMED
+                # check whether current image src's version already exists..
+                list_of_original_links_less_cj_trigger = [urllib.parse.unquote(original_link.split('imgurl=')[-1]) for
+                                                          original_link in list_of_original_links]
+                all_image_link_version_lists = [metadata.get('list_of_image_src_versions', None) for metadata in links_metadata if metadata.get('list_of_image_src_versions', None) != None]
 
-                        # if there's been previous update(s) to the current image src, register the version the
-                        # current change was implemented in (if any), otherwise register the number of times the change
-                        # was not registered
-                        if len(current_image_links_versions) > 0:
+                if len(all_image_link_version_lists) != 0:
 
-                            for link_version in current_image_links_versions:
+                    list_of_image_src_versions_versions = [image_link_version for image_src_version_list in
+                                                           all_image_link_version_lists for image_link_version in
+                                                           image_src_version_list]
 
-                                if link_shortening_progress[link_version] \
-                                        ['original_link_less_cj_trigger'] == image_src_less_cj_trigger:
+                    # if the image src id already exists but the current image src is not in the list of original
+                    # links (less CJ trigger), nor is it in the list of (all) link versions, indicate that the current
+                    # product's image src has been updated..
+                    if list_of_links_metadata_id.count(image_src_id) > 0 and \
+                            list_of_original_links_less_cj_trigger.count(image_src_less_cj_trigger_unquoted) == 0 and \
+                            list_of_image_src_versions_versions.count(image_src_less_cj_trigger_unquoted) == 0:
 
-                                    version_change_was_previously_implemented_in = link_version
-                                    version_short_image_link_change_was_previously_implemented_in = version_change_was_previously_implemented_in
+                        image_src_updated = True
 
-                                # has sentimental value
-                                else:
+                    # else if the image src id already exists but the current image src is not in the list of original links
+                    # (less CJ trigger), but it's in the list of image src's versions, retrieve the previously implemented
+                    # image src update as 'image_src_less_cj_trigger_update'
+                    # useful in case a previous image src update was not implemented in DB..
+                    elif list_of_links_metadata_id.count(image_src_id) > 0 and \
+                            list_of_original_links_less_cj_trigger.count(image_src_less_cj_trigger_unquoted) == 0 and \
+                            list_of_image_src_versions_versions.count(image_src_less_cj_trigger_unquoted) > 0:
 
-                                    number_of_existing_versions_change_does_not_exist_in += 1
+                        image_src_updated = True
 
-                        # if the detected change has been implemented in an existing version, extract short_link's value
-                        # from there..
-                        if (len(current_image_links_versions) > 0 and version_change_was_previously_implemented_in != ""):
-
-                            short_image_link = link_shortening_progress[
-                                version_change_was_previously_implemented_in]['short_link']
-
-                    # if there's been no previous update to the current image src or detected change has not been
-                    # implemented in any existing update or link version, implement an update
-                    if version_change_was_previously_implemented_in == "":
-
-                        print()
-                        print('Image src (without trigger) has changed')
-
-                        old_original_link_less_cj_trigger = link_shortening_progress[image_src_id][
-                            'original_link_less_cj_trigger']
-                        print()
-
-                        print(f'old original_link_less_cj_trigger: {old_original_link_less_cj_trigger}')
-                        print(f'new original_link_less_cj_trigger: {image_src_less_cj_trigger}')
-
-                        shorten_image_link_operation = shorten_url(
-                            product_title=product_title,
-                            product_or_image_link_to_shorten=image_src,
-                            path_to_save_shortened_link_to=final_is_path
-                        )
-
-                        if type(shorten_image_link_operation) != str:
-                            short_image_link = shorten_image_link_operation['shortened_url']
-                            short_image_link_creation_time = shorten_image_link_operation['created_at']
-                            short_image_link_id_string = shorten_image_link_operation['id_string']
-                            short_image_link_domain_id = shorten_image_link_operation['domain_id']
-                            short_image_link_owner_id = shorten_image_link_operation['owner_id']
-
-                        else:
-                            short_image_link = shorten_image_link_operation
-                            short_image_link_creation_time = shorten_image_link_operation
-                            short_image_link_id_string = shorten_image_link_operation
-                            short_image_link_domain_id = shorten_image_link_operation
-                            short_image_link_owner_id = shorten_image_link_operation
-
-                        # updating image_src_id to ensure proper registration
-                        link_id_incrementor = 0
-                        image_src_id_updated = image_src_id
-
-                        while list_of_short_links_id.count(image_src_id_updated) > 0:
-                            link_id_incrementor += 1
-                            image_src_id_updated = image_src_id + '-update-' + f'{link_id_incrementor}'
-
-                            print()
-                            print(f'while (image_src_id_updated)-> {image_src_id_updated}')
-
-
-
-                else:
-                    # use the already existing short value that's associated with the image src rather than the
-                    # code-generated short link..
-                    short_image_link = link_shortening_progress[image_src_id]['short_link'] # 'https://shop.askandcarts.com/' + final_is_path
+                # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
             # DEFINING GENDER
             product_gender = product['gender']
 
             if product_gender != None:
-                product_gender = product_gender.upper()
+                if (product_gender.lower()).count('female') > 0:
+                    product_gender = 'WOMEN'
+
+                elif (product_gender.lower()).count('male') > 0:
+                    product_gender = 'MEN'
+
+                else:
+                    product_gender = product_gender.upper()
 
             else:
 
@@ -792,7 +1004,11 @@ def add_products_to_table(
             # products_feed_dict['productLinkShortened'].append(short_product_link)
 
             products_feed_dict['imageSrc_CJ'].append(image_src)
-            products_feed_dict['imageSrc'].append(short_image_link)
+            # DELETE -> WHEN IMAGE SRC SHORTENING GETS RESUMES
+            products_feed_dict['imageSrc'].append(image_src_less_cj_trigger_unquoted)
+
+            # PAUSED -> RESUME WHEN IMAGE SRC SHORTENING GETS RESUMES
+            # products_feed_dict['imageSrc'].append(short_image_link)
 
             # if current_index >= last_link_shortening_progress_index:
             # products_feed_dict['imageSrcShortened'].append(short_image_link)
@@ -812,9 +1028,16 @@ def add_products_to_table(
             else:
                 products_feed_dict['isProductLinkUpdated'].append('false')
 
-            if len(image_src_id_updated) > 0 or len(version_short_image_link_change_was_previously_implemented_in) > 0:
+            # PAUSED -> RESUME WHEN IMAGE SRC SHORTENING GETS RESUMES
+            # if len(image_src_id_updated) > 0 or len(version_short_image_link_change_was_previously_implemented_in) > 0:
+            #     products_feed_dict['isImageSrcUpdated'].append('true')
+            # elif len(image_src_id_updated) == 0:
+            #     products_feed_dict['isImageSrcUpdated'].append('false')
+
+            # DELETE -> WHEN IMAGE SRC SHORTENING GETS RESUMES
+            if image_src_updated == True:
                 products_feed_dict['isImageSrcUpdated'].append('true')
-            elif len(image_src_id_updated) == 0:
+            elif image_src_updated == False:
                 products_feed_dict['isImageSrcUpdated'].append('false')
 
 
@@ -878,41 +1101,71 @@ def add_products_to_table(
 
                         shorts_progress_log_json_as_dict[site_name][product_links_id]['current_links_updates_ids'].append(product_links_id_updated)
 
-                if short_image_link.count('failed_to_shorten') < 1 and short_image_link != '':
+                # if short_image_link.count('failed_to_shorten') < 1 and short_image_link != '': -> IMAGE SHORTENING PAUSED
+                #
+                #     if shorts_progress_log_json_as_dict[site_name].get(image_src_id, None) == None:
+                #         shorts_progress_log_json_as_dict[site_name][image_src_id] = {}
+                #         shorts_progress_log_json_as_dict[site_name][image_src_id]['current_links_updates_ids'] = []
+                #
+                #
+                #         shorts_progress_log_json_as_dict[site_name][image_src_id]['short_link'] = short_image_link
+                #         shorts_progress_log_json_as_dict[site_name][image_src_id]['original_link'] = image_src
+                #         shorts_progress_log_json_as_dict[site_name][image_src_id]['original_link_less_cj_trigger'] = image_src_less_cj_trigger
+                #
+                #         shorts_progress_log_json_as_dict['total_number_of_links'] += 1
+                #         shorts_progress_log_json_as_dict[site_name][image_src_id]['link_number'] = shorts_progress_log_json_as_dict['total_number_of_links']
+                #         shorts_progress_log_json_as_dict[site_name][image_src_id]['id_string'] = short_image_link_id_string
+                #         shorts_progress_log_json_as_dict[site_name][image_src_id]['domain_id'] = short_image_link_domain_id
+                #         shorts_progress_log_json_as_dict[site_name][image_src_id]['owner_id'] = short_image_link_owner_id
+                #         shorts_progress_log_json_as_dict[site_name][image_src_id]['short_link_creation_time'] = short_image_link_creation_time
+                #
+                #
+                #     if shorts_progress_log_json_as_dict[site_name].get(image_src_id_updated, None) == None and image_src_id_updated != "":
+                #         shorts_progress_log_json_as_dict[site_name][image_src_id_updated] = {}
+                #
+                #         shorts_progress_log_json_as_dict[site_name][image_src_id_updated]['short_link'] = short_image_link
+                #         shorts_progress_log_json_as_dict[site_name][image_src_id_updated]['original_link'] = image_src
+                #         shorts_progress_log_json_as_dict[site_name][image_src_id_updated][
+                #             'original_link_less_cj_trigger'] = image_src_less_cj_trigger
+                #         shorts_progress_log_json_as_dict['total_number_of_links'] += 1
+                #         shorts_progress_log_json_as_dict[site_name][image_src_id_updated]['link_number'] = shorts_progress_log_json_as_dict['total_number_of_links']
+                #         shorts_progress_log_json_as_dict[site_name][image_src_id_updated]['id_string'] = short_image_link_id_string
+                #         shorts_progress_log_json_as_dict[site_name][image_src_id_updated]['domain_id'] = short_image_link_domain_id
+                #         shorts_progress_log_json_as_dict[site_name][image_src_id_updated]['owner_id'] = short_image_link_owner_id
+                #         shorts_progress_log_json_as_dict[site_name][image_src_id_updated]['short_link_creation_time'] = short_image_link_creation_time
 
+                #         shorts_progress_log_json_as_dict[site_name][image_src_id]['current_links_updates_ids'].append(image_src_id_updated)
+
+                if image_src != '': # -> DELETE WHEN IMAGE LINK SHORTENING GETS RESUMED
+
+                    # creating new instance of image src metadata
                     if shorts_progress_log_json_as_dict[site_name].get(image_src_id, None) == None:
                         shorts_progress_log_json_as_dict[site_name][image_src_id] = {}
-                        shorts_progress_log_json_as_dict[site_name][image_src_id]['current_links_updates_ids'] = []
+                        shorts_progress_log_json_as_dict[site_name][image_src_id]['list_of_image_src_versions'] = []
 
-
-                        shorts_progress_log_json_as_dict[site_name][image_src_id]['short_link'] = short_image_link
+                        shorts_progress_log_json_as_dict[site_name][image_src_id]['short_link'] = short_image_link # necessary to have it for avoid error while trying to retreive list of short_product_links
                         shorts_progress_log_json_as_dict[site_name][image_src_id]['original_link'] = image_src
-                        shorts_progress_log_json_as_dict[site_name][image_src_id]['original_link_less_cj_trigger'] = image_src_less_cj_trigger
+                        shorts_progress_log_json_as_dict[site_name][image_src_id]['original_link_less_cj_trigger'] = image_src_less_cj_trigger_unquoted
+
 
                         shorts_progress_log_json_as_dict['total_number_of_links'] += 1
                         shorts_progress_log_json_as_dict[site_name][image_src_id]['link_number'] = shorts_progress_log_json_as_dict['total_number_of_links']
-                        shorts_progress_log_json_as_dict[site_name][image_src_id]['id_string'] = short_image_link_id_string
-                        shorts_progress_log_json_as_dict[site_name][image_src_id]['domain_id'] = short_image_link_domain_id
-                        shorts_progress_log_json_as_dict[site_name][image_src_id]['owner_id'] = short_image_link_owner_id
-                        shorts_progress_log_json_as_dict[site_name][image_src_id]['short_link_creation_time'] = short_image_link_creation_time
+
+                        shorts_progress_log_json_as_dict[site_name][image_src_id]['id_string'] = short_image_link_id_string # sentimental value
+                        shorts_progress_log_json_as_dict[site_name][image_src_id]['domain_id'] = short_image_link_domain_id # sentimental value
+                        shorts_progress_log_json_as_dict[site_name][image_src_id]['owner_id'] = short_image_link_owner_id # sentimental value
+                        shorts_progress_log_json_as_dict[site_name][image_src_id]['short_link_creation_time'] = short_image_link_creation_time # sentimental value
+
+                    if image_src_updated == True:
+
+                        image_src_update = image_src_less_cj_trigger_unquoted
+                        list_of_current_products_image_src_versions = shorts_progress_log_json_as_dict[site_name][image_src_id]['list_of_image_src_versions']
+
+                        if list_of_current_products_image_src_versions.count(image_src_update) == 0:
+
+                            list_of_current_products_image_src_versions.append(image_src_update)
 
 
-                    if shorts_progress_log_json_as_dict[site_name].get(image_src_id_updated, None) == None and image_src_id_updated != "":
-                        shorts_progress_log_json_as_dict[site_name][image_src_id_updated] = {}
-
-                        shorts_progress_log_json_as_dict[site_name][image_src_id_updated]['short_link'] = short_image_link
-                        shorts_progress_log_json_as_dict[site_name][image_src_id_updated]['original_link'] = image_src
-                        shorts_progress_log_json_as_dict[site_name][image_src_id_updated][
-                            'original_link_less_cj_trigger'] = image_src_less_cj_trigger
-                        shorts_progress_log_json_as_dict['total_number_of_links'] += 1
-                        shorts_progress_log_json_as_dict[site_name][image_src_id_updated]['link_number'] = shorts_progress_log_json_as_dict['total_number_of_links']
-                        shorts_progress_log_json_as_dict[site_name][image_src_id_updated]['id_string'] = short_image_link_id_string
-                        shorts_progress_log_json_as_dict[site_name][image_src_id_updated]['domain_id'] = short_image_link_domain_id
-                        shorts_progress_log_json_as_dict[site_name][image_src_id_updated]['owner_id'] = short_image_link_owner_id
-                        shorts_progress_log_json_as_dict[site_name][image_src_id_updated]['short_link_creation_time'] = short_image_link_creation_time
-
-
-                        shorts_progress_log_json_as_dict[site_name][image_src_id]['current_links_updates_ids'].append(image_src_id_updated)
 
 
                 # update 'link_shortening_progress' dict to reflect shortened links additions
@@ -939,22 +1192,6 @@ def add_products_to_table(
     print(product_feed_df.count())
 
     # print(product_feed_df['country'].to_list().count('US'))
-
-    # JUST IN CASE REMINDER
-    # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    print()
-    print()
-    confirm_commission_non_error = input("You didn't use the right exchange to calculate minimum commissions - (t)rue/(f)alse: ")
-
-    while confirm_commission_non_error != 't' and confirm_commission_non_error != 'f':
-
-        if confirm_commission_non_error == 't':
-            sys.exit('Operation terminated - YOU WERE NOT PAYING ATTENTION..')
-        elif confirm_commission_non_error == 'f':
-            pass
-        else:
-            confirm_commission_non_error = input(
-                "You didn't use the right exchange to calculate minimum commissions - (t)rue/(f)alse: ")
 
     # EXTRACT AND UPLOAD ROWS?
     # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1114,14 +1351,14 @@ partners = {
 
 }
 
-partner_to_fetch_num = 0
+partner_to_fetch_num = 1
 
 add_products_to_table(
 
     site_name=partners[partner_to_fetch_num]['partners_company_name'],
     partners_id=partners[partner_to_fetch_num]['partners_company_id'],
     ad_id=partners[partner_to_fetch_num]['partners_company_ad_id'],
-    mininum_commission_target_detected_currency_value= 734.40, # USD200 TO AED = AED 734.46 => MAY 8
+    mininum_commission_target_detected_currency_value= 200, # USD200 TO AED = AED 734.42 => MAY 8
     is_upload_to_wx=False
 )
 

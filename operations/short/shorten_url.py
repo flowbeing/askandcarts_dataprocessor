@@ -8,7 +8,7 @@ def shorten_url(
         product_title,
         product_or_image_link_to_shorten,
         path_to_save_shortened_link_to,
-        link_title_to_save_as="OOPS! The offer you're looking for has expired.",
+        links_title # "OOPS! The offer you're looking for has expired.",
 ):
 
     url = 'https://api.short.io/links'
@@ -17,7 +17,7 @@ def shorten_url(
         'domain': 'shop.askandcarts.com',
         'originalURL': product_or_image_link_to_shorten,
         'path': path_to_save_shortened_link_to,
-        'title': link_title_to_save_as
+        'title': links_title
     }
 
     # body_jsonified = json.dumps(body)
