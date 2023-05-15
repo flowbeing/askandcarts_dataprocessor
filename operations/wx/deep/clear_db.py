@@ -8,9 +8,9 @@ from settings.q.other_settings import api_key_wx
 
 
 dblist = [
-    'singaporeProducts', 'singaporeProductsPopularity',
-    'uaeProducts', 'uaeProductsPopularity',
-    'usaProducts', 'usaProductsPopularity']
+    'Singaporeproducts', 'singaporeProductsPopularity',
+    'Uaeproducts', 'uaeProductsPopularity',
+    'Usaproducts', 'usaProductsPopularity']
 
 url = 'https://flowbeing.wixsite.com/my-site-1/_functions-dev/clearDataBase'
 

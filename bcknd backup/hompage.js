@@ -135,16 +135,16 @@ async function resolveGalleryItems(){
 
 			/// defining collection in focus by user country
 			if (ipLoc.countryCode == 'SG') {
-				dbCollectionToFocusOn = 'singaporeProducts';
+				dbCollectionToFocusOn = 'Singaporeproducts';
 				usersCountryCode = 'SG';
 			}
 			else if (ipLoc.countryCode == 'AE'){
-				dbCollectionToFocusOn = 'uaeProducts';
+				dbCollectionToFocusOn = 'Uaeproducts';
 				usersCountryCode = 'AE';
 				// timeOut = 2500;
 			}
 			else if (ipLoc.countryCode == 'US'){
-				dbCollectionToFocusOn = 'usaProducts';
+				dbCollectionToFocusOn = 'Usaproducts';
 				usersCountryCode = 'US';
 			}
 

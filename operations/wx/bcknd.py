@@ -29,9 +29,9 @@ def extract_elements_per_row_from_dataframe(
 ):
     # value to check whether p values has been set where is_continue_daily_upload_if_any is False
     is_p_values_reset = {
-        'uaeProducts': False,
-        'usaProducts': False,
-        'singaporeProducts': False
+        'Uaeproducts': False,
+        'Usaproducts': False,
+        'Singaporeproducts': False
     }
     
     print()
@@ -186,7 +186,7 @@ def extract_elements_per_row_from_dataframe(
             current_row_country_name = \
                 'USA' if '_US_' in file_name or '_USA_' in file_name else current_row_country_name[0].replace('_', '')
 
-        current_rows_relevant_collection = f'{current_row_country_name.lower()}Products'
+        current_rows_relevant_collection = f'{current_row_country_name[0] + current_row_country_name[1:].lower()}products'
 
         # update check variables
         current_rows_isProductLinkUpdated = ''
@@ -230,7 +230,7 @@ def extract_elements_per_row_from_dataframe(
         # UPLOAD ROW DATA TO IT'S RELEVANT WIX DATABASE..
         try:
 
-            watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_collections_name = ['uaeProducts', 'usaProducts', 'singaporeProducts']
+            watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_collections_name = ['Uaeproducts', 'Usaproducts', 'Singaporeproducts']
             watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_countries_name = ['UAE', 'USA', 'SINGAPORE']
 
             number_of_times_to_upload_products_to_databases = 0
@@ -304,13 +304,20 @@ def extract_elements_per_row_from_dataframe(
                                 print(
                                     f'wix_upload_errors_dict: {wix_upload_errors_dict}, {type(wix_upload_errors_dict)}')
 
+                                # identifier prevents unsuccessfully uploaded rows from being added to this
+                                # wx upload error log file twice..
+                                current_unsuccessfully_uploaded_row_identifier = current_row_title + current_row_gender
+
                                 # add the current row's number to its relevant file within the error log file..
                                 if file_name not in wix_upload_errors_dict:
-                                    wix_upload_errors_dict[file_name] = [index]
+                                    wix_upload_errors_dict[file_name] = {
+                                        current_unsuccessfully_uploaded_row_identifier: index
+                                    }
                                 else:
                                     current_files_list_of_upload_error_row_numbers = wix_upload_errors_dict[file_name]
-                                    if index not in current_files_list_of_upload_error_row_numbers:
-                                        wix_upload_errors_dict[file_name].append(index)
+
+                                    if current_unsuccessfully_uploaded_row_identifier not in current_files_list_of_upload_error_row_numbers:
+                                        wix_upload_errors_dict[file_name][current_unsuccessfully_uploaded_row_identifier] = index
 
                                 with open(f'{all_log_files_folder}{wx_upload_error_log_filename}',
                                           'w') as wx_upload_error_log_file_ii:
@@ -344,6 +351,8 @@ def extract_elements_per_row_from_dataframe(
 
                                 row_in_progress_last_operation_file_one.close()
 
+                        # accounting for api limit of 200 request per minute
+                        time.sleep(0.4)
 
 
                 else:
@@ -386,20 +395,30 @@ def extract_elements_per_row_from_dataframe(
                     )
 
                     if upload_data_operation_status_code != 200:
-                        with open(f'{all_log_files_folder}{wx_upload_error_log_filename}', 'r+') as wx_upload_error_log_file_i:
+                        with open(f'{all_log_files_folder}{wx_upload_error_log_filename}',
+                                  'r+') as wx_upload_error_log_file_i:
                             wix_upload_errors_dict_as_json = wx_upload_error_log_file_i.read()
                             print(f"wix_upload_errors_dict_as_json: {wix_upload_errors_dict_as_json}")
 
                             wix_upload_errors_dict = json.loads(wix_upload_errors_dict_as_json)
-                            print(f'wix_upload_errors_dict: {wix_upload_errors_dict}, {type(wix_upload_errors_dict)}')
+                            print(
+                                f'wix_upload_errors_dict: {wix_upload_errors_dict}, {type(wix_upload_errors_dict)}')
+
+                            # identifier prevents unsuccessfully uploaded rows from being added to this
+                            # wx upload error log file twice..
+                            current_unsuccessfully_uploaded_row_identifier = current_row_title + current_row_gender
 
                             # add the current row's number to its relevant file within the error log file..
                             if file_name not in wix_upload_errors_dict:
-                                wix_upload_errors_dict[file_name] = [index]
+                                wix_upload_errors_dict[file_name] = {
+                                    current_unsuccessfully_uploaded_row_identifier: index
+                                }
                             else:
                                 current_files_list_of_upload_error_row_numbers = wix_upload_errors_dict[file_name]
-                                if index not in current_files_list_of_upload_error_row_numbers:
-                                    wix_upload_errors_dict[file_name].append(index)
+
+                                if current_unsuccessfully_uploaded_row_identifier not in current_files_list_of_upload_error_row_numbers:
+                                    wix_upload_errors_dict[file_name][
+                                        current_unsuccessfully_uploaded_row_identifier] = index
 
                             with open(f'{all_log_files_folder}{wx_upload_error_log_filename}',
                                       'w') as wx_upload_error_log_file_ii:
@@ -433,9 +452,45 @@ def extract_elements_per_row_from_dataframe(
 
                             row_in_progress_last_operation_file_one.close()
 
+                    # accounting for api limit of 200 request per minute
+                    time.sleep(0.4)
+
 
         except:
             traceback.print_exc()
+
+            # add failed wx upload row to list of unsuccessful uploads
+            with open(f'{all_log_files_folder}{wx_upload_error_log_filename}',
+                      'r+') as wx_upload_error_log_file_i:
+                wix_upload_errors_dict_as_json = wx_upload_error_log_file_i.read()
+                print(f"wix_upload_errors_dict_as_json: {wix_upload_errors_dict_as_json}")
+
+                wix_upload_errors_dict = json.loads(wix_upload_errors_dict_as_json)
+                print(
+                    f'wix_upload_errors_dict: {wix_upload_errors_dict}, {type(wix_upload_errors_dict)}')
+
+                # identifier prevents unsuccessfully uploaded rows from being added to this
+                # wx upload error log file twice..
+                current_unsuccessfully_uploaded_row_identifier = current_row_title + current_row_gender
+
+                # add the current row's number to its relevant file within the error log file..
+                if file_name not in wix_upload_errors_dict:
+                    wix_upload_errors_dict[file_name] = {
+                        current_unsuccessfully_uploaded_row_identifier: index
+                    }
+                else:
+                    current_files_list_of_upload_error_row_numbers = wix_upload_errors_dict[file_name]
+
+                    if current_unsuccessfully_uploaded_row_identifier not in current_files_list_of_upload_error_row_numbers:
+                        wix_upload_errors_dict[file_name][current_unsuccessfully_uploaded_row_identifier] = index
+
+                with open(f'{all_log_files_folder}{wx_upload_error_log_filename}',
+                          'w') as wx_upload_error_log_file_ii:
+                    wix_upload_errors_dict_to_json = json.dumps(wix_upload_errors_dict)
+                    wx_upload_error_log_file_ii.write(wix_upload_errors_dict_to_json)
+                    wx_upload_error_log_file_ii.close()
+
+                wx_upload_error_log_file_i.close()
 
 
         time.sleep(0.4) # accounting for api limit of 200 request per minute
@@ -467,7 +522,7 @@ def upload_skipped_csv_rows(
         current_CSVs_ignored_rows_during_wx_upload_list = skipped_csv_rows_dict[file_name]
 
         if '_CJ' in file_name:
-            current_csv_file_path = f'{all_filtered_data_folder_cj}{file_name}_CJ.csv'
+            current_csv_file_path = f'{all_filtered_data_folder_cj}{file_name}.csv'
         else:
             current_csv_file_path = f'{all_filtered_data_folder}{file_name}_FILTERED.csv'
 
@@ -476,7 +531,9 @@ def upload_skipped_csv_rows(
 
         current_csv_files_list_of_successfully_reuploaded_rows = []
 
-        for index in current_CSVs_ignored_rows_during_wx_upload_list:
+        for unsuccessfully_uploaded_row_identifier in current_CSVs_ignored_rows_during_wx_upload_list:
+
+            index = current_CSVs_ignored_rows_during_wx_upload_list[unsuccessfully_uploaded_row_identifier]
 
             print()
             print(f"current row's index: {index}")
@@ -493,7 +550,9 @@ def upload_skipped_csv_rows(
 
             # current row's brandname if brand name's has been included in the data set
             # work for CJ products feed data as well
-            current_row_brandname = current_row_data['brandName'] if 'brandName' in list_of_columns else ''
+            current_row_brandname = current_row_data['brandName'] if 'brandName' in list_of_columns  else ''
+            if pd.isna(current_row_brandname) == True:
+                current_row_brandname = ''
 
             # obtaining product category and if product category contains 'BAG', remove the category that irrelevant as per
             # the file name..
@@ -579,12 +638,20 @@ def upload_skipped_csv_rows(
 
             if 'isProductLinkUpdated' in list_of_columns:
                 current_rows_isProductLinkUpdated = current_row_data['isProductLinkUpdated']
+                if current_rows_isProductLinkUpdated == False:
+                    current_rows_isProductLinkUpdated = 'false'
+                elif current_rows_isProductLinkUpdated == True:
+                    current_rows_isProductLinkUpdated = 'true'
 
             if 'baseProductLinksId' in list_of_columns:
                 current_rows_baseProductLinksId = current_row_data['baseProductLinksId']
 
             if 'isImageSrcUpdated' in list_of_columns:
                 current_rows_isImageSrcUpdated = current_row_data['isImageSrcUpdated']
+                if current_rows_isImageSrcUpdated == False:
+                    current_rows_isImageSrcUpdated = 'false'
+                elif current_rows_isImageSrcUpdated == True:
+                    current_rows_isImageSrcUpdated = 'true'
 
             if 'baseImageSrcsId' in list_of_columns:
                 current_rows_baseImageSrcsId = current_row_data['baseImageSrcsId']
@@ -639,15 +706,14 @@ def upload_skipped_csv_rows(
                         for index in range(2):
 
                             upload_data_operation_status_code = populate_site_db(
-                                collection_name=
-                                watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_collections_name[i]
+                                collection_name=watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_collections_name[i]
                                 if 'THE_LUXURY_CLOSET' in file_name or 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
                                 else current_rows_relevant_collection,  #
 
                                 title=current_row_title,
                                 brand_name=current_row_brandname,
                                 product_category=current_row_product_category,
-                                gender=gender_to_apply[index],
+                                gender= current_row_gender,
                                 price=current_row_price,
                                 product_link=current_row_product_link,
                                 image_src=current_row_image_link,
@@ -655,7 +721,7 @@ def upload_skipped_csv_rows(
 
                                 country=watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_countries_name[i]
                                 if 'THE_LUXURY_CLOSET' in file_name or 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
-                                else current_row_country_name,  #
+                                else current_row_country_name, #
 
                                 isProductLinkUpdated=current_rows_isProductLinkUpdated,
                                 baseProductLinksId=current_rows_baseProductLinksId,
@@ -666,20 +732,19 @@ def upload_skipped_csv_rows(
                             )
 
                             if upload_data_operation_status_code == 200:
-                                current_csv_files_list_of_successfully_reuploaded_rows.append(index)
+                                current_csv_files_list_of_successfully_reuploaded_rows.append(unsuccessfully_uploaded_row_identifier)
 
                     else:
 
                         upload_data_operation_status_code = populate_site_db(
-                            collection_name=watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_collections_name[
-                                i]
+                            collection_name=watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_collections_name[i]
                             if 'THE_LUXURY_CLOSET' in file_name or 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
                             else current_rows_relevant_collection,  #
 
                             title=current_row_title,
                             brand_name=current_row_brandname,
                             product_category=current_row_product_category,
-                            gender=current_row_gender,
+                            gender= current_row_gender,
                             price=current_row_price,
                             product_link=current_row_product_link,
                             image_src=current_row_image_link,
@@ -687,7 +752,7 @@ def upload_skipped_csv_rows(
 
                             country=watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_countries_name[i]
                             if 'THE_LUXURY_CLOSET' in file_name or 'WATCHES_COM' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name
-                            else current_row_country_name,  #
+                            else current_row_country_name, #
 
                             isProductLinkUpdated=current_rows_isProductLinkUpdated,
                             baseProductLinksId=current_rows_baseProductLinksId,
@@ -698,7 +763,7 @@ def upload_skipped_csv_rows(
                         )
 
                         if upload_data_operation_status_code == 200:
-                            current_csv_files_list_of_successfully_reuploaded_rows.append(index)
+                            current_csv_files_list_of_successfully_reuploaded_rows.append(unsuccessfully_uploaded_row_identifier)
 
 
             except:
@@ -708,9 +773,16 @@ def upload_skipped_csv_rows(
 
 
         # remove all successfully uploaded rows from skipped csv rows dict
-        for row_index in current_csv_files_list_of_successfully_reuploaded_rows:
+        for row_reuploaded_successfully in current_csv_files_list_of_successfully_reuploaded_rows:
 
-            current_CSVs_ignored_rows_during_wx_upload_list.remove(row_index)
+            current_CSVs_ignored_rows_during_wx_upload_list.remove(row_reuploaded_successfully)
+
+        # if all previous unsuccessfully uploaded rows within the current file have now been successfully uploaded,
+        # delete the current file from skipped csv rows list, otherwise update it..
+        if len(current_CSVs_ignored_rows_during_wx_upload_list) == 0:
+            skipped_csv_rows_dict.remove(file_name)
+        else:
+            skipped_csv_rows_dict[file_name] = current_CSVs_ignored_rows_during_wx_upload_list
 
 
     # update wx_upload_error_log_file
@@ -718,8 +790,6 @@ def upload_skipped_csv_rows(
         wix_upload_errors_dict_to_json = json.dumps(skipped_csv_rows_dict)
         wx_upload_error_log_file.write(wix_upload_errors_dict_to_json)
         wx_upload_error_log_file.close()
-
-
 
 
 
@@ -805,7 +875,7 @@ def populate_site_db(
     return req.status_code
 
 
-
+# upload_skipped_csv_rows()
 
 # populate_site_db(
 #     collection_name='singaporeProducts',
