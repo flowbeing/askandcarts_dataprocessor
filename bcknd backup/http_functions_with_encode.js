@@ -238,7 +238,8 @@ export async function get_resetP(request) {
 }
 
 
-
+// To be used only when all products listing from all partner brands for the day have been updated or uploaded
+// To avoid mal-updates (& products desappearnace)
 export async function get_removePlessAll(request){
 
 	const headers = request.headers;
@@ -261,6 +262,7 @@ export async function get_removePlessAll(request){
 	let response = {
 	        body: {
 				'removePlessCollectionName': '',
+				'queryResult': {},
 				'noOfItemsRemoved': 0,
     			// 'removedItemIDs': ,
     			'noOfItemsSkipped': 0,
@@ -283,6 +285,9 @@ export async function get_removePlessAll(request){
 
 			let queryAllItems = results.items;
 
+			var listOfIDsOfItemsToRemove = [];
+
+
 			// remove all items with p from queryAllItems
 			if (queryAllItems.length > 0){
 
@@ -290,16 +295,11 @@ export async function get_removePlessAll(request){
 
 				while (itemCounter < queryAllItems.length){
 
-					var currentItem = queryAllItems[0];
+					var currentItem = queryAllItems[itemCounter];
 
 					// keep all items without p in list of items to remove
-					if (currentItem.p == ''){
-						queryAllItems.push(currentItem._id);
-						queryAllItems.shift();
-					}
-					// remove all items with p from list of items
-					else if (currentItem.p == 'p'){
-						queryAllItems.shift();
+					if (currentItem.p != 'p'){
+						listOfIDsOfItemsToRemove.push(currentItem._id);
 					}
 
 					itemCounter += 1;
@@ -307,9 +307,12 @@ export async function get_removePlessAll(request){
 
 			}
 
-			let listOfItemsToRemoveIDs = queryAllItems; // it's filtered version
+			response.body.queryResult = listOfIDsOfItemsToRemove.length;
 
-			return wixData.bulkRemove(collectionName, listOfItemsToRemoveIDs)
+
+			// let listOfItemsToRemoveIDs = listOfIDsOfItemsToRemove; // it's filtered version
+
+			return wixData.bulkRemove(collectionName, listOfIDsOfItemsToRemove, options)
 			.then((results) => {
 
 				let removed = results.removed; // 2
@@ -335,7 +338,7 @@ export async function get_removePlessAll(request){
       			    }
       			}
 
-				  return error(response);
+				return error(response);
 
 			  });
 
@@ -404,14 +407,42 @@ export async function get_addRowToCollection(request) {
   	// SETTING P
 	rowDataToInsert.p = 'p';
 
+	const currentRowsTitle = rowDataToInsert.title;
+	const currentRowsProductCategory = rowDataToInsert.productcategory;
+  	const currentRowsProductLink = rowDataToInsert.productlink;
+	const currentRowsImageLink = rowDataToInsert.imagesrc;
+  	var currentRowsProductPrice = rowDataToInsert.price;
+	var  currentRowsProductGender = rowDataToInsert.gender;
 
-  	const currentRowsProductLink = rowDataToInsert.productLink;
+	var currentRowsBaseProductLinksId = rowDataToInsert.baseproductlinksid;
+	var currentRowsBaseImageSrcsId = rowDataToInsert.baseimagesrcsid;
 
-	const currentRowsImageLink = rowDataToInsert.imageSrc;
 
-  	let currentRowsProductPrice = rowDataToInsert.price;
+  	var isResetP = JSON.parse(headers.is_reset_p);
+	var currentRowsIsProductLinkUpdated = JSON.parse(headers.is_product_link_updated);
+	var currentRowsIsImageSrcUpdated = JSON.parse(headers.is_image_src_updated);
 
-  	let isResetP = JSON.parse(headers.is_reset_p);
+
+	var eqColumnName = '';
+	var eqColumnValue = '';
+
+	// appropriately setting query parameters to search for existing product data or rows (if any)
+	if (currentRowsIsProductLinkUpdated == true){
+
+		eqColumnName = 'baseproductlinksid';
+		eqColumnValue = currentRowsBaseProductLinksId;
+	}
+	else if (currentRowsIsImageSrcUpdated == true){
+
+		eqColumnName = 'baseimagesrcsid';
+		eqColumnValue = currentRowsBaseImageSrcsId;
+
+	}
+	else{
+
+		eqColumnName = "imageSrc";
+		eqColumnValue = currentRowsImageLink;
+	}
 
 
   	// t toInsert = {
@@ -434,6 +465,22 @@ export async function get_addRowToCollection(request) {
       let response = {
         body: {
           	"collectionName": collectionName, //
+
+			'currentRowsIsProductLinkUpdated': currentRowsIsProductLinkUpdated,
+			'currentRowsIsProductLinkUpdatedType': typeof(currentRowsIsProductLinkUpdated),
+			'currentRowsBaseProductLinksId': currentRowsBaseProductLinksId,
+
+			'currentRowsIsImageSrcUpdated': currentRowsIsImageSrcUpdated,
+			'currentRowsIsImageSrcUpdatedType': typeof(currentRowsIsImageSrcUpdated),
+			'currentRowsBaseImageSrcsId': currentRowsBaseImageSrcsId,
+
+			'eqColumnName': eqColumnName,
+			'eqColumnNameType': typeof(eqColumnName),
+			'eqColumnValue': eqColumnValue,
+			'eqColumnValueType': typeof(eqColumnValue),
+			'queryResult': {},
+			'currentRowsProductGender': {},
+			'isCurrentRowProductGenderInQueryResult': {},
 		  	'isAndHasResetPValueForAll': null, //
 		  	'pValue': '', // update during updates or insertion
 		  	// 'pResetCollection': {},
@@ -445,7 +492,7 @@ export async function get_addRowToCollection(request) {
 		  	// 'popularityTagAdded': false,
           	'productPriceOriginal': JSON.parse(JSON.stringify(rowDataToInsert.price)),
           	'productPriceConverted': '',
-		  	'imageSrc': '', //
+		  	'imagesrc': '', //
 		  	'codifiedUrlLength': 0,
           	// 'codifiedUrl': '',
 		  	'isAddedOrUpdatedToCollection': {},
@@ -474,22 +521,50 @@ export async function get_addRowToCollection(request) {
         response.body.productPriceConverted = newPriceValue;
         rowDataToInsert.price = newPriceValue;
 
-		response.body.imageSrc = currentRowsImageLink;
+		response.body.imagesrc = currentRowsImageLink;
 
-        return wixData.query(collectionName).eq("imageSrc", currentRowsImageLink).find(options)
+		// get rows that have the same image src, baseProductLinksId, or baseImageSrcsId to ensure existing
+		// product info can be updated..
+        return wixData.query(collectionName).eq(eqColumnName, eqColumnValue).find(options)
         .then((results) => {
 
 			// response.body.isAddedOrUpdatedToCollection = results.items;
 
 			let queryResult = results.items;
-			let codifiedUrl = codifyUrl(rowDataToInsert.productLink);
+			response.body.queryResult = queryResult;
+
+			let codifiedUrl = codifyUrl(rowDataToInsert.productlink);
 
 			let isProductLinkDBEqualscurrentRowsProductLinkList = [];
 
 			let listOfItemsToUpdate = [];
 
 			// CHECK AND TRY ADDING PRODUCT DATA IN DB..
-        	if(results.items.length > 0) {
+			// checks whether or not one of the queryResult(s) absolutely matches the currentrow's data
+			var isCurrentRowProductGenderInQueryResult = {};
+			let currentDBItemCountPreUpdateTestAndAttempt = 0;
+
+
+			while(currentDBItemCountPreUpdateTestAndAttempt < queryResult.length) {
+
+				var currentDBRowToAbsoluteCheckGender = queryResult[currentDBItemCountPreUpdateTestAndAttempt];
+
+				if (currentDBRowToAbsoluteCheckGender.gender == currentRowsProductGender){
+
+					isCurrentRowProductGenderInQueryResult = true;
+
+				}
+
+				currentDBItemCountPreUpdateTestAndAttempt += 1;
+
+			}
+
+			response.body.isCurrentRowProductGenderInQueryResult = isCurrentRowProductGenderInQueryResult;
+			response.body.currentRowsProductGender = currentRowsProductGender;
+
+
+			// update existing rowData's productLink, price, and p
+        	if(results.items.length > 0 && isCurrentRowProductGenderInQueryResult == true) {
 
 				let currentDBItemCount = 0;
 
@@ -497,19 +572,38 @@ export async function get_addRowToCollection(request) {
 				while(currentDBItemCount < queryResult.length) {
 
 					let currentDBItemToUpdate = queryResult[currentDBItemCount];
+					var currentDBItemsGender = currentDBItemToUpdate.gender;
 
 					// let imgSrcDB = value.imageSrc;
-					let productLinkDB = currentDBItemToUpdate.productLink;
+					let productLinkDB = currentDBItemToUpdate.productlink;
+
 
 					let isProductLinkDBEqualscurrentRowsProductLink = (stripUrlInitials(decodeCodifiedUrl(productLinkDB)) == stripUrlInitials(currentRowsProductLink));
 
 					isProductLinkDBEqualscurrentRowsProductLinkList.push(isProductLinkDBEqualscurrentRowsProductLink);
 
-					// if product link in database is equal to current row to be inserted or updated's product link,
-					// update relative row in db's product link, price and p..
-					if (stripUrlInitials(decodeCodifiedUrl(productLinkDB)) == stripUrlInitials(currentRowsProductLink)){
+					// if:
+					// a. if the product link already exists i.e product link in database is equal to current row to be inserted or updated's product link,
+					// b. current row's product link's was updated
+					// c. current row's image src was updated,
+					// update the current row's in db's product link, price and p..
 
-						currentDBItemToUpdate.productLink = codifiedUrl;
+					// (All in all, update a row (or product data) if it already exists by identifying:
+					// a. whether or not the product and image link already exist within a row..
+					// b. whether or not an existing product's 'product link' or image src has changed..
+
+					if (
+						(stripUrlInitials(decodeCodifiedUrl(productLinkDB)) == stripUrlInitials(currentRowsProductLink)) ||
+						// to ensure that only absolutely matching rows in db with the same gender are uploaded
+						(currentRowsIsProductLinkUpdated	== true && currentDBItemsGender == currentRowsProductGender)||
+						(currentRowsIsImageSrcUpdated == true && currentDBItemsGender == currentRowsProductGender)
+
+						){
+
+						currentDBItemToUpdate.title = currentRowsTitle;
+						currentDBItemToUpdate.productCategory = currentRowsProductCategory;
+						currentDBItemToUpdate.productlink = codifiedUrl;
+						currentDBItemToUpdate.imagesrc = currentRowsImageLink;
 						currentDBItemToUpdate.price = rowDataToInsert.price;
 						currentDBItemToUpdate.p = rowDataToInsert.p;
 					  	// delete currentDBItemToUpdate._owner;
@@ -581,7 +675,7 @@ export async function get_addRowToCollection(request) {
         	}
         	else{
 
-				rowDataToInsert.productLink = codifiedUrl;
+				rowDataToInsert.productlink = codifiedUrl;
 
 				// INSERT PRODUCT DATA IN DB..
         	  	 return wixData.insert(collectionName, rowDataToInsert, options)
@@ -710,7 +804,7 @@ async function convertProductPrice(
 
 	// console.log('priceFloat: ' + priceFloat);
 
-	if (collectionName == 'singaporeProducts') {
+	if (collectionName == 'Singaporeproducts') {
 		console.log('here');
 
 		if ( priceString.includes('SGD$') || priceString.includes('SGD') ){
@@ -772,7 +866,7 @@ async function convertProductPrice(
 		}
 
 	}
-	else if (collectionName == 'uaeProducts') {
+	else if (collectionName == 'Uaeproducts') {
 		console.log('here');
 
 		if ((priceString.includes('د.إ'))){
@@ -836,7 +930,7 @@ async function convertProductPrice(
 		}
 
 	}
-	else if (collectionName == 'usaProducts') {
+	else if (collectionName == 'Usaproducts') {
 		console.log('here');
 
 		if ( priceString.includes('USD') || priceString.includes('USD$') || priceString.includes('US$') ){
@@ -907,13 +1001,13 @@ async function convertProductPrice(
 
     applicablePriceValue = priceString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
-    // if (collectionName == 'singaporeProducts'){
+    // if (collectionName == 'Singaporeproducts'){
     //   applicablePriceValue = 'S$' + String(Number(priceFloat.toFixed(0))).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     // }
-    // else if (collectionName == 'uaeProducts'){
+    // else if (collectionName == 'Uaeproducts'){
     //   applicablePriceValue = 'AED' + String(Number(priceFloat.toFixed(0))).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     // }
-    // else if (collectionName == 'usaProducts'){
+    // else if (collectionName == 'Usaproducts'){
     //   applicablePriceValue = '$' + String(Number(priceFloat.toFixed(0))).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     // }
   }
@@ -923,11 +1017,11 @@ async function convertProductPrice(
 
 	return applicablePriceValue // replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 	// else if (usersCountryCode == 'AE'){
-	// 	dbCollectionToFocusOn = 'uaeProducts';
+	// 	dbCollectionToFocusOn = 'Uaeproducts';
 	// 	timeOut = 2500;
 	// }
 	// else if (usersCountryCode == 'US'){
-	// 	dbCollectionToFocusOn = 'usaProducts';
+	// 	dbCollectionToFocusOn = 'Usaproducts';
 	// }
 }
 

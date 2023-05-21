@@ -1,12 +1,22 @@
+# lacks location fetching - lacks extreme ip (original)
+# secret key edited
+
+# lacks decode url
+# orderProducts function has been edited to remove decodeUrl()
+# everything from decodeUrl function down had been deleted
+
+
 // Velo API Reference: https://www.wix.com/velo/reference/api-overview/introduction
 
 import wixData from 'wix-data';
 import wixLocation from 'wix-location';
 import {fetch} from 'wix-fetch';
 import wixWindow from 'wix-window';
+import wixCrm from 'wix-crm';
 
 // user's country
 var usersCountryCode = '';
+var usersCountry = '';
 
 // list of all currencies
 // var allCurrenciesDict = {}
@@ -52,7 +62,7 @@ var handbagsAndMoreWomen = []; // Bags & Jewelleries (BRACELET , WATCH)
 var handbagsAndMoreWomenAmazonless = [];
 var clothesAndPerfumesWomen = []; // CLOTHES AND PERFUMES
 var clothesAndPerfumesWomenAmazonless = [];
-var flowersAndRingsWomen = []; // FLOWERS & RINGS
+var flowersAndRingsWomen = []; // Rings
 var flowersAndRingsWomenAmazonless = [];
 var travelBagsAndOtherBagsWomen = []; // TRAVEL BAGS & OTHER BAGS
 var travelBagsAndOtherBagsWomenAmazonless = [];
@@ -70,7 +80,7 @@ var necklacesAndBraceletsMen = []; // NECKLACES AND Bracelets
 var necklacesAndBraceletsMenAmazonless = [];
 var clothesAndPerfumesMen = []; // CLOTHES AND PERFUMES
 var clothesAndPerfumesMenAmazonless = [];
-var flowersAndRingsMen = []; // FLOWERS & RINGS
+var flowersAndRingsMen = []; // Rings
 var flowersAndRingsMenAmazonless = [];
 var travelBagsAndOtherBagsMen = []; // TRAVEL BAGS & OTHER BAGS
 var travelBagsAndOtherBagsMenAmazonless = [];
@@ -78,8 +88,8 @@ var otherAccessoriesMen = []; // OTHER ACCESSORIES
 var otherAccessoriesMenAmazonless = [];
 var luxuryTechMen = []; // TECH
 var luxuryTechMenAmazonless = []; // TECH
-var giftForHer = []; // GIFTS FOR HER (WATCHES, PERFUMES, FLOWERS)
-var giftForHerAmazonless = [];
+var giftsForHer = []; // GIFTS FOR HER (WATCHES, PERFUMES, FLOWERS)
+var giftsForHerAmazonless = [];
 
 // OTHERS
 // var featuredWatches = [];
@@ -131,6 +141,9 @@ async function resolveGalleryItems(){
 
 		if (ipLoc.countryCode != ''){
 
+			// user's country
+			usersCountry = ipLoc.country;
+
 			console.log(ipLoc.countryCode);
 
 			/// defining collection in focus by user country
@@ -143,7 +156,7 @@ async function resolveGalleryItems(){
 				usersCountryCode = 'AE';
 				// timeOut = 2500;
 			}
-			else if (ipLoc.countryCode == 'US'){
+			else{ // ipLoc.countryCode == 'US'
 				dbCollectionToFocusOn = 'Usaproducts';
 				usersCountryCode = 'US';
 			}
@@ -163,66 +176,44 @@ async function resolveGalleryItems(){
 	})
 	.then((dbCollectionToFocusOn) => {
 
-		// console.log(dbCollectionToFocusOn);
 
 		// obtaining products as per current country
-		return wixData.query(dbCollectionToFocusOn).limit(999).find(options)
-		.then((dbQueryAllResponse) => {
-
-			dbQueryAllResponseItems	= dbQueryAllResponse.items;
-
-			return dbQueryAllResponse.items
-
-		}).catch((error) => {
-
-			return error(error);
-
-		})
-
-
-
-		// console.log(typeof(dbQueryAllResponseItems[0].title));
-
-		// return dbQueryAllResponseItems;
-				// else{
-
-				// 	console.error('There are no products for this origin');
-				// }
+		return retrieveDatabaseItems(
+			dbCollectionToFocusOn,
+			options
+		);
 
 	});
 
-	// return dbQueryAllResponseItems.length;
 
-	// console.log('typeof(dbQueryAllResponseItems): ' + dbQueryAllResponseItems[0].title);
+}
 
-	//$w.onReady(function () {
-	//
-	//	var gallery1ItemsReformatted = [];
-	//
-	//	dbQueryAllResponseItems.forEach((item) => {
-	//		gallery1ItemsReformatted.push(
-	//			{
-	//				"type": "image",
-	//	  			"title": item.title,
-	//  	  			"src": item.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
-	//	  			'description': item.price,
-	//	  			'link': item.productLink,
-	//	  			'slug': item.productLink
-	//			}
-	//		);
-	//	})
-	//
-	//	console.log(gallery1ItemsReformatted);
-	//
-	//	$w('#gallery1').items = gallery1ItemsReformatted;
-	//	$w('#gallery1').show;
-	//
-	//});
+function retrieveDatabaseItems(
+	dbCollectionToFocusOn,
+	options
+){
 
-	// return dbQueryAllResponseItems;
+	return wixData.query(dbCollectionToFocusOn).limit(1000).find(options)
+		.then((dbQueryAllResponse) => {
 
-	// setTimeout(()=>{},5000);
+			console.log(dbQueryAllResponse)
 
+			dbQueryAllResponseItems	= dbQueryAllResponse.items;
+
+			// check for and add more results
+			while (dbQueryAllResponse.hasNext()) {
+    		    dbQueryAllResponse.next().then((nextResult) => {
+					dbQueryAllResponseItems = dbQueryAllResponseItems.concat(nextResult.items);
+				});
+    		}
+    		return dbQueryAllResponseItems;
+
+		}).catch((error) => {
+
+			console.log('ERROR LOADING DB!!')
+			return error(error);
+
+		});
 }
 
 $w.onReady(function () {
@@ -253,6 +244,75 @@ $w.onReady(function () {
 
     }
 
+	// Get subscribers (Join) form..
+	$w('#getSubscribers1').onWixFormSubmit((event) => {
+
+		console.log('here 1');
+		console.log('userInput: ' + $w('#input2').value);
+		var userInput = $w('#input2').value;
+
+		setTimeout(() => {
+
+			const contactInfo = {
+			  name: {
+			    first: " ",
+			    last: "Undefined Gender"
+			  },
+			  emails: [
+			    {
+			      email: userInput,
+			    },
+			    {
+			      email: userInput
+			    }
+			  ],
+
+			  phones: [
+  				  {
+  				    tag: "MOBILE",
+  				    countryCode: usersCountryCode,
+  				    phone: "once or twice a month",
+  				    primary: true
+  				  }
+  				],
+
+			  addresses: [
+    			  {
+    			    tag: "HOME",
+    			    address: {
+    			      formatted: usersCountry,
+    			      location: {
+    			        latitude: 0,
+    			        longitude: 0
+    			      },
+    			      city: "",
+    			      subdivision: "",
+    			      country: usersCountryCode,
+    			      postalCode: "00000"
+    			    }
+    			  }
+    			],
+			};
+
+			console.log('here 2');
+			// console.log('contactInfo: ' + contactInfo.phones[0].countryCode);
+
+
+			wixCrm.contacts.appendOrCreateContact(contactInfo)
+		  	.then((resolvedContact) => {
+				console.log('resolvedContact ' + resolvedContact);
+		  	  	return resolvedContact;
+		  	})
+		  	.catch((error) => {
+		  	  	console.error(error);
+		  	});
+
+			console.log('here 3');
+
+		}, 500);
+
+	});
+
 	// $w('#line1').hide();
 
 	resolveGalleryItems();
@@ -261,30 +321,141 @@ $w.onReady(function () {
 	setTimeout(() => {
 
 	    // redirect to not available
-		if (usersCountryCode != 'AE' && usersCountryCode != 'US' && usersCountryCode != 'SG'){
-			wixLocation.to('https://askandcarts.com/not-available');
-			close();
-		}
+		// if (usersCountryCode != 'AE' && usersCountryCode != 'US' && usersCountryCode != 'SG'){
+		// 	wixLocation.to('https://askandcarts.com/not-available');
+		// 	close();
+		// }
 
-		// removing items without product category or gender
+		// removing items (products) without product category or gender & products that exist more than once in the database..
 		var properDbQueryAllResponseItems = [];
 
 		for (let itemIndexString in dbQueryAllResponseItems){
 
 			var currentDBItem = dbQueryAllResponseItems[Number(itemIndexString)];
 			var currentDBItemGenderType = typeof(currentDBItem.gender);
-			var currentDBItemProductCategoryType = typeof(currentDBItem.productCategory);
+			var currentDBItemProductCategoryType = typeof(currentDBItem.productcategory);
+
+			var currentDBItemTitle = currentDBItem.title;
+			var currentDBItemPrice = currentDBItem.price;
+			var currentDBItemImageSrc = currentDBItem.imagesrc;
+
+			// console.log('currentDBItemGenderType: ' + currentDBItem.gender + ", " + currentDBItemGenderType);
+			// console.log('currentDBItemProductCategoryType: ' + currentDBItem.productcategory + ", " + currentDBItem.gender + ', ' + currentDBItemProductCategoryType);
+
 
 			if (
 				currentDBItemGenderType != 'object' && currentDBItemProductCategoryType != 'object'
 				){
-					console.log('currentDBItemGenderType: ' + currentDBItemGenderType);
-					console.log('currentDBItemProductCategoryType: ' + currentDBItemProductCategoryType);
+					// console.log('currentDBItemGenderType: ' + currentDBItemGenderType);
+					// console.log('currentDBItemProductCategoryType: ' + currentDBItemProductCategoryType);
 
-					properDbQueryAllResponseItems.push(currentDBItem);
+					// console.log('currentDBItemProductCategoryType: ' + currentDBItem.productcategory + ", " + currentDBItem.gender + ', ' + currentDBItemProductCategoryType);
+
+
+
+
+					// checking whether the current product has very similar variations in the database..
+					var numberOfTimesCurrentDBItemExistsInDB = dbQueryAllResponseItems.filter(
+						(product) => {
+
+							var ninetyFourPercentCurrentDBItemTitleIndex = Math.round(0.94 * currentDBItemTitle.length);
+							var ninetyFourPercentCurrentDBItemTitle = currentDBItemTitle.substring(0, ninetyFourPercentCurrentDBItemTitleIndex);
+
+
+							var currentDBItemGender = currentDBItem.gender;
+
+							var ninetyFourPercentCurrentDBItemImageSrcIndex =  Math.round(0.94 * currentDBItemImageSrc.length);
+							var ninetyFourPercentCurrentDBItemImageSrc =  currentDBItemImageSrc.substring(0, ninetyFourPercentCurrentDBItemImageSrcIndex);
+
+							// --
+
+							var ninetyFourPercentAProductFromDBsTitleIndex =  Math.round(0.94 * (product.title).length);
+							var ninetyFourPercentAProductFromDBsTitle =  product.title.substring(0, ninetyFourPercentAProductFromDBsTitleIndex)
+
+
+							var aProductFromDBsGender = product.gender;
+
+							var ninetyFourPercentAProductFromDBsImageSrcIndex =  Math.round(0.94 * (product.imagesrc).length);
+							var ninetyFourPercentAProductFromDBsImageSrc =  product.imagesrc.substring(0, ninetyFourPercentAProductFromDBsImageSrcIndex);
+
+							var ninetyFourPercentAProductFromDBsPrice = product.price;
+
+							// console.log(
+							// 	ninetyFourPercentAProductFromDBsTitle + ' == ' +  ninetyFourPercentCurrentDBItemTitle + '\n' +
+							// 		aProductFromDBsGender + ' == ' + currentDBItemGender + '\n' +
+							// 		ninetyFourPercentAProductFromDBsImageSrc + ' == ' + ninetyFourPercentCurrentDBItemImageSrc + '\n' +
+							// 		ninetyFourPercentAProductFromDBsPrice + ' == ' + currentDBItemPrice
+							// );
+
+							// comparing every product within DB with current product
+							return  ninetyFourPercentAProductFromDBsTitle == ninetyFourPercentCurrentDBItemTitle
+									&& aProductFromDBsGender == currentDBItemGender
+									&& ninetyFourPercentAProductFromDBsImageSrc == ninetyFourPercentCurrentDBItemImageSrc
+									&& ninetyFourPercentAProductFromDBsPrice == currentDBItemPrice;
+
+						}
+					).length;
+
+					console.log('numberOfTimesCurrentDBItemExistsInDB: ' + numberOfTimesCurrentDBItemExistsInDB);
+
+
+					// checking whether the an current item that has very similar variations in the database has been added to 'properDbQueryAllResponseItems' list
+					var isCurrentDBItemAlreadyAddedToProperDbQueryAllResponseItems = false;
+
+					if (numberOfTimesCurrentDBItemExistsInDB > 1){
+
+						isCurrentDBItemAlreadyAddedToProperDbQueryAllResponseItems = properDbQueryAllResponseItems.filter((addedProducts) => {
+
+							var ninetyFourPercentCurrentDBItemTitleIndex = Math.round(0.94 * currentDBItemTitle.length);
+							var ninetyFourPercentCurrentDBItemTitle = currentDBItemTitle.substring(0, ninetyFourPercentCurrentDBItemTitleIndex);
+
+							var currentDBItemGender = currentDBItem.gender;
+
+							var ninetyFourPercentCurrentDBItemImageSrcIndex =  Math.round(0.94 * currentDBItemImageSrc.length);
+							var ninetyFourPercentCurrentDBItemImageSrc =  currentDBItemImageSrc.substring(0, ninetyFourPercentCurrentDBItemImageSrcIndex);
+
+							// --
+
+							var ninetyFourPercentAddedProductsTitleIndex =  Math.round(0.94 * (addedProducts.title).length);
+							var ninetyFourPercentAddedProductsTitle =  addedProducts.title.substring(0, ninetyFourPercentAddedProductsTitleIndex)
+
+
+							var addedProductsGender = addedProducts.gender;
+
+							var ninetyFourPercentAddedProductsImageSrcIndex =  Math.round(0.94 * (addedProducts.imagesrc).length);
+							var ninetyFourPercentAddedProductsImageSrc =  addedProducts.imagesrc.substring(0, ninetyFourPercentAddedProductsImageSrcIndex);
+
+							var ninetyFourPercentAddedProductsPrice = addedProducts.price;
+
+							// comparing every product within DB with current product
+							return  ninetyFourPercentAddedProductsTitle == ninetyFourPercentCurrentDBItemTitle
+									&& addedProductsGender == currentDBItemGender
+									&& ninetyFourPercentAddedProductsImageSrc == ninetyFourPercentCurrentDBItemImageSrc
+									&& ninetyFourPercentAddedProductsPrice == currentDBItemPrice;
+
+						}).length > 0;
+					}
+
+
+					if (numberOfTimesCurrentDBItemExistsInDB == 1){
+
+						properDbQueryAllResponseItems.push(currentDBItem);
+
+					}
+					else if (numberOfTimesCurrentDBItemExistsInDB > 1 && isCurrentDBItemAlreadyAddedToProperDbQueryAllResponseItems == false){
+
+						properDbQueryAllResponseItems.push(currentDBItem);
+
+					}
 
 			}
 		}
+
+		// shuffled (proper) list of available products - To ensure that visitors do not keep seeing the same products over and over again
+
+		properDbQueryAllResponseItems = properDbQueryAllResponseItems.sort(function () {
+		  return Math.random() - 0.5;
+		})
 
 		dbQueryAllResponseItems = properDbQueryAllResponseItems;
 		console.log('items length: ' + dbQueryAllResponseItems.length);
@@ -321,7 +492,7 @@ $w.onReady(function () {
 
 			console.log('countEntry: ' + countEntry);
 			// console.log('here');
-			var productCat = item.productCategory;
+			var productCat = item.productcategory;
 			var productGender = item.gender;
 
 
@@ -350,6 +521,7 @@ $w.onReady(function () {
 				availableProductsCategoryForEachGender['MEN'].filter((productCategory) => productCategory == productCat).length > 0;
 
 				if (isCurrentProductCategoryInAvailableProductsCategoryForEachGender == false){
+					console.log('pushed category for men: ' + productCat )
 					availableProductsCategoryForEachGender['MEN'].push(productCat);
 					totalProductsPerCategoryPerGender['MEN'][productCat] = [];
 				}
@@ -362,7 +534,7 @@ $w.onReady(function () {
 
 
 
-			// console.log(totalProductsPerCategoryPerGender.WOMEN.productCategory == undefined);
+			// console.log(totalProductsPerCategoryPerGender.WOMEN.productcategory == undefined);
 			// var currentCategoryWithinCurrentGender = totalProductsPerCategoryPerGender[productGender][productCat];
 			// console.log('typeof: ' + typeof(currentCategoryWithinCurrentGender));
 			// console.log('typeof(0): ' + typeof(0));
@@ -375,15 +547,15 @@ $w.onReady(function () {
             // ){
 			// 	// if (typeof(totalProductsPerCategoryPerGender[productGender][productCat]) != 'object') {
 			// 	// 	// console.log('gender: women, productCategory: ' + productCat + ', undefined: ' + typeof(totalProductsPerCategoryPerGender[productGender][productCat]));
-			// 	// 	totalProductsPerCategoryPerGender.WOMEN[item.productCategory] = [item];
+			// 	// 	totalProductsPerCategoryPerGender.WOMEN[item.productcategory] = [item];
 			// 	//
 			// 	// }
 			// 	// if (typeof(totalProductsPerCategoryPerGender[productGender][productCat]) == 'object'){
 			// 	// 	// console.log('gender: women, productCategory: ' + productCat + ', defined: ' + typeof(totalProductsPerCategoryPerGender[productGender][productCat]));
-			// 	// 	totalProductsPerCategoryPerGender.WOMEN[item.productCategory].push(item);
+			// 	// 	totalProductsPerCategoryPerGender.WOMEN[item.productcategory].push(item);
 			// 	// }
 			//
-			// 	totalProductsPerCategoryPerGender.WOMEN[item.productCategory].push(item);
+			// 	totalProductsPerCategoryPerGender.WOMEN[item.productcategory].push(item);
 			//
 			// 	count += 1;
 			// 	console.log('countW: ' + count);
@@ -393,14 +565,14 @@ $w.onReady(function () {
 			//
 			// 	// if (typeof(totalProductsPerCategoryPerGender[productGender][productCat]) != 'object') {
 			// 	// 	// console.log('gender: men, productCategory: ' + productCat + ', undefined: ' + typeof(totalProductsPerCategoryPerGender[productGender][productCat]));
-			// 	// 	totalProductsPerCategoryPerGender.MEN[item.productCategory] = [item];
+			// 	// 	totalProductsPerCategoryPerGender.MEN[item.productcategory] = [item];
 			// 	// }
 			// 	// if (typeof(totalProductsPerCategoryPerGender[productGender][productCat]) == 'object'){
 			// 	// 	// console.log('gender: women, productCategory: ' + productCat + ', defined: ' + typeof(totalProductsPerCategoryPerGender[productGender][productCat]));
-			// 	// 	totalProductsPerCategoryPerGender.MEN[item.productCategory].push(item);
+			// 	// 	totalProductsPerCategoryPerGender.MEN[item.productcategory].push(item);
 			// 	// }
 			//
-			// 	totalProductsPerCategoryPerGender.MEN[item.productCategory].push(item);
+			// 	totalProductsPerCategoryPerGender.MEN[item.productcategory].push(item);
 			//
 			//
 			// 	count += 1;
@@ -439,7 +611,7 @@ $w.onReady(function () {
 
 		// console.log('type check');
 		// for (var x in womensFeaturableShoesList){
-		// 	console.log(JSON.stringify(womensFeaturableShoesList[x].productLink == womensFeaturableShoesListCopy[x].productLink));
+		// 	console.log(JSON.stringify(womensFeaturableShoesList[x].productlink == womensFeaturableShoesListCopy[x].productlink));
 		// }
 		// console.log(womensFeaturableBagsList == womensFeaturableBagsListCopy);
 
@@ -450,6 +622,7 @@ $w.onReady(function () {
 		/// product categories that's currently available per gender selection
 		var availableProductCategoriesForMen = availableProductsCategoryForEachGender['MEN'];
 		var availableProductCategoriesForWomen = availableProductsCategoryForEachGender['WOMEN'];
+
 
         console.log('got here 3');
 
@@ -474,6 +647,7 @@ $w.onReady(function () {
 
 
 		var currentProductItemsIndexWithinListOfAllProducts = 1;
+		var numberOfLuxuryTechInRecommendedGalleryTracker = 0;
 
 
 
@@ -484,22 +658,22 @@ $w.onReady(function () {
 
 			while (currentProductItemsIndexWithinListOfAllProducts < dbQueryAllResponseItems.length) {
 
-				console.log('got here x1');
+				// console.log('got here x1');
 				console.log('currentProductItemsIndexWithinListOfAllProducts x1' + currentProductItemsIndexWithinListOfAllProducts);
 
 				for (var gender in totalProductsPerCategoryPerGender){
 
-					console.log('got here x2');
+					// console.log('got here x2');
 
 						for (var productCategory in totalProductsPerCategoryPerGender[gender]){
 
-							console.log('got here x3');
+							// console.log('got here x3');
 
 							// ' + productCategory);
 
 							if (totalProductsPerCategoryPerGender[gender][productCategory].length != 0){
 
-								console.log('got here 4a');
+								// console.log('got here 4a');
 
 								/// current product within current product category
 								var currentProduct = totalProductsPerCategoryPerGender[gender][productCategory][0];
@@ -545,45 +719,45 @@ $w.onReady(function () {
 
 													"type": "image",
 	  												"title": currentProductTitle,
-	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  										"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  												'description': currentProduct.price,
-	  												'link': currentProduct.productCategory,
+	  												'link': currentProduct.productcategory,
 	  												'slug': String(indexOfCurrentProduct)
 												});
 
-												if (productCategory == 'NECKLACE' && giftForHer.length < 20){
-													giftForHer.push({
+												if (productCategory == 'NECKLACE' && giftsForHer.length < 20){
+													giftsForHer.push({
 
 														"type": "image",
 	  													"title": currentProductTitle,
-	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  											"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  													'description': currentProduct.price,
-	  													'link': currentProduct.productCategory,
+	  													'link': currentProduct.productcategory,
 	  													'slug': String(indexOfCurrentProduct)
 													});
 												}
 
 												// populating amazonless
-												if (!currentProduct.imageSrc.includes('amazon')){
+												if (!currentProduct.imagesrc.includes('amazon')){
 
 													shoesAndMoreWomenAmazonless.push({
 
 														"type": "image",
 	  													"title": currentProductTitle,
-	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  											"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  													'description': currentProduct.price,
-	  													'link': currentProduct.productCategory,
+	  													'link': currentProduct.productcategory,
 	  													'slug': String(indexOfCurrentProduct)
 													});
 
-													if (productCategory == 'NECKLACE' && giftForHer.length < 20 && !currentProduct.imageSrc.includes('amazon')){
-													giftForHerAmazonless.push({
+													if (productCategory == 'NECKLACE' && giftsForHerAmazonless.length < 20 && !currentProduct.imagesrc.includes('amazon')){
+													giftsForHerAmazonless.push({
 
 															"type": "image",
 	  														"title": currentProductTitle,
-	 		  												"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  												"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  														'description': currentProduct.price,
-	  														'link': currentProduct.productCategory,
+	  														'link': currentProduct.productcategory,
 	  														'slug': String(indexOfCurrentProduct)
 														});
 													}
@@ -596,46 +770,46 @@ $w.onReady(function () {
 
 													"type": "image",
 	  												"title": currentProductTitle,
-	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  										"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  												'description': currentProduct.price,
-	  												'link': currentProduct.productCategory,
+	  												'link': currentProduct.productcategory,
 	  												'slug': String(indexOfCurrentProduct)
 												});
 
-												if (productCategory == 'BRACELET' && giftForHer.length < 20){
-													giftForHer.push({
+												if (productCategory == 'BRACELET' && giftsForHer.length < 20){
+													giftsForHer.push({
 
 														"type": "image",
 	  													"title": currentProductTitle,
-	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  											"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  													'description': currentProduct.price,
-	  													'link': currentProduct.productCategory,
+	  													'link': currentProduct.productcategory,
 	  													'slug': String(indexOfCurrentProduct)
 													});
 												}
 
 												// populating amazonless
-												if (!currentProduct.imageSrc.includes('amazon')){
+												if (!currentProduct.imagesrc.includes('amazon')){
 
 													handbagsAndMoreWomenAmazonless.push({
 
 														"type": "image",
 	  													"title": currentProductTitle,
-	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  											"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  													'description': currentProduct.price,
-	  													'link': currentProduct.productCategory,
+	  													'link': currentProduct.productcategory,
 	  													'slug': String(indexOfCurrentProduct)
 													});
 
-													if (productCategory == 'BRACELET' && giftForHer.length < 20 && !currentProduct.imageSrc.includes('amazon')){
+													if (productCategory == 'BRACELET' && giftsForHerAmazonless.length < 20 && !currentProduct.imagesrc.includes('amazon')){
 
-													giftForHerAmazonless.push({
+													giftsForHerAmazonless.push({
 
 															"type": "image",
 	  														"title": currentProductTitle,
-	 		  												"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  												"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  														'description': currentProduct.price,
-	  														'link': currentProduct.productCategory,
+	  														'link': currentProduct.productcategory,
 	  														'slug': String(indexOfCurrentProduct)
 														});
 													}
@@ -648,22 +822,22 @@ $w.onReady(function () {
 
 													"type": "image",
 	  												"title": currentProductTitle,
-	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  										"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  												'description': currentProduct.price,
-	  												'link': currentProduct.productCategory,
+	  												'link': currentProduct.productcategory,
 	  												'slug': String(indexOfCurrentProduct)
 												})
 
 												// populating Amazonless
-												if (!currentProduct.imageSrc.includes('amazon')){
+												if (!currentProduct.imagesrc.includes('amazon')){
 
 													furnituresMenAndWomenAmazonless.push({
 
 														"type": "image",
 	  													"title": currentProductTitle,
-	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  											"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  													'description': currentProduct.price,
-	  													'link': currentProduct.productCategory,
+	  													'link': currentProduct.productcategory,
 	  													'slug': String(indexOfCurrentProduct)
 													});
 
@@ -675,22 +849,22 @@ $w.onReady(function () {
 
 													"type": "image",
 	  												"title": currentProductTitle,
-	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  										"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  												'description': currentProduct.price,
-	  												'link': currentProduct.productCategory,
+	  												'link': currentProduct.productcategory,
 	  												'slug': String(indexOfCurrentProduct)
 												})
 
 												// populating Amazonless
-												if (!currentProduct.imageSrc.includes('amazon')){
+												if (!currentProduct.imagesrc.includes('amazon')){
 
 													clothesAndPerfumesWomenAmazonless.push({
 
 														"type": "image",
 	  													"title": currentProductTitle,
-	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  											"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  													'description': currentProduct.price,
-	  													'link': currentProduct.productCategory,
+	  													'link': currentProduct.productcategory,
 	  													'slug': String(indexOfCurrentProduct)
 													});
 
@@ -702,45 +876,45 @@ $w.onReady(function () {
 
 													"type": "image",
 	  												"title": currentProductTitle,
-	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  										"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  												'description': currentProduct.price,
-	  												'link': currentProduct.productCategory,
+	  												'link': currentProduct.productcategory,
 	  												'slug': String(indexOfCurrentProduct)
 												});
 
-												if (giftForHer.length < 20){
-													giftForHer.push({
+												if (giftsForHer.length < 20){
+													giftsForHer.push({
 
 														"type": "image",
 	  													"title": currentProductTitle,
-	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  											"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  													'description': currentProduct.price,
-	  													'link': currentProduct.productCategory,
+	  													'link': currentProduct.productcategory,
 	  													'slug': String(indexOfCurrentProduct)
 													});
 												}
 
 												// populating amazonless
-												if (!currentProduct.imageSrc.includes('amazon')){
+												if (!currentProduct.imagesrc.includes('amazon')){
 
 													flowersAndRingsWomenAmazonless.push({
 
 														"type": "image",
 	  													"title": currentProductTitle,
-	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  											"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  													'description': currentProduct.price,
-	  													'link': currentProduct.productCategory,
+	  													'link': currentProduct.productcategory,
 	  													'slug': String(indexOfCurrentProduct)
 													});
 
-													if (productCategory == 'RING' && giftForHer.length < 20 && !currentProduct.imageSrc.includes('amazon')){
-													giftForHerAmazonless.push({
+													if (productCategory == 'RING' && giftsForHerAmazonless.length < 20 && !currentProduct.imagesrc.includes('amazon')){
+													giftsForHerAmazonless.push({
 
 															"type": "image",
 	  														"title": currentProductTitle,
-	 		  												"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  												"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  														'description': currentProduct.price,
-	  														'link': currentProduct.productCategory,
+	  														'link': currentProduct.productcategory,
 	  														'slug': String(indexOfCurrentProduct)
 														});
 													}
@@ -752,22 +926,22 @@ $w.onReady(function () {
 
 													"type": "image",
 	  												"title": currentProductTitle,
-	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  										"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  												'description': currentProduct.price,
-	  												'link': currentProduct.productCategory,
+	  												'link': currentProduct.productcategory,
 	  												'slug': String(indexOfCurrentProduct)
 												})
 
 												// populating Amazonless
-												if (!currentProduct.imageSrc.includes('amazon')){
+												if (!currentProduct.imagesrc.includes('amazon')){
 
 													travelBagsAndOtherBagsWomenAmazonless.push({
 
 														"type": "image",
 	  													"title": currentProductTitle,
-	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  											"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  													'description': currentProduct.price,
-	  													'link': currentProduct.productCategory,
+	  													'link': currentProduct.productcategory,
 	  													'slug': String(indexOfCurrentProduct)
 													});
 
@@ -779,22 +953,22 @@ $w.onReady(function () {
 
 													"type": "image",
 	  												"title": currentProductTitle,
-	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  										"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  												'description': currentProduct.price,
-	  												'link': currentProduct.productCategory,
+	  												'link': currentProduct.productcategory,
 	  												'slug': String(indexOfCurrentProduct)
 												});
 
 												// populating Amazonless
-												if (!currentProduct.imageSrc.includes('amazon')){
+												if (!currentProduct.imagesrc.includes('amazon')){
 
 													otherAccessoriesWomenAmazonless.push({
 
 														"type": "image",
 	  													"title": currentProductTitle,
-	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  											"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  													'description': currentProduct.price,
-	  													'link': currentProduct.productCategory,
+	  													'link': currentProduct.productcategory,
 	  													'slug': String(indexOfCurrentProduct)
 													});
 
@@ -806,22 +980,22 @@ $w.onReady(function () {
 
 													"type": "image",
 	  												"title": currentProductTitle,
-	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  										"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  												'description': currentProduct.price,
-	  												'link': currentProduct.productCategory,
+	  												'link': currentProduct.productcategory,
 	  												'slug': String(indexOfCurrentProduct)
 												});
 
 												// populating Amazonless
-												if (!currentProduct.imageSrc.includes('amazon')){
+												if (!currentProduct.imagesrc.includes('amazon')){
 
 													luxuryTechWomenAmazonless.push({
 
 														"type": "image",
 	  													"title": currentProductTitle,
-	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  											"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  													'description': currentProduct.price,
-	  													'link': currentProduct.productCategory,
+	  													'link': currentProduct.productcategory,
 	  													'slug': String(indexOfCurrentProduct)
 													});
 
@@ -848,46 +1022,46 @@ $w.onReady(function () {
 
 													"type": "image",
 	  												"title": currentProductTitle,
-	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  										"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  												'description': currentProduct.price,
-	  												'link': currentProduct.productCategory,
+	  												'link': currentProduct.productcategory,
 	  												'slug': String(indexOfCurrentProduct)
 												});
 
-												if (productCategory == 'WATCH' || productCategory == 'WATCHES' && giftsForHim.length < 20){
+												if ((productCategory == 'WATCH' || productCategory == 'WATCHES') && giftsForHim.length < 20){
 													giftsForHim.push({
 
 														"type": "image",
 	  													"title": currentProductTitle,
-	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  											"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  													'description': currentProduct.price,
-	  													'link': currentProduct.productCategory,
+	  													'link': currentProduct.productcategory,
 	  													'slug': String(indexOfCurrentProduct)
 													});
 												}
 
 												// populating amazonless
-												if (!currentProduct.imageSrc.includes('amazon')){
+												if (!currentProduct.imagesrc.includes('amazon')){
 
 													shoesAndWatchesMenAmazonless.push({
 
 														"type": "image",
 	  													"title": currentProductTitle,
-	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  											"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  													'description': currentProduct.price,
-	  													'link': currentProduct.productCategory,
+	  													'link': currentProduct.productcategory,
 	  													'slug': String(indexOfCurrentProduct)
 													});
 
-													if ((productCategory == 'WATCH' || productCategory == 'WATCHES') && giftsForHim.length < 20 && !currentProduct.imageSrc.includes('amazon')){
+													if ((productCategory == 'WATCH' || productCategory == 'WATCHES') && giftsForHimAmazonless.length < 20 && !currentProduct.imagesrc.includes('amazon')){
 
 														giftsForHimAmazonless.push({
 
 																"type": "image",
 	  															"title": currentProductTitle,
-	 		  													"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  													"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  															'description': currentProduct.price,
-	  															'link': currentProduct.productCategory,
+	  															'link': currentProduct.productcategory,
 	  															'slug': String(indexOfCurrentProduct)
 															});
 														}
@@ -901,21 +1075,21 @@ $w.onReady(function () {
 
 													"type": "image",
 	  												"title": currentProductTitle,
-	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  										"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  												'description': currentProduct.price,
-	  												'link': currentProduct.productCategory,
+	  												'link': currentProduct.productcategory,
 	  												'slug': String(indexOfCurrentProduct)
 												});
 
-												if (!currentProduct.imageSrc.includes('amazon')){
+												if (!currentProduct.imagesrc.includes('amazon')){
 
 													necklacesAndBraceletsMenAmazonless.push({
 
 														"type": "image",
 	  													"title": currentProductTitle,
-	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  											"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  													'description': currentProduct.price,
-	  													'link': currentProduct.productCategory,
+	  													'link': currentProduct.productcategory,
 	  													'slug': String(indexOfCurrentProduct)
 													});
 
@@ -930,9 +1104,9 @@ $w.onReady(function () {
 
 														"type": "image",
 	  													"title": currentProductTitle,
-	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  											"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  													'description': currentProduct.price,
-	  													'link': currentProduct.productCategory,
+	  													'link': currentProduct.productcategory,
 	  													'slug': String(indexOfCurrentProduct)
 													}]) == false){
 
@@ -940,24 +1114,24 @@ $w.onReady(function () {
 
 														"type": "image",
 	  													"title": currentProductTitle,
-	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  											"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  													'description': currentProduct.price,
-	  													'link': currentProduct.productCategory,
+	  													'link': currentProduct.productcategory,
 	  													'slug': String(indexOfCurrentProduct)
 													});
 
 												};
 
-												if (!currentProduct.imageSrc.includes('amazon')){
+												if (!currentProduct.imagesrc.includes('amazon')){
 
 													if (isItemsInList(furnituresMenAndWomen, [
 													{
 
 														"type": "image",
 	  													"title": currentProductTitle,
-	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  											"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  													'description': currentProduct.price,
-	  													'link': currentProduct.productCategory,
+	  													'link': currentProduct.productcategory,
 	  													'slug': String(indexOfCurrentProduct)
 													}]) == false){
 
@@ -965,9 +1139,9 @@ $w.onReady(function () {
 
 															"type": "image",
 	  														"title": currentProductTitle,
-	 		  												"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  												"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  														'description': currentProduct.price,
-	  														'link': currentProduct.productCategory,
+	  														'link': currentProduct.productcategory,
 	  														'slug': String(indexOfCurrentProduct)
 														});
 
@@ -982,22 +1156,22 @@ $w.onReady(function () {
 
 													"type": "image",
 	  												"title": currentProductTitle,
-	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  										"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  												'description': currentProduct.price,
-	  												'link': currentProduct.productCategory,
+	  												'link': currentProduct.productcategory,
 	  												'slug': String(indexOfCurrentProduct)
 												});
 
 
-												if (!currentProduct.imageSrc.includes('amazon')){
+												if (!currentProduct.imagesrc.includes('amazon')){
 
 													clothesAndPerfumesMenAmazonless.push({
 
 														"type": "image",
 	  													"title": currentProductTitle,
-	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  											"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  													'description': currentProduct.price,
-	  													'link': currentProduct.productCategory,
+	  													'link': currentProduct.productcategory,
 	  													'slug': String(indexOfCurrentProduct)
 													});
 
@@ -1010,9 +1184,9 @@ $w.onReady(function () {
 
 													"type": "image",
 	  												"title": currentProductTitle,
-	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  										"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  												'description': currentProduct.price,
-	  												'link': currentProduct.productCategory,
+	  												'link': currentProduct.productcategory,
 	  												'slug': String(indexOfCurrentProduct)
 												});
 
@@ -1021,33 +1195,33 @@ $w.onReady(function () {
 
 														"type": "image",
 	  													"title": currentProductTitle,
-	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  											"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  													'description': currentProduct.price,
-	  													'link': currentProduct.productCategory,
+	  													'link': currentProduct.productcategory,
 	  													'slug': String(indexOfCurrentProduct)
 													});
 												}
 
-												if (!currentProduct.imageSrc.includes('amazon')){
+												if (!currentProduct.imagesrc.includes('amazon')){
 
 													flowersAndRingsMenAmazonless.push({
 
 														"type": "image",
 	  													"title": currentProductTitle,
-	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  											"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  													'description': currentProduct.price,
-	  													'link': currentProduct.productCategory,
+	  													'link': currentProduct.productcategory,
 	  													'slug': String(indexOfCurrentProduct)
 													});
 
-													if (giftsForHim.length < 20){
+													if (giftsForHimAmazonless.length < 20){
 														giftsForHimAmazonless.push({
 
 															"type": "image",
 	  														"title": currentProductTitle,
-	 		  												"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  												"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  														'description': currentProduct.price,
-	  														'link': currentProduct.productCategory,
+	  														'link': currentProduct.productcategory,
 	  														'slug': String(indexOfCurrentProduct)
 														});
 													}
@@ -1061,22 +1235,22 @@ $w.onReady(function () {
 
 													"type": "image",
 	  												"title": currentProductTitle,
-	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  										"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  												'description': currentProduct.price,
-	  												'link': currentProduct.productCategory,
+	  												'link': currentProduct.productcategory,
 	  												'slug': String(indexOfCurrentProduct)
 												});
 
 												// populating amazonless
-												if (!currentProduct.imageSrc.includes('amazon')){
+												if (!currentProduct.imagesrc.includes('amazon')){
 
 													travelBagsAndOtherBagsMenAmazonless.push({
 
 														"type": "image",
 	  													"title": currentProductTitle,
-	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  											"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  													'description': currentProduct.price,
-	  													'link': currentProduct.productCategory,
+	  													'link': currentProduct.productcategory,
 	  													'slug': String(indexOfCurrentProduct)
 													});
 
@@ -1089,22 +1263,22 @@ $w.onReady(function () {
 
 													"type": "image",
 	  												"title": currentProductTitle,
-	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  										"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  												'description': currentProduct.price,
-	  												'link': currentProduct.productCategory,
+	  												'link': currentProduct.productcategory,
 	  												'slug': String(indexOfCurrentProduct)
 												})
 
 												// populating amazonless
-												if (!currentProduct.imageSrc.includes('amazon')){
+												if (!currentProduct.imagesrc.includes('amazon')){
 
 													otherAccessoriesMenAmazonless.push({
 
 														"type": "image",
 	  													"title": currentProductTitle,
-	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  											"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  													'description': currentProduct.price,
-	  													'link': currentProduct.productCategory,
+	  													'link': currentProduct.productcategory,
 	  													'slug': String(indexOfCurrentProduct)
 													});
 
@@ -1117,22 +1291,22 @@ $w.onReady(function () {
 
 													"type": "image",
 	  												"title": currentProductTitle,
-	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  										"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  												'description': currentProduct.price,
-	  												'link': currentProduct.productCategory,
+	  												'link': currentProduct.productcategory,
 	  												'slug': String(indexOfCurrentProduct)
 												});
 
 												// populating Amazonless
-												if (!currentProduct.imageSrc.includes('amazon')){
+												if (!currentProduct.imagesrc.includes('amazon')){
 
 													luxuryTechMenAmazonless.push({
 
 														"type": "image",
 	  													"title": currentProductTitle,
-	 		  											"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  											"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  													'description': currentProduct.price,
-	  													'link': currentProduct.productCategory,
+	  													'link': currentProduct.productcategory,
 	  													'slug': String(indexOfCurrentProduct)
 													});
 
@@ -1143,38 +1317,57 @@ $w.onReady(function () {
 
 										console.log('got here 4c');
 										// populating recommendedForWomen's list i.e list of products that are meant for women
-										if (currentProduct.gender == 'WOMEN' && currentProduct.productCategory != 'CLOTHING' && recommendedForWomen.length < 10){
+										if (currentProduct.gender == 'WOMEN' && currentProduct.productcategory != 'CLOTHING' && recommendedForWomen.length < 10){
 
 											console.log('got here 4ci');
 
-											recommendedForWomen.push(
+											// Ensuring that not more than one 'LUXURY TECH' product gets recommended.. e.g Fancy TVs..
+											if (currentProduct.productcategory == 'LUXURY TECH' && numberOfLuxuryTechInRecommendedGalleryTracker == 0){
+
+												recommendedForWomen.push(
 
 												{
 
 													"type": "image",
 	  												"title": currentProductTitle,
-	 		  										"src": currentProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  										"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  												'description': currentProduct.price,
-	  												'link': currentProduct.productCategory,
+	  												'link': currentProduct.productcategory,
 	  												'slug': String(indexOfCurrentProduct)
 												});
+											}
+											else if (currentProduct.productcategory != 'LUXURY TECH'){
+
+												recommendedForWomen.push(
+
+												{
+
+													"type": "image",
+	  												"title": currentProductTitle,
+	 		  										"src": currentProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	  												'description': currentProduct.price,
+	  												'link': currentProduct.productcategory,
+	  												'slug': String(indexOfCurrentProduct)
+												});
+
+											}
 
 
 											console.log('got here 4d');
 
 											/// track bags and / or shoes has been added to recommendedForWomenGallery..
-											if ((currentProduct.gender == 'WOMEN' && currentProduct.productCategory == 'HANDBAG') ||
-											(currentProduct.gender == 'WOMEN' && currentProduct.productCategory == 'SHOE')){
-												ladiesShoesAndBagsIncludedTracker.push(currentProduct.productCategory);
+											if ((currentProduct.gender == 'WOMEN' && currentProduct.productcategory == 'HANDBAG') ||
+											(currentProduct.gender == 'WOMEN' && currentProduct.productcategory == 'SHOE')){
+												ladiesShoesAndBagsIncludedTracker.push(currentProduct.productcategory);
 
-												if (currentProduct.productCategory == 'SHOE'){
+												if (currentProduct.productcategory == 'SHOE'){
 													// womensFeaturableShoesList.pop(currentProduct);
 													// console.log('');
 													// console.log('removed from copy: ' + womensFeaturableShoesListCopy[0].title + ', ' + womensFeaturableShoesListCopy[0].gender);
 													womensFeaturableShoesListCopy.splice(0, 1);
 													// console.log('womensFeaturableShoesList after item removal: ' + womensFeaturableShoesList.length);
 												}
-												else if (currentProduct.productCategory == 'HANDBAG'){
+												else if (currentProduct.productcategory == 'HANDBAG'){
 													// womensFeaturableBagsList.pop(currentProduct);
 													// console.log('');
 													// console.log('removed from copy: ' + womensFeaturableBagsListCopy[0].title + ', ' + womensFeaturableBagsListCopy[0].gender);
@@ -1205,7 +1398,7 @@ $w.onReady(function () {
 
 									// console.log(currentProductItemsIndexWithinListOfAllProducts);
 
-									// console.log(currentProduct.imageSrc);
+									// console.log(currentProduct.imagesrc);
 
 										// if ((gender == 'WOMEN' && gallery1WomensProductsCount == 8) || (gender == 'MEN' && gallery1MensProductsCount == 2)){
 										// 	break;
@@ -1332,10 +1525,10 @@ $w.onReady(function () {
 
 					// add shoe product to featured general item
 					var currentShoeProduct = womensFeaturableShoesListCopy[indexOne];
-					var indexOfCurrentProduct = dbQueryAllResponseItems.findIndex((product) => product.productLink == currentShoeProduct.productLink); // dbQueryAllResponseItems.indexOf(currentShoeProduct);
+					var indexOfCurrentProduct = dbQueryAllResponseItems.findIndex((product) => product.productlink == currentShoeProduct.productlink); // dbQueryAllResponseItems.indexOf(currentShoeProduct);
 					// console.log('');
 					// console.log('slug extra shoe: ' + indexOfCurrentProduct);
-					// console.log('currentShoeProduct extra shoe: ' + currentShoeProduct.title, currentShoeProduct.productLink);
+					// console.log('currentShoeProduct extra shoe: ' + currentShoeProduct.title, currentShoeProduct.productlink);
 					// console.log('');
 
 					recommendedForWomen.push(
@@ -1343,9 +1536,9 @@ $w.onReady(function () {
 										{
 											"type": "image",
 	  										"title": currentShoeProduct.title,
-	 		  								"src": currentShoeProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  								"src": currentShoeProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  										'description': currentShoeProduct.price,
-	  										'link': currentShoeProduct.productCategory,
+	  										'link': currentShoeProduct.productcategory,
 	  										'slug': String(indexOfCurrentProduct)
 										}
 
@@ -1394,19 +1587,19 @@ $w.onReady(function () {
 
 					// add bag product to featured general item
 					var currentBagProduct = womensFeaturableBagsListCopy[indexOne];
-					var indexOfCurrentProduct = dbQueryAllResponseItems.findIndex((product) => product.productLink == currentBagProduct.productLink); // dbQueryAllResponseItems.indexOf(currentBagProduct);
+					var indexOfCurrentProduct = dbQueryAllResponseItems.findIndex((product) => product.productlink == currentBagProduct.productlink); // dbQueryAllResponseItems.indexOf(currentBagProduct);
 					// console.log('');
 					// console.log('slug extra bag: ' + indexOfCurrentProduct);
-					// console.log('currentBagProduct extra shoe: ' + currentBagProduct.title + ' , ' + currentBagProduct.productLink);
+					// console.log('currentBagProduct extra shoe: ' + currentBagProduct.title + ' , ' + currentBagProduct.productlink);
 					// console.log('');
 					recommendedForWomen.push(
 
 										{
 											"type": "image",
 	  										"title": currentBagProduct.title,
-	 		  								"src": currentBagProduct.imageSrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
+	 		  								"src": currentBagProduct.imagesrc, // "wix:image://v1/99bc1c6f66444769b531221214c885ac.jpeg/A%20View.jpeg#originWidth=3264&originHeight=2448",
 	  										'description': currentBagProduct.price,
-	  										'link': currentBagProduct.productCategory,
+	  										'link': currentBagProduct.productcategory,
 	  										'slug': String(indexOfCurrentProduct)
 										}
 
@@ -1440,11 +1633,11 @@ $w.onReady(function () {
 		var listOfProductCategoryForWomen = [];
 
 		// var listOfProductCategoryForWomen = [
-		// 	{"label": "Shoes & Jewelleries", "value": "Shoes & Jewelleries"},
+		// 	{"label": "Necklaces & Earrings", "value": "Necklaces & Earrings"},
 		// 	{"label": "Bags & Jewelleries", "value": "Bags & Jewelleries"},
 		// 	{"label": "Furnitures", "value": "Furnitures"},
 		// 	{"label": "Clothes And Perfumes", "value": "Clothes And Perfumes"},
-		// 	{"label": "Flowers & Rings", "value": "Flowers & Rings"},
+		// 	{"label": "Rings", "value": "Rings"}, // Flowers & Rings
 		// 	{"label": "Travel Bags & Other Bags", "value": "Travel Bags & Other Bags"},
 		// 	{"label": "Other Accessories", "value": "Other Accessories"},
 		// 	{"label": "Gifts For Him", "value": "Gifts For Him"}
@@ -1467,16 +1660,16 @@ $w.onReady(function () {
 		var isDisplayOtherAccessoriesForWomen = isItemsInList(availableProductCategoriesForWomen, ['ACCESSORIES']);
 		var isDisplayGiftsForHim = isItemsInList(availableProductCategoriesForMen, ['FLOWER', 'RING', 'WATCH', 'WATCHES']);
 
-		if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
-			listOfProductCategoryForWomen.push({"label": "Recommended", "value": "Recommended"});
-		}
+		// if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
+		// 	listOfProductCategoryForWomen.push({"label": "Recommended", "value": "Recommended"});
+		// }
 
 		if (isDisplayHandbagsAndMore){
 			listOfProductCategoryForWomen.push({"label": "Bags & Jewelleries", "value": "Bags & Jewelleries"});
 		}
 
 		if (isDisplayShoesAndMore){
-			listOfProductCategoryForWomen.push({"label": "Shoes & Jewelleries", "value": "Shoes & Jewelleries"});
+			listOfProductCategoryForWomen.push({"label": "Necklaces & Earrings", "value": "Necklaces & Earrings"}); // Shoes & Jewelleries
 		}
 
 		if (isDisplayFurnituresForWomen){
@@ -1484,15 +1677,15 @@ $w.onReady(function () {
 		}
 
 		if (isDisplayLuxuryTechForWomen){
-			listOfProductCategoryForWomen.push({"label": "Fancy Tech", "value": "Fancy Tech"});
+			listOfProductCategoryForWomen.push({"label": "Electronics", "value": "Electronics"});
 		}
 
 		if (isDisplayWomensClothesAndPerfumes){
-			listOfProductCategoryForWomen.push({"label": "Clothes & Perfumes", "value": "Clothes & Perfumes"});
+			listOfProductCategoryForWomen.push({"label": "Clothes", "value": "Clothes"}); // Clothes & Perfumes
 		}
 
 		if (isDisplayFlowersAndWomensRings){
-			listOfProductCategoryForWomen.push({"label": "Flowers & Rings", "value": "Flowers & Rings"});
+			listOfProductCategoryForWomen.push({"label": "Rings", "value": "Rings"}); // Flowers & Rings
 		}
 
 		if (isDisplayTravelBagsAndOtherBags){
@@ -1528,8 +1721,8 @@ $w.onReady(function () {
 		// 	{"label": "Shoes & Watches", "value": "Shoes & Watches"},
 		// 	{"label": "Necklaces & Bracelets", "value": "Necklaces & Bracelets"},
 		// 	{"label": "Furnitures", "value": "Furnitures"},
-		// 	{"label": "Clothes & Perfumes", "value": "Clothes & Perfumes"},
-		// 	{"label": "Flowers & Rings", "value": "Flowers & Rings"},
+		// 	{"label": "Clothes", "value": "Clothes"},
+		// 	{"label": "Rings", "value": "Rings"},
 		// 	{"label": "Travel Bags & Other Bags", "value": "Travel Bags & Other Bags"},
 		// 	{"label": "Other Accessories", "value": "Other Accessories"},
 		// 	{"label": "Gifts For Her", "value": "Gifts For Her"}
@@ -1557,16 +1750,18 @@ $w.onReady(function () {
 			listOfProductCategoryForMen.push({"label": "Furnitures", "value": "Furnitures"});
 		}
 
-		if (isDisplayLuxuryTechForMen){
-			listOfProductCategoryForMen.push({"label": "Fancy Tech", "value": "Fancy Tech"});
+		console.log('isDisplayLuxuryTechForMen: ' + isDisplayLuxuryTechForMen);
+
+		if (isDisplayLuxuryTechForMen == true){
+			listOfProductCategoryForMen.push({"label": "Electronics", "value": "Electronics"});
 		}
 
 		if (isDisplayMensClothesAndPerfumes){
-			listOfProductCategoryForMen.push({"label": "Clothes & Perfumes", "value": "Clothes & Perfumes"});
+			listOfProductCategoryForMen.push({"label": "Clothes", "value": "Clothes"}); // Clothes & Perfumes
 		}
 
 		if (isDisplayFlowersAndMensRings){
-			listOfProductCategoryForMen.push({"label": "Flowers & Rings", "value": "Flowers & Rings"});
+			listOfProductCategoryForMen.push({"label": "Rings", "value": "Rings"}); // Flowers & Rings
 		}
 
 		if (isDisplayMensTravelBagsAndOtherBags){
@@ -1919,6 +2114,8 @@ $w.onReady(function () {
 
 		if(wixWindow.formFactor === "Mobile" || wixWindow.formFactor === "Tablet"){
 
+			var userInput = $w('#input1').value;
+
 			// load Main Gallery
 			SetGalleries(userInput, true, true, false, false)
 
@@ -1944,16 +2141,29 @@ $w.onReady(function () {
 			// set recommendedForWomenGallery
 			// SetGalleries('', true, true, true); // ? don't show links on load
 
-			var userInput = $w('#input1').value;
+
+			// tracking whether Main Gallery only is in view
+			var button3InViewOnly = 0
+
+			var isRecommendedGalleryRecentlyInView = false;
 
 
+			SetGalleries(
 
+						userInput,
+						true,
+						true,
+						true,
+						true
 
+					);
 
 			// if Recommended Gallery is in view
 			$w('#button5').onViewportEnter((event) => {
 
 				isButton5InView = true;
+				isRecommendedGalleryRecentlyInView = true;
+
 				console.log('');
 				console.log('4: ' + isButton4InView + ' 5: ' + isButton5InView + ' 3: ' + isButton3InView);
 
@@ -2002,6 +2212,44 @@ $w.onReady(function () {
 				console.log('4: ' + isButton4InView + ' 5: ' + isButton5InView + ' 3: ' + isButton3InView);
 
 
+				// Only the Main Gallery is in view, show its links
+				if (isButton5InView == false && isButton4InView == false && isButton3InView == true){
+
+					// increase button3InViewOnly tracker if Main Gallery is in view for the first time or after a scroll back into view..
+					button3InViewOnly += 1
+
+					// reset button3InViewOnly if Main Gallery is scrolled back into view
+					if (button3InViewOnly == 2){
+						button3InViewOnly -= 2
+					}
+
+					// console.log('button3InViewOnly: ' + button3InViewOnly);
+
+					//
+					if (button3InViewOnly == 1 && isRecommendedGalleryRecentlyInView == true){
+
+						var userInput = $w('#input1').value;
+
+						console.log('button3InViewOnly: ' + button3InViewOnly);
+
+
+						SetGalleries(
+
+							userInput,
+							true,
+							true,
+							true,
+							true
+
+						);
+
+						isRecommendedGalleryRecentlyInView = false;
+
+					}
+
+				}
+
+
 			});
 
 			// if Main Gallery is in view
@@ -2009,30 +2257,13 @@ $w.onReady(function () {
 
 				isButton3InView = true;
 
-				console.log('');
-				console.log('4: ' + isButton4InView + ' 5: ' + isButton5InView + ' 3: ' + isButton3InView);
-
-
-				// Only the Main Gallery is in view, show its links
-				if (isButton5InView == false && isButton4InView == false){
-
-					SetGalleries(
-
-						userInput,
-						true,
-						true,
-						true,
-						false
-
-					);
-
-				}
-
 			});
 
 			$w('#button3').onViewportLeave((event) => {
 
 				isButton3InView = false;
+				isRecommendedGalleryRecentlyInView = false;
+
 				console.log('4: ' + isButton4InView + ' 5: ' + isButton5InView + ' 3: ' + isButton3InView);
 
 
@@ -2042,6 +2273,8 @@ $w.onReady(function () {
 			$w('#button4').onViewportEnter((event) => {
 
 				isButton4InView = true;
+				isRecommendedGalleryRecentlyInView = true;
+
 				console.log('');
 				console.log('4: ' + isButton4InView + ' 5: ' + isButton5InView + ' 3: ' + isButton3InView);
 
@@ -2170,12 +2403,12 @@ function isItemsInList(
 
 // function openTarget(event){
 //
-// 	// $w('#button1').link = dbQueryAllResponseItems[Number(event.item.slug)].productLink;
+// 	// $w('#button1').link = dbQueryAllResponseItems[Number(event.item.slug)].productlink;
 // 				$w('#button1').target = '_blank';
 // 				$w('#button1').enable();
 // 				// $w('#html1').postMessage('click');
 // 				// console.log('event.item.slug: ' + event.item.slug);
-// 				// console.log('productLink: ' + dbQueryAllResponseItems[Number(event.item.slug)].productLink);
+// 				// console.log('productlink: ' + dbQueryAllResponseItems[Number(event.item.slug)].productlink);
 // 				console.log(event.item.slug);
 // 				console.log($w('#button1').link);
 // 				console.log($w('#button1').id);
@@ -2217,7 +2450,7 @@ function SetGalleries(
 	if (isRecommendedGalleryForDesktop == true){
 
 			// var productsInFocusSortedByRelevanceMobile = [];
-			var productsInFocusSortedByRelevanceDesktop = [];
+			// var productsInFocusSortedByRelevanceDesktop = [];
 
 			var productsInFocusSortedByRelevanceDesktop = orderProducts(recommendedForWomen, 'None', 3, isShowLinksRecommendedGallery);
 
@@ -2589,7 +2822,7 @@ function SetGalleries(
 
 
 			}
-			else if (currentProductCategory == 'Shoes & Jewelleries'){
+			else if (currentProductCategory == 'Necklaces & Earrings'){
 
 				// var productsInFocusSortedByRelevanceMobile = orderProducts(handbagsAndMoreWomen, 'HANDBAG', 2);
 				// var productsInFocusSortedByRelevanceDesktop = orderProducts(handbagsAndMoreWomen, 'HANDBAG', 3);
@@ -2909,7 +3142,7 @@ function SetGalleries(
 
 
 			}
-			else if (currentProductCategory == 'Fancy Tech'){
+			else if (currentProductCategory == 'Electronics'){
 
 				// var productsInFocusSortedByRelevanceMobile = orderProducts(furnituresMenAndWomen, 'FURNITURE', 2);
 				// var productsInFocusSortedByRelevanceDesktop = orderProducts(furnituresMenAndWomen, 'FURNITURE', 2);
@@ -3068,7 +3301,7 @@ function SetGalleries(
 
 
 			}
-			else if (currentProductCategory == 'Clothes & Perfumes'){
+			else if (currentProductCategory == 'Clothes'){
 
 				// var productsInFocusSortedByRelevanceMobile = orderProducts(clothesAndPerfumesWomen, 'CLOTHING', 2, isShowLinksMainGallery);
 				// var productsInFocusSortedByRelevanceDesktop = orderProducts(clothesAndPerfumesWomen, 'CLOTHING', 3, isShowLinksMainGallery);
@@ -3226,7 +3459,7 @@ function SetGalleries(
 
 
 			}
-			else if (currentProductCategory == 'Flowers & Rings'){
+			else if (currentProductCategory == 'Rings'){
 
 				// var productsInFocusSortedByRelevanceMobile = orderProducts(flowersAndRingsWomen, 'RING', 2, isShowLinksMainGallery);
 				// var productsInFocusSortedByRelevanceDesktop = orderProducts(flowersAndRingsWomen, 'RING', 3, isShowLinksMainGallery);
@@ -4335,7 +4568,7 @@ function SetGalleries(
 					}
 				}
 			}
-			else if (currentProductCategory == 'Fancy Tech'){
+			else if (currentProductCategory == 'Electronics'){
 
 				// var productsInFocusSortedByRelevanceMobile = orderProducts(furnituresMenAndWomen, 'FURNITURE', 2);
 				// var productsInFocusSortedByRelevanceDesktop = orderProducts(furnituresMenAndWomen, 'FURNITURE', 3);
@@ -4491,7 +4724,7 @@ function SetGalleries(
 					}
 				}
 			}
-			else if (currentProductCategory == 'Clothes & Perfumes'){
+			else if (currentProductCategory == 'Clothes'){
 
 				// var productsInFocusSortedByRelevanceMobile = orderProducts(clothesAndPerfumesMen, 'CLOTHING', 2);
 				// var productsInFocusSortedByRelevanceDesktop = orderProducts(clothesAndPerfumesMen, 'CLOTHING', 3);
@@ -4647,7 +4880,7 @@ function SetGalleries(
 					}
 				}
 			}
-			else if (currentProductCategory == 'Flowers & Rings'){
+			else if (currentProductCategory == 'Rings'){
 
 				// var productsInFocusSortedByRelevanceMobile = orderProducts(flowersAndRingsMen, 'RING', 2);
 				// var productsInFocusSortedByRelevanceDesktop = orderProducts(flowersAndRingsMen, 'RING', 3);
@@ -5119,19 +5352,19 @@ function SetGalleries(
 			}
 			else if (currentProductCategory == 'Gifts For Her'){
 
-				// var productsInFocusSortedByRelevanceMobile = orderProducts(giftForHer, 'NECKLACE', 1);
-				// var productsInFocusSortedByRelevanceDesktop = orderProducts(giftForHer, 'NECKLACE', 1);
+				// var productsInFocusSortedByRelevanceMobile = orderProducts(giftsForHer, 'NECKLACE', 1);
+				// var productsInFocusSortedByRelevanceDesktop = orderProducts(giftsForHer, 'NECKLACE', 1);
 
 				var productsInFocusSortedByRelevanceMobile = [];
 				var productsInFocusSortedByRelevanceDesktop = [];
 
 				if (hideAmazonButtonValue == 'Show Amazon Products'){
-					var productsInFocusSortedByRelevanceMobile = orderProducts(giftForHerAmazonless, 'NECKLACE', 1, isShowLinksMainGallery);
-					var productsInFocusSortedByRelevanceDesktop = orderProducts(giftForHerAmazonless, 'NECKLACE', 1, isShowLinksMainGallery);
+					var productsInFocusSortedByRelevanceMobile = orderProducts(giftsForHerAmazonless, 'NECKLACE', 1, isShowLinksMainGallery);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(giftsForHerAmazonless, 'NECKLACE', 1, isShowLinksMainGallery);
 				}
 				else if (hideAmazonButtonValue == 'Hide Amazon Products'){
-					var productsInFocusSortedByRelevanceMobile = orderProducts(giftForHer, 'NECKLACE', 1, isShowLinksMainGallery);
-					var productsInFocusSortedByRelevanceDesktop = orderProducts(giftForHer, 'NECKLACE', 1, isShowLinksMainGallery);
+					var productsInFocusSortedByRelevanceMobile = orderProducts(giftsForHer, 'NECKLACE', 1, isShowLinksMainGallery);
+					var productsInFocusSortedByRelevanceDesktop = orderProducts(giftsForHer, 'NECKLACE', 1, isShowLinksMainGallery);
 				}
 
 				// filtering by brand name or product name..
@@ -5281,6 +5514,7 @@ function SetGalleries(
 
 }
 
+/// PRE - FVRR
 // ordering product categories options' content(s)
 // Most product categories options have up to 2 subcategories
 function orderProducts(
@@ -5315,8 +5549,8 @@ function orderProducts(
 		if (currentProduct.link == mainCategoryName){
 
 			if (isShowLinksMainGallery == true){
-				var  currentProductEncodedLink = dbQueryAllResponseItems[Number(currentProductsSlug)].productLink;
-				currentProduct.link = decodeCodifiedUrl(currentProductEncodedLink);
+				var  currentProductEncodedLink = dbQueryAllResponseItems[Number(currentProductsSlug)].productlink;
+				currentProduct.link = currentProductEncodedLink;
 
 				// console.log('');
 				// console.log('orderProducts - Added Product name:' + currentProduct.title);
@@ -5362,9 +5596,9 @@ function orderProducts(
 				if (isShowLinksMainGallery == true){
 					// console.log('?error1');
 					// console.log('slug: ' + currentProductsSlug);
-					var  currentProductEncodedLink = dbQueryAllResponseItems[Number(currentProductsSlug)].productLink;
+					var  currentProductEncodedLink = dbQueryAllResponseItems[Number(currentProductsSlug)].productlink;
 					// console.log('?error2');
-					currentProduct.link = decodeCodifiedUrl(currentProductEncodedLink);
+					currentProduct.link = currentProductEncodedLink;
 				}
 				else if (isShowLinksMainGallery == false){
 					currentProduct.link = 'https://www.gotquestions.org/personal-Savior.html?=READ-JOHN-3-16&ROMANS-10-9&10-SAY-THESE-WORDS?=LORD-JESUS-I-INVITE-YOU-INTO-MY-LIFE/BE-THE-LORD-OF-MY-LIFE/I-ACCEPT-YOU-AS-MY-LORD-AND-PERSONAL-SAVIOR/I-BELIEVE-THAT-YOU-DIED-ON-THE-CROSS-AND-ROSE-UP-FROM-THE-DEAD/LEAD-ME-AND-DIRECT-MY-PATH-IN-YOUR-PRECIOUS-NAME/AMEN?=IF-YOU-SAID-THESE-WORDS-WELCOME-TO-ETERNAL-LIFE/HALLELUYAH/REMAIN-CONSCIOUS-AND-MINDFUL-OF-THE-ETERNAL-LIFE-AND-THE-RIGHTEOUSNESS-OF-GOD-THAT-YOU-JUST-RECIEVED/WALK-IN-IT-AND-REMAIN-BLESSED?=LEARN&WALK-IN-HIS-COMMANDMENTS-AND-POWER/AMEN'
@@ -5417,366 +5651,5 @@ function stripP(priceString){
 	}
 
 	return priceFloat = Number(listPriceNumbers.join(""));
-
-}
-
-
-
-// decode codified url
-function decodeCodifiedUrl(codifiedUrl) {
-
-	if (codifiedUrl.includes('https://www.')){
-		codifiedUrl = codifiedUrl.replace('https://www.', '');
-	}
-	else if (codifiedUrl.includes('https://')){
-		// console.log('replacing https://');
-		codifiedUrl = codifiedUrl.replace('https://', '');
-	}
-	else if (codifiedUrl.includes('http://www.')){
-		codifiedUrl = codifiedUrl.replace('http://www.', '');
-	}
-	else if (codifiedUrl.includes('http://')){
-		codifiedUrl = codifiedUrl.replace('http://', '');
-	}
-
-	var urlLength = (codifiedUrl.length - 20) / 5;
-	var lengthPreSII = Math.floor(((urlLength * 2) + 15) * .25);
-	var lengthPreMid = Math.floor(((urlLength * 2) + 10) * .50);
-	var lengthPreSI = Math.floor(((urlLength * 2) + 5)* .75);
-
-	// convert codifiedUrl string to array
-	// var counter = 0;
-	// console.log('codifiedUrl: ' + codifiedUrl.length);
-
-	// 0 to first block;
-
-
-	var shiftCounter = 0;
-	var codifiedUrlListIndexCounter = 0;
-	var unfinishedBusiness = false;
-
-	var codifiedUrlList = [];
-	var codifiedUrlListUnpack = {};
-
-	var codifiedUrlListLastBlock = (urlLength * 2);
-
-	// generate codifiedUrlList
-	// 1. codifiedUrlList to first unblock
-	codifiedUrlListUnpack = generateCodifiedListPercent(
-		shiftCounter,
-		codifiedUrl,
-		codifiedUrlList,
-		codifiedUrlListIndexCounter,
-		lengthPreSII,
-		true,
-		unfinishedBusiness
-	);
-
-	// 2. codifiedUrlList to second unblock
-	codifiedUrlListUnpack = generateCodifiedListPercent(
-		codifiedUrlListUnpack['currentShiftCounterValue'],
-		codifiedUrl,
-		codifiedUrlListUnpack['codifiedUrlListRecentValue'],
-		codifiedUrlListUnpack['codifiedUrlListIndexCounter'],
-		lengthPreMid,
-		true,
-		codifiedUrlListUnpack['unfinishedBusinessBooleanValue']
-	);
-
-	// 3. codifiedUrlList to third unblock
-	codifiedUrlListUnpack = generateCodifiedListPercent(
-		codifiedUrlListUnpack['currentShiftCounterValue'],
-		codifiedUrl,
-		codifiedUrlListUnpack['codifiedUrlListRecentValue'],
-		codifiedUrlListUnpack['codifiedUrlListIndexCounter'],
-		lengthPreSI,
-		true,
-		codifiedUrlListUnpack['unfinishedBusinessBooleanValue']
-	);
-
-	// 4. codifiedUrlList full list
-	codifiedUrlListUnpack = generateCodifiedListPercent(
-		codifiedUrlListUnpack['currentShiftCounterValue'],
-		codifiedUrl,
-		codifiedUrlListUnpack['codifiedUrlListRecentValue'],
-		codifiedUrlListUnpack['codifiedUrlListIndexCounter'],
-		codifiedUrlListLastBlock,
-		false,
-		codifiedUrlListUnpack['unfinishedBusinessBooleanValue']
-	);
-
-	codifiedUrlList = codifiedUrlListUnpack['codifiedUrlListRecentValue'];
-
-
-	// console.log('full list: ' + codifiedUrlList);
-
-	// dequeue mid..
-
-	// var countNoOfDevaredItems = 0;
-	var codifiedUrlListlength = JSON.parse(JSON.stringify(codifiedUrlList.length));
-	var currentIndex = 0;
-
-	while (currentIndex < codifiedUrlListlength){
-
-		var currentItem = codifiedUrlList[0];
-		// console.log('current item: ' + currentItem);
-		var countNumberOfTimesHere = 1;
-
-		// console.log('String.fromCharCode(currentItem.charCodeAt(0) - 128)' + String.fromCharCode(currentItem.charCodeAt(0) - 128));
-
-		if (currentItem.length == 1){
-			// console.log('currentItem.length == 1: ' + currentItem.length);
-			// console.log('number of times here: ' + countNumberOfTimesHere);
-			var c = String.fromCharCode(currentItem.charCodeAt(0) - 128);
-			// console.log('b');
-			codifiedUrlList.push(c);
-			codifiedUrlList.shift();
-		}
-		else if (currentItem.length > 1){
-			// console.log('currentItem.length > 1: ' + currentItem.length)
-			codifiedUrlList.shift();
-		}
-
-		currentIndex += 1;
-
-	}
-
-
-	codifiedUrlList.reverse();
-
-	var returnValue = 'https://' + codifiedUrlList.join('');
-
-	// console.log(returnValue);
-
-	return returnValue;
-
-}
-
-
-function generateCodifiedListPercent(
-	currentShiftCounterValue,
-	codifiedUrl,
-	codifiedUrlListRecentValue,
-	codifiedUrlListIndexCounter,
-	blockInFocusInputIndex,
-	applyUnblock,
-	unfinishedBusinessBooleanValue
-){
-
-	// var shiftCounter = currentShiftCounterValue;
-	// var codifiedUrlList = codifiedUrlListRecentValue;
-
-
-	// obataining the length of the las item in codifiedUrlList if applicable..
-	var isLastCodifiedUrlListItemsLengthAfterUnblockEqualToOne = false;
-	var isLastCodifiedUrlListItemsLengthAfterUnblockGreaterThanOne = false;
-
-	// if the current printing point is not the start of the codified url and codifiedUrlList has been populated to an unblocking,
-	// check if the last unblocked item's (string) length is equal to 1.. useful after each unblock
-	if (currentShiftCounterValue != 0 && codifiedUrlListRecentValue.length > 0){
-
-		// codifiedUrlListIndexCounter = codifiedUrlListIndexCounter - 1;
-
-
-
-
-		// console.log('codifiedUrlListRecentValue length: ' + codifiedUrlListRecentValue.length);
-		// console.log('codifiedUrlListIndexCounter: ' + codifiedUrlListIndexCounter);
-		// console.log('Item at codifiedUrlListIndexCounter: ' + codifiedUrlListRecentValue[codifiedUrlListIndexCounter - 1]);
-		// console.log('currentShiftCounterValue: ' + currentShiftCounterValue);
-		// console.log('Item at currentShiftCounterValue: ' + codifiedUrl[currentShiftCounterValue]);
-
-
-		var lengthOfLastItem = codifiedUrlListRecentValue[codifiedUrlListIndexCounter - 1].length;
-
-		if (lengthOfLastItem == 1){
-			isLastCodifiedUrlListItemsLengthAfterUnblockEqualToOne = true;
-			// isLastCodifiedUrlListItemsLengthAfterUnblockGreaterThanOne = false
-		}
-		else if (lengthOfLastItem > 1){
-			isLastCodifiedUrlListItemsLengthAfterUnblockGreaterThanOne = true;
-			// isLastCodifiedUrlListItemsLengthAfterUnblockEqualToOne = false
-		}
-	}
-
-	if (currentShiftCounterValue == 0 || (currentShiftCounterValue != 0 && isLastCodifiedUrlListItemsLengthAfterUnblockEqualToOne == true)){
-
-		while (codifiedUrlListIndexCounter < blockInFocusInputIndex && unfinishedBusinessBooleanValue == false){
-
-			// console.log('in equal to one');
-
-			var tai = codifiedUrl[currentShiftCounterValue] + codifiedUrl[currentShiftCounterValue + 1] + codifiedUrl[currentShiftCounterValue + 2] + codifiedUrl[currentShiftCounterValue + 3];
-			var c = codifiedUrl[currentShiftCounterValue + 4];
-
-			if (codifiedUrlListIndexCounter == blockInFocusInputIndex){
-				unfinishedBusinessBooleanValue = true;
-			}
-
-			codifiedUrlListRecentValue.push(tai);
-			codifiedUrlListIndexCounter += 1;
-			currentShiftCounterValue += 4;
-
-			if (codifiedUrlListIndexCounter != blockInFocusInputIndex){
-				codifiedUrlListRecentValue.push(c);
-				codifiedUrlListIndexCounter += 1;
-				currentShiftCounterValue += 1;
-			}else{
-				// currentShiftCounterValue += 1;
-				unfinishedBusinessBooleanValue = true;
-			}
-		}
-	}
-
-	else if ((currentShiftCounterValue != 0 && isLastCodifiedUrlListItemsLengthAfterUnblockGreaterThanOne == true)){
-
-		while (codifiedUrlListIndexCounter < blockInFocusInputIndex && unfinishedBusinessBooleanValue == false){
-
-			// console.log('in greater than');
-
-			var c = codifiedUrl[currentShiftCounterValue];
-			var tai = codifiedUrl[currentShiftCounterValue + 1] + codifiedUrl[currentShiftCounterValue + 2] + codifiedUrl[currentShiftCounterValue + 3] + codifiedUrl[currentShiftCounterValue + 4];
-
-			// if codifiedUrlListIndexCounter is same as blockInFocusInputIndex i.e prog has gotten to index of stoppage,
-			// don't add the fourth sequence i.e the next index, rather signify that the fourth
-			// sequence or the next index has not been added
-
-			// console.log('codifiedUrlListIndexCounter: ' + codifiedUrlListIndexCounter);
-			// console.log('blockInFocusInputIndex: ' + blockInFocusInputIndex);
-
-			if (codifiedUrlListIndexCounter == blockInFocusInputIndex){
-				unfinishedBusinessBooleanValue = true;
-			}
-
-			codifiedUrlListRecentValue.push(c);
-			codifiedUrlListIndexCounter += 1;
-			currentShiftCounterValue += 1;
-
-			if (codifiedUrlListIndexCounter != blockInFocusInputIndex){
-				codifiedUrlListRecentValue.push(tai);
-				codifiedUrlListIndexCounter += 1;
-				currentShiftCounterValue += 4;
-			}else{
-				// currentShiftCounterValue += 1;
-				unfinishedBusinessBooleanValue = true;
-			}
-
-
-		}
-
-		// console.log('codifiedUrlListIndexCounter: ' + codifiedUrlListIndexCounter);
-		// console.log('blockInFocusInputIndex: ' + blockInFocusInputIndex);
-
-
-	}
-
-	// unblocking
-	if (applyUnblock == true){
-
-		// first block to next start
-		if (unfinishedBusinessBooleanValue == true){
-			// console.log('IN TRUE');
-			// console.log('Pre Block Item shiftCounterValue: ' + codifiedUrl[currentShiftCounterValue - 1]);
-			// console.log('Block identified at at shiftCounterValue: ' + codifiedUrl[currentShiftCounterValue]);
-			// console.log('Post Block Item shiftCounterValue: ' + codifiedUrl[currentShiftCounterValue + 1]);
-			// console.log('');
-
-			// var currentShiftCounterValueTwo = currentShiftCounterValue;
-
-			// var indexToStartFrom = codifiedUrlListIndexCounter;
-			var doNum = 0;
-
-			while (doNum < 5){
-
-				// console.log('codifiedUrlListRecentValue: ' + codifiedUrlListRecentValue);
-				// console.log('codifiedUrlListRecentValueLength: ' + codifiedUrlListRecentValue.length);
-				var lengthOfItemBeforeBlock = codifiedUrlListRecentValue[codifiedUrlListIndexCounter - 1].length;
-
-				var block = codifiedUrl[currentShiftCounterValue];
-				var next = '';
-
-				if (lengthOfItemBeforeBlock > 1){
-					next = codifiedUrl[currentShiftCounterValue + 1];
-					codifiedUrlListRecentValue.push(next);
-					codifiedUrlListIndexCounter += 1;
-					currentShiftCounterValue += 2; // next block sequence to be focused on..
-				}
-				else if (lengthOfItemBeforeBlock == 1){
-					next = codifiedUrl[currentShiftCounterValue + 1] + codifiedUrl[currentShiftCounterValue + 2] + codifiedUrl[currentShiftCounterValue + 3] + codifiedUrl[currentShiftCounterValue + 4];
-					codifiedUrlListRecentValue.push(next);
-					codifiedUrlListIndexCounter += 1;
-					currentShiftCounterValue += 5;
-				}
-
-				doNum += 1;
-
-			}
-
-
-		}
-
-		else if (unfinishedBusinessBooleanValue == false){
-			// console.log('IN FALSE');
-			// console.log('Pre Block Item shiftCounterValue: ' + codifiedUrl[currentShiftCounterValue - 1]);
-			// console.log('Block identified at at shiftCounterValue: ' + codifiedUrl[currentShiftCounterValue]);
-			// console.log('Post Block Item shiftCounterValue: ' + codifiedUrl[currentShiftCounterValue + 1]);
-			// console.log('');
-
-			// codifiedUrlListIndexCounter += 1;
-
-			// var currentShiftCounterValueTwo = currentShiftCounterValue;
-
-			var indexToStartFrom = codifiedUrlListIndexCounter;
-
-			// console.log('codifiedUrlListRecentValue: ' + codifiedUrlListRecentValue);
-			// console.log('codifiedUrlListRecentValueLength: ' + codifiedUrlListRecentValue.length);
-			// var lengthOfItemBeforeBlock = codifiedUrlListRecentValue[codifiedUrlListIndexCounter - 1].length;
-
-			var doNum = 0;
-
-			while (doNum < 5){
-
-				// console.log('codifiedUrlListRecentValue: ' + codifiedUrlListRecentValue);
-				// console.log('codifiedUrlListRecentValueLength: ' + codifiedUrlListRecentValue.length);
-				var lengthOfItemBeforeBlock = codifiedUrlListRecentValue[codifiedUrlListIndexCounter - 1].length;
-
-				var block = codifiedUrl[currentShiftCounterValue];
-				var next = '';
-
-				if (lengthOfItemBeforeBlock == 1){
-
-					next = codifiedUrl[currentShiftCounterValue + 1] + codifiedUrl[currentShiftCounterValue + 2] + codifiedUrl[currentShiftCounterValue + 3] + codifiedUrl[currentShiftCounterValue + 4];
-					codifiedUrlListRecentValue.push(next);
-					codifiedUrlListIndexCounter += 1;
-					currentShiftCounterValue += 5; // next block sequence to be focused on..
-
-				}
-				else if (lengthOfItemBeforeBlock > 1){
-
-					next = codifiedUrl[currentShiftCounterValue + 1];
-					codifiedUrlListRecentValue.push(next);
-					codifiedUrlListIndexCounter += 1;
-					currentShiftCounterValue += 2; // next block sequence to be focused on..
-
-				}
-
-				doNum += 1;
-
-			}
-
-		}
-
-		unfinishedBusinessBooleanValue = false;
-
-	}
-
-	// console.log('gen: ' + codifiedUrlListRecentValue);
-
-	return {
-		'currentShiftCounterValue': currentShiftCounterValue,
-		'codifiedUrlListRecentValue': codifiedUrlListRecentValue,
-		'codifiedUrlListIndexCounter': codifiedUrlListIndexCounter,
-		'blockInFocusInputIndex': blockInFocusInputIndex,
-		'unfinishedBusinessBooleanValue': unfinishedBusinessBooleanValue
-	}
 
 }

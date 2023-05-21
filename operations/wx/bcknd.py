@@ -230,8 +230,8 @@ def extract_elements_per_row_from_dataframe(
         # UPLOAD ROW DATA TO IT'S RELEVANT WIX DATABASE..
         try:
 
-            watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_collections_name = ['Uaeproducts', 'Usaproducts', 'Singaporeproducts']
-            watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_countries_name = ['UAE', 'USA', 'SINGAPORE']
+            watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_collections_name = ['Uaeproducts', 'Usaproducts', 'Singaporeproducts', 'Ukproducts']
+            watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_countries_name = ['UAE', 'USA', 'SINGAPORE', 'UK']
 
             number_of_times_to_upload_products_to_databases = 0
 
@@ -240,8 +240,10 @@ def extract_elements_per_row_from_dataframe(
             if 'WATCHES_COM' in file_name:
                 number_of_times_to_upload_products_to_databases = 2
 
-            elif 'THE_LUXURY_CLOSET' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name:
+            elif 'FWRD' in file_name or 'JIMMY_CHOO' in file_name:
                 number_of_times_to_upload_products_to_databases = 3
+            elif 'THE_LUXURY_CLOSET' in file_name:
+                number_of_times_to_upload_products_to_databases = 4
 
 
             else:
@@ -678,10 +680,13 @@ def upload_skipped_csv_rows(
             # UPLOAD ROW DATA TO IT'S RELEVANT WIX DATABASE..
             try:
 
-                watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_collections_name = ['uaeProducts',
-                                                                                               'usaProducts',
-                                                                                               'singaporeProducts']
-                watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_countries_name = ['UAE', 'USA', 'SINGAPORE']
+                watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_collections_name = ['Uaeproducts',
+                                                                                               'Usaproducts',
+                                                                                               'Singaporeproducts',
+                                                                                               'Ukproducts']
+
+                watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_countries_name = ['UAE', 'USA', 'SINGAPORE',
+                                                                                             'UK']
 
                 number_of_times_to_upload_products_to_databases = 0
 
@@ -690,8 +695,11 @@ def upload_skipped_csv_rows(
                 if 'WATCHES_COM' in file_name:
                     number_of_times_to_upload_products_to_databases = 2
 
-                elif 'THE_LUXURY_CLOSET' in file_name or 'FWRD' in file_name or 'JIMMY_CHOO' in file_name:
+                elif 'FWRD' in file_name or 'JIMMY_CHOO' in file_name:
                     number_of_times_to_upload_products_to_databases = 3
+
+                elif 'THE_LUXURY_CLOSET' in file_name:
+                    number_of_times_to_upload_products_to_databases = 4
 
 
                 else:
@@ -816,21 +824,23 @@ def populate_site_db(
 
     site_url = 'https://flowbeing.wixsite.com/my-site-1/_functions-dev/addRowToCollection'
 
+    # title, brandname, productcategory, gender, price, productlink, imagesrc, sitename, country, baseproductlinksid, baseimagesrcsid
+
     body = {
         'collectionName': collection_name,
         'rowData': {
             'title': title,
-            'brandName': brand_name,
-            'productCategory': product_category,  #
+            'brandname': brand_name,
+            'productcategory': product_category,  #
             'gender': gender, #
             'price': price,
-            'productLink': product_link,
-            'imageSrc': image_src,
-            'siteName': site_name, #
+            'productlink': product_link,
+            'imagesrc': image_src,
+            'sitename': site_name, #
             'country': country,
 
-            'baseProductLinksId': baseProductLinksId,
-            'baseImageSrcsId': baseImageSrcsId,
+            'baseproductlinksid': baseProductLinksId,
+            'baseimagesrcsid': baseImageSrcsId,
         }
     }
 

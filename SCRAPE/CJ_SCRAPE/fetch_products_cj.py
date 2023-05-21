@@ -185,6 +185,7 @@ def add_products_to_table(
 
     # creating products dictionary to be used in creating products dataframe
     products_feed_dict = {
+        # 'description': [],
         'title': [],
         'brandName': [],
         'productCategory': [],
@@ -205,6 +206,26 @@ def add_products_to_table(
         'isImageSrcUpdated': [],
         'baseImageSrcsId': [],
     }
+
+    list_of_luxury_brands = ["Samung", "Louis Vuitton", "Gucci", "Hermès", "Prada", "Chanel", "Burberry", "Fendi", "Givenchy",
+                             "Dior", "Versace", "Armani", "Balenciaga", "Yves Saint Laurent", "Rolex", "Tiffany",
+                             "Cartier", "Valentino", "Nina Ricci", "Dolce Gabbana", "Bulgari", "Tom Ford", "Hugo Boss",
+                             "Jimmy Choo", "Moschino", "Kenzo", "Ralph Lauren", "Oscar de la Renta", "MCM", "OMEGA",
+                             "Salvatore Ferragamo S.p.A.", "Michael Kors", "Kate Spade", "Vera Wang", "Tory Burch",
+                             "Zegna", "DKNY", "LOEWE", "Goyard", "Celine", "Berluti", "Rimowa", "Marc Jacobs",
+                             "Emilio Pucci", "Loro Piana", "Fenty", "Paul Stuart", "Chloé", "Ray-Ban", "Ray Ban",
+                             "RayBan", "Longines", "Swarovski", "Miu Miu", "Coach", "Patek Philippe SA", "Moynat",
+                             "Marni", "Cesare Attolini", "Braccialini", "Canali", "Brioni", "Roberto Cavalli",
+                             "Corneliani", "Alexander Mcqueen", "Balmain", "Jil Sander", "Etro", "Brunello Cucinelli",
+                             "Furla", "Genny", "Nicholas Kirkwood", "Isaia", "La Perla", "Diesel", "Larusmiani", "Malo",
+                             "Fila", "Max Mara", "Lardini", "Stefano Ricci", "Marina Rinaldi", "Rubinacci", "Pinko",
+                             "Piquadro", "Missoni", "André Laug", "Pal Zileri", "Borsalino", "Luciano Barbera",
+                             "Paul Smith", "Audemars Piguet", "Fiorucci", "Bottega Veneta", "Pomellato", "Lanvin",
+                             "Jérôme Dreyfuss", "Jerome Dreyfuss", "Bell & Ross", "Bell Ross", "Escada", "Moncler",
+                             "Franck Muller", "Rouje", "Iceberg", "Hermes", "Place Vendome", "Girard Perregaux",
+                             "TagHeuer", "Bvlgari", "Damiani", "Corum", "Breitling", "Chopard", "Bvlgari",
+                             "Montegrappa", "Van Cleef Arpels", "Jaeger LeCoultre", "Graham", "Vacheron Constantin",
+                             "S.T. Dupont", "S.T.Dupont", "Montblanc", 'Tag Heuer']
 
     # products table dataframe index tracker
     current_index = 0
@@ -258,6 +279,9 @@ def add_products_to_table(
             print('SHORTENING NEW ROW')
             print(product, type(product))
             # DETERMINING ALL OTHER COLUMN VALUES
+
+            # PRODUCT DESCRIPTION
+            product_description = product['description']
 
             # PRODUCT TITLE
             product_title = product['title']
@@ -336,6 +360,50 @@ def add_products_to_table(
             #     index_of_semicolon = product_title.index(';') + 1
             #     product_title = product_title[index_of_semicolon:]
             # product_brandName x
+
+
+
+            # BRAND NAME
+            brand_name = ''
+
+            for brand_full_name in list_of_luxury_brands:
+
+                brand_full_name = brand_full_name.lower()
+
+                luxury_brand_name_split = brand_full_name.split(' ')
+
+                if brand_full_name in product['title'].lower() or \
+                    brand_full_name in product['description'].lower() or \
+                        brand_full_name in product['linkCode']['imageUrl'].lower() or \
+                        brand_full_name in product['linkCode']['clickUrl'].lower():
+
+                    brand_name = brand_full_name.upper()
+
+                    break
+
+                else:
+
+                    for word in luxury_brand_name_split:
+
+                        word = word.lower()
+
+                        if word != '&' and \
+                                word != ' ' and \
+                                word != 'de' and \
+                                word != 'la' and \
+                                word != 'le' and \
+                                len(word) > 4 and \
+                                (word in product['title'].lower()
+                                            or word in product['description'].lower()
+                                            or word in product['linkCode']['imageUrl'].lower()
+                                            or word in product['linkCode']['clickUrl'].lower()
+                        ):
+
+                            brand_name = brand_full_name.upper()
+
+
+
+
 
             # DETERMINING PRODUCT CATEGORY
             product_category = ''
@@ -990,8 +1058,9 @@ def add_products_to_table(
             site_name_edited = site_name.replace('_', ' ')
 
             # populating products feed dict
+            # products_feed_dict['description'].append(product_description)
             products_feed_dict['title'].append(product_title)
-            products_feed_dict['brandName'].append('')
+            products_feed_dict['brandName'].append(brand_name)
             products_feed_dict['productCategory'].append(product_category)
             products_feed_dict['gender'].append(product_gender)
             products_feed_dict['price'].append(product_price)
@@ -1190,6 +1259,12 @@ def add_products_to_table(
 
     print(product_feed_df.head(100000))
     print(product_feed_df.count())
+
+    list_of_available_brands = list(products_feed_dict['brandName'])
+    list_of_available_brands = set(list_of_available_brands)
+
+    print(f'list of available brands: {len(list_of_available_brands)}, {list_of_available_brands}')
+
 
     # print(product_feed_df['country'].to_list().count('US'))
 
