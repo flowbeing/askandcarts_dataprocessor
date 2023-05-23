@@ -1263,7 +1263,11 @@ def add_products_to_table(
     list_of_available_brands = list(products_feed_dict['brandName'])
     list_of_available_brands = set(list_of_available_brands)
 
+    total_commissions = product_feed_df['commission'].sum()
+    total_number_of_products = len(product_feed_df['commission'])
+
     print(f'list of available brands: {len(list_of_available_brands)}, {list_of_available_brands}')
+    print(f'average commissions: {total_commissions/total_number_of_products} -> total commissions: {total_commissions}, total number of products: {total_number_of_products}')
 
 
     # print(product_feed_df['country'].to_list().count('US'))
@@ -1426,14 +1430,14 @@ partners = {
 
 }
 
-partner_to_fetch_num = 1
+partner_to_fetch_num = 0
 
 add_products_to_table(
 
     site_name=partners[partner_to_fetch_num]['partners_company_name'],
     partners_id=partners[partner_to_fetch_num]['partners_company_id'],
     ad_id=partners[partner_to_fetch_num]['partners_company_ad_id'],
-    mininum_commission_target_detected_currency_value= 200, # USD200 TO AED = AED 734.41 => MAY 8
+    mininum_commission_target_detected_currency_value= 734.44, # USD200 TO AED = AED 734.41 => MAY 8
     is_upload_to_wx=False
 )
 

@@ -5,12 +5,8 @@ import requests
 import json
 
 from settings.q.other_settings import api_key_wx
+from settings.q.d.listed import listed
 
-
-dblist = [
-    'Singaporeproducts', 'singaporeProductsPopularity',
-    'Uaeproducts', 'uaeProductsPopularity',
-    'Usaproducts', 'usaProductsPopularity']
 
 url = 'https://flowbeing.wixsite.com/my-site-1/_functions-dev/clearDataBase'
 
@@ -27,7 +23,7 @@ else:
     sys.exit('DB Clear Task has been terminated')
 
 
-for dbName in dblist:
+for dbName in listed:
 
     body = {
         'collectionName': dbName

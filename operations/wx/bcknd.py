@@ -230,8 +230,14 @@ def extract_elements_per_row_from_dataframe(
         # UPLOAD ROW DATA TO IT'S RELEVANT WIX DATABASE..
         try:
 
-            watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_collections_name = ['Uaeproducts', 'Usaproducts', 'Singaporeproducts', 'Ukproducts']
-            watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_countries_name = ['UAE', 'USA', 'SINGAPORE', 'UK']
+            watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_collections_name = ['Uaeproducts',
+                                                                                           'Usaproducts',
+                                                                                           'Singaporeproducts',
+                                                                                           'Ukproducts',
+                                                                                           'Euproducts']
+
+            watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_countries_name = ['UAE', 'USA', 'SINGAPORE',
+                                                                                         'UK', 'EU']
 
             number_of_times_to_upload_products_to_databases = 0
 
@@ -242,13 +248,13 @@ def extract_elements_per_row_from_dataframe(
 
             elif 'FWRD' in file_name or 'JIMMY_CHOO' in file_name:
                 number_of_times_to_upload_products_to_databases = 3
+
             elif 'THE_LUXURY_CLOSET' in file_name:
-                number_of_times_to_upload_products_to_databases = 4
+                number_of_times_to_upload_products_to_databases = 5
 
 
             else:
                 number_of_times_to_upload_products_to_databases = 1
-
 
 
             for i in range(number_of_times_to_upload_products_to_databases):
@@ -683,10 +689,11 @@ def upload_skipped_csv_rows(
                 watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_collections_name = ['Uaeproducts',
                                                                                                'Usaproducts',
                                                                                                'Singaporeproducts',
-                                                                                               'Ukproducts']
+                                                                                               'Ukproducts',
+                                                                                               'Euproducts']
 
                 watches_com_theluxurycloset_fwrd_jimmy_choo_relative_extra_countries_name = ['UAE', 'USA', 'SINGAPORE',
-                                                                                             'UK']
+                                                                                             'UK', 'EU']
 
                 number_of_times_to_upload_products_to_databases = 0
 
@@ -699,11 +706,13 @@ def upload_skipped_csv_rows(
                     number_of_times_to_upload_products_to_databases = 3
 
                 elif 'THE_LUXURY_CLOSET' in file_name:
-                    number_of_times_to_upload_products_to_databases = 4
+                    number_of_times_to_upload_products_to_databases = 5
 
 
                 else:
                     number_of_times_to_upload_products_to_databases = 1
+
+
 
                 for i in range(number_of_times_to_upload_products_to_databases):
 

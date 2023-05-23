@@ -1,16 +1,16 @@
-# lacks location fetching - lacks extreme ip (original)
-# secret key edited
+// lacks location fetching - lacks extreme ip (original)
+// secret key edited
 
-# lacks decode url
-# orderProducts function has been edited to remove decodeUrl()
-# everything from decodeUrl function down had been deleted
+// lacks decode url
+// orderProducts function has been edited to remove decodeUrl()
+// everything from decodeUrl function down had been deleted
 
 
 // Velo API Reference: https://www.wix.com/velo/reference/api-overview/introduction
 
 import wixData from 'wix-data';
 import wixLocation from 'wix-location';
-import {fetch} from 'wix-fetch';
+import wixFetch from 'wix-fetch';
 import wixWindow from 'wix-window';
 import wixCrm from 'wix-crm';
 
@@ -108,7 +108,7 @@ var giftsForHerAmazonless = [];
 // var featuredBags = [];
 // var featuredAccessories = [];
 
-var timeOut = 5000;
+var timeOut = 4500;
 
 async function resolveGalleryItems(){
 
@@ -116,7 +116,7 @@ async function resolveGalleryItems(){
 
 	var dbCollectionToFocusOn = '';
 
-	var eIPURL='https://extreme-ip-lookup.com/json/?key=uLYcH3A5LvgGZm9CKjxM';
+	var userIPFetchUrl= 'https://extreme-ip-lookup.com/json/?key=uLYcH3A5LvgGZm9CKjxM'; // ' 'https://extreme-ip-lookup.com/json/?key=uLYcH3A5LvgGZm9CKjxM';
 
 
 
@@ -126,20 +126,34 @@ async function resolveGalleryItems(){
     };
 
 	// fetching each featured category's products as per visitor's country..
-	return fetch(eIPURL, {
-	    method: 'get'
+	console.log('pre-fetch');
+
+	return wixFetch.fetch(userIPFetchUrl, {
+	    method: 'get',
+		"headers": {
+  		  "Content-Type": "application/x-www-form-urlencoded"
+  		},
 	})
 	.then((httpResponse) => {
 
+		console.log('post-fetch 1');
+
 	   if (httpResponse.ok) {
-	      return httpResponse.json();
+	      	return httpResponse.json();
 	   }
+	   else {
+    		return Promise.reject("Fetch did not succeed");
+    	}
 	})
 	.then((json) => {
+
+		console.log('post-fetch 2');
 
 		ipLoc = json;
 
 		if (ipLoc.countryCode != ''){
+
+			console.log('post-fetch 3');
 
 			// user's country
 			usersCountry = ipLoc.country;
@@ -156,7 +170,20 @@ async function resolveGalleryItems(){
 				usersCountryCode = 'AE';
 				// timeOut = 2500;
 			}
-			else{ // ipLoc.countryCode == 'US'
+			else if (ipLoc.countryCode == 'GB'){
+				dbCollectionToFocusOn = 'Ukproducts';
+				usersCountryCode = 'GB';
+			}
+			else if (ipLoc.continent == 'North America'){
+
+				dbCollectionToFocusOn = 'Usaproducts';
+				usersCountryCode = 'US';
+			}
+			else if (ipLoc.continent == 'Europe'){
+				dbCollectionToFocusOn = 'Euproducts';
+				usersCountryCode = 'EU';
+			}
+			else{
 				dbCollectionToFocusOn = 'Usaproducts';
 				usersCountryCode = 'US';
 			}
