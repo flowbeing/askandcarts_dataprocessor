@@ -72,6 +72,8 @@ def reconcile_shorts(
 
     for product_or_image_id in link_shortening_progress:
 
+
+
         link_data = link_shortening_progress[product_or_image_id]
 
         owner_id_personal_records = link_data['owner_id']
@@ -81,64 +83,68 @@ def reconcile_shorts(
         original_link_personal_records = link_data['original_link']
         link_creation_date_personal_records = link_data['short_link_creation_time']
 
-        # populating 'personal_records_of_short_links' dictionary
-        if personal_records_of_short_links.get(short_link_personal_records, None) == None:
-            personal_records_of_short_links[short_link_personal_records] = {}
+        if short_link_personal_records != "":
 
-        personal_records_of_short_links[short_link_personal_records]['ownerId-PersonalRecords'] = owner_id_personal_records
-        personal_records_of_short_links[short_link_personal_records]['domainId-PersonalRecords'] = domain_id_personal_records
-        personal_records_of_short_links[short_link_personal_records]['idString-PersonalRecords'] = id_string_personal_records
-        personal_records_of_short_links[short_link_personal_records]['createdAt-PersonalRecords'] = link_creation_date_personal_records
-        personal_records_of_short_links[short_link_personal_records]['originalURL-PersonalRecords'] = original_link_personal_records
-        
-        
-        # reconciling data - (retrieved_links_data_short_io == personal_records_of_short_links)
-        if len(retrieved_links_data_short_io) != 0:
-            
-            owner_id_shorts_records = retrieved_links_data_short_io[short_link_personal_records]['owner_id_shorts_records']
-            domain_id_shorts_records = retrieved_links_data_short_io[short_link_personal_records]['domain_id_shorts_records']
-            id_string_shorts_records = retrieved_links_data_short_io[short_link_personal_records]['id_string_shorts_records']
-            original_link_shorts_records = retrieved_links_data_short_io[short_link_personal_records]['original_link_shorts_records']
-            is_link_updated_shorts_records = retrieved_links_data_short_io[short_link_personal_records]['is_link_updated_shorts_records'] #
-            link_creation_date_shorts_records = retrieved_links_data_short_io[short_link_personal_records]['link_creation_date_shorts_records']
-            link_update_date_shorts_records = retrieved_links_data_short_io[short_link_personal_records]['link_update_date_shorts_records']
+            # populating 'personal_records_of_short_links' dictionary where the current short_link is not empty
+            # (i.e if current link is product url - expected).. excluding non-shortened (by code) image id
+            if personal_records_of_short_links.get(short_link_personal_records, None) == None:
+                personal_records_of_short_links[short_link_personal_records] = {}
 
-            # reconciliation_dict = {
-            #     'shortURL': [],
-            #     'OwnerId Changed? (Personal - Short.io)': [],
-            #     'DomainId Changed? (Personal - Short.io)?': [],
-            #     'IdString Changed? (Personal - Short.io)?': [],
-            #     'CreationDate Changed? (Personal - Short.io)?': [],
-            #     'OriginalURL Changed? (Personal - Short.io)?': [],
-            #     'Was Link Data Ever Updated? (Personal - Short.io)?': [],
-            #     'Was Link Data Ever Updated? (Short.io - Short.io)?': []
-            # }
-            
-            reconciliation_dict['shortURL'].append(short_link_personal_records)
+            personal_records_of_short_links[short_link_personal_records]['ownerId-PersonalRecords'] = owner_id_personal_records
+            personal_records_of_short_links[short_link_personal_records]['domainId-PersonalRecords'] = domain_id_personal_records
+            personal_records_of_short_links[short_link_personal_records]['idString-PersonalRecords'] = id_string_personal_records
+            personal_records_of_short_links[short_link_personal_records]['createdAt-PersonalRecords'] = link_creation_date_personal_records
+            personal_records_of_short_links[short_link_personal_records]['originalURL-PersonalRecords'] = original_link_personal_records
 
-            reconciliation_dict['ownerId-PersonalRecords'].append(owner_id_personal_records)
-            reconciliation_dict['ownerId-ShortsRecords'].append(owner_id_shorts_records)
-            reconciliation_dict['OwnerId Changed? (Personal - Short.io)'].append(owner_id_personal_records != owner_id_shorts_records)
 
-            reconciliation_dict['domainId-PersonalRecords'].append(domain_id_personal_records)
-            reconciliation_dict['domainId-ShortsRecords'].append(domain_id_shorts_records)
-            reconciliation_dict['DomainId Changed? (Personal - Short.io)'].append(domain_id_personal_records != domain_id_shorts_records)
+            # reconciling data - (retrieved_links_data_short_io == personal_records_of_short_links).. if data is not of
+            # non-shortened image src..
+            if len(retrieved_links_data_short_io) != 0:
 
-            reconciliation_dict['idString-PersonalRecords'].append(id_string_personal_records)
-            reconciliation_dict['idString-ShortsRecords'].append(id_string_shorts_records)
-            reconciliation_dict['IdString Changed? (Personal - Short.io)'].append(id_string_personal_records != id_string_shorts_records)
+                owner_id_shorts_records = retrieved_links_data_short_io[short_link_personal_records]['owner_id_shorts_records']
+                domain_id_shorts_records = retrieved_links_data_short_io[short_link_personal_records]['domain_id_shorts_records']
+                id_string_shorts_records = retrieved_links_data_short_io[short_link_personal_records]['id_string_shorts_records']
+                original_link_shorts_records = retrieved_links_data_short_io[short_link_personal_records]['original_link_shorts_records']
+                is_link_updated_shorts_records = retrieved_links_data_short_io[short_link_personal_records]['is_link_updated_shorts_records'] #
+                link_creation_date_shorts_records = retrieved_links_data_short_io[short_link_personal_records]['link_creation_date_shorts_records']
+                link_update_date_shorts_records = retrieved_links_data_short_io[short_link_personal_records]['link_update_date_shorts_records']
 
-            reconciliation_dict['CreationDate-PersonalRecords'].append(link_creation_date_personal_records)
-            reconciliation_dict['CreationDate-ShortsRecords'].append(link_creation_date_shorts_records)
-            reconciliation_dict['CreationDate Changed? (Personal - Short.io)'].append(link_creation_date_personal_records != link_creation_date_shorts_records)
-            reconciliation_dict['UpdatedAt-ShortsRecords'].append(link_update_date_shorts_records)
-            reconciliation_dict['Was Link Data Ever Updated? (Personal - Short.io)'].append(link_creation_date_personal_records != link_update_date_shorts_records)
+                # reconciliation_dict = {
+                #     'shortURL': [],
+                #     'OwnerId Changed? (Personal - Short.io)': [],
+                #     'DomainId Changed? (Personal - Short.io)?': [],
+                #     'IdString Changed? (Personal - Short.io)?': [],
+                #     'CreationDate Changed? (Personal - Short.io)?': [],
+                #     'OriginalURL Changed? (Personal - Short.io)?': [],
+                #     'Was Link Data Ever Updated? (Personal - Short.io)?': [],
+                #     'Was Link Data Ever Updated? (Short.io - Short.io)?': []
+                # }
 
-            reconciliation_dict['originalURL-PersonalRecords'].append(original_link_personal_records)
-            reconciliation_dict['originalURL-ShortsRecords'].append(original_link_shorts_records)
-            reconciliation_dict['OriginalURL Changed? (Personal - Short.io)'].append(original_link_personal_records != original_link_shorts_records)
+                reconciliation_dict['shortURL'].append(short_link_personal_records)
 
-            reconciliation_dict['Was Link Data Ever Updated? (Short.io - Short.io)'].append(is_link_updated_shorts_records)
+                reconciliation_dict['ownerId-PersonalRecords'].append(owner_id_personal_records)
+                reconciliation_dict['ownerId-ShortsRecords'].append(owner_id_shorts_records)
+                reconciliation_dict['OwnerId Changed? (Personal - Short.io)'].append(owner_id_personal_records != owner_id_shorts_records)
+
+                reconciliation_dict['domainId-PersonalRecords'].append(domain_id_personal_records)
+                reconciliation_dict['domainId-ShortsRecords'].append(domain_id_shorts_records)
+                reconciliation_dict['DomainId Changed? (Personal - Short.io)'].append(domain_id_personal_records != domain_id_shorts_records)
+
+                reconciliation_dict['idString-PersonalRecords'].append(id_string_personal_records)
+                reconciliation_dict['idString-ShortsRecords'].append(id_string_shorts_records)
+                reconciliation_dict['IdString Changed? (Personal - Short.io)'].append(id_string_personal_records != id_string_shorts_records)
+
+                reconciliation_dict['CreationDate-PersonalRecords'].append(link_creation_date_personal_records)
+                reconciliation_dict['CreationDate-ShortsRecords'].append(link_creation_date_shorts_records)
+                reconciliation_dict['CreationDate Changed? (Personal - Short.io)'].append(link_creation_date_personal_records != link_creation_date_shorts_records)
+                reconciliation_dict['UpdatedAt-ShortsRecords'].append(link_update_date_shorts_records)
+                reconciliation_dict['Was Link Data Ever Updated? (Personal - Short.io)'].append(link_creation_date_personal_records != link_update_date_shorts_records)
+
+                reconciliation_dict['originalURL-PersonalRecords'].append(original_link_personal_records)
+                reconciliation_dict['originalURL-ShortsRecords'].append(original_link_shorts_records)
+                reconciliation_dict['OriginalURL Changed? (Personal - Short.io)'].append(original_link_personal_records != original_link_shorts_records)
+
+                reconciliation_dict['Was Link Data Ever Updated? (Short.io - Short.io)'].append(is_link_updated_shorts_records)
 
 
     #
@@ -157,7 +163,7 @@ def reconcile_shorts(
     print(f"Was Link Data Ever Updated? (Personal - Short.io): {reconciliation_dict['Was Link Data Ever Updated? (Personal - Short.io)'].count(True) > 0}")
     print(f"Was Link Data Ever Updated? (Short.io - Short.io): {reconciliation_dict['Was Link Data Ever Updated? (Short.io - Short.io)'].count(True) > 0}")
 
-    file = f'{links_reconciliation_folder}links_reconciliation-{datetime.datetime.now()}.csv'
+    file = f'{links_reconciliation_folder}links_reconciliation-{site_or_file_name}-{datetime.datetime.now()}.csv'
     reconciliation_df.to_csv(file)
     print()
     print()
@@ -171,39 +177,48 @@ def reconcile_shorts(
 # RETRIEVING LINKS FROM Short.io
 def retrieve_links_web():
 
-    url = "https://api.short.io/api/links?domain_id=715488&limit=150&dateSortOrder=desc"
 
-    # body_jsonified = json.dumps(body)
+    def get_links_web(
+        next_page_token = ''
+    ):
 
-    url = "https://api.short.io/api/links"
+        url = "https://api.short.io/api/links?domain_id=715488&limit=150&dateSortOrder=desc"
 
-    querystring = {"domain_id": "715488",  "offset": "0"} # limit: 150
+        # body_jsonified = json.dumps(body)
 
-    headers = {
-        'accept': "application/json",
-        'authorization': short
-    }
+        url = "https://api.short.io/api/links"
 
-    req = requests.request("GET", url, headers=headers, params=querystring)
+        querystring = {"domain_id": "715488",  "offset": "0", 'pageToken': next_page_token} # limit: 150
 
-    print('RETRIEVING LINKS - WEB')
-    print('-----------------------')
-    print()
-    print(f'req.status_code: {req.status_code}, {type(req.status_code)}')
-    print()
-    # print(f'req.content: {req.content}')
-    print(f'req.text: {req.text}')
-    print()
-    print(req.reason)
+        headers = {
+            'accept': "application/json",
+            'authorization': short
+        }
 
-    return_header = req.headers
-    print()
-    print('RESPONSE HEADERS')
-    print('----------------')
-    for i in return_header:
-        print(f'{i}: {return_header[i]}')
+        req = requests.request("GET", url, headers=headers, params=querystring)
+
+        print('RETRIEVING LINKS - WEB')
+        print('-----------------------')
+        print()
+        print(f'req.status_code: {req.status_code}, {type(req.status_code)}')
+        print()
+        # print(f'req.content: {req.content}')
+        print(f'req.text: {req.text}')
+        print()
+        print(req.reason)
+
+        return_header = req.headers
+        print()
+        print('RESPONSE HEADERS')
+        print('----------------')
+        for i in return_header:
+            print(f'{i}: {return_header[i]}')
+
+        return req
 
     print('---------------------------------------------------------------------------------')
+
+    req = get_links_web()
 
     retrieved_links = {}
 
@@ -222,8 +237,22 @@ def retrieve_links_web():
             'originalURL-ShortsRecords': []
         }
 
-        retrieved_links = json.loads(req.text)
-        retrieved_links = retrieved_links['links']
+        retrieved_links_data = json.loads(req.text)
+        retrieved_links = retrieved_links_data['links']
+
+        # retrieving links data for next page - web
+        while retrieved_links_data.get('nextPageToken') != None:
+
+            next_page_token = retrieved_links_data['nextPageToken']
+
+            req = get_links_web(next_page_token)
+
+            retrieved_links_data = json.loads(req.text)
+
+            retrieved_links += retrieved_links_data['links']
+
+
+        # sort retrieved_links (web) by creation date and save it
         print(f"len retrieved links: {len(retrieved_links)}")
 
         # Sort - oldest first, lastest last, oldest to latest
@@ -323,5 +352,6 @@ def retrieve_links_web():
 
 
 # retrieve_links_web()
-reconcile_shorts('SAMSUNG_UAE_CJ')
+# reconcile_shorts('SAMSUNG_UAE_CJ')
+reconcile_shorts('THE_LUXURY_CLOSET_CJ')
 

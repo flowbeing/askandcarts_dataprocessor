@@ -1430,14 +1430,14 @@ partners = {
 
 }
 
-partner_to_fetch_num = 0
+partner_to_fetch_num = 1
 
 add_products_to_table(
 
     site_name=partners[partner_to_fetch_num]['partners_company_name'],
     partners_id=partners[partner_to_fetch_num]['partners_company_id'],
     ad_id=partners[partner_to_fetch_num]['partners_company_ad_id'],
-    mininum_commission_target_detected_currency_value= 734.44, # USD200 TO AED = AED 734.41 => MAY 8
+    mininum_commission_target_detected_currency_value= 200, # USD200 TO AED = AED 734.41 => MAY 8
     is_upload_to_wx=False
 )
 
