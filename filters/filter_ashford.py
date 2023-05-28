@@ -156,7 +156,6 @@ def filter_ashford_scraped_data(
 
     # wx upload if cleaned dataframe is not empty and wx upload parameter has been set to true
     if len_after_filtering > 0 and is_wx_upload == True:
-        #
 
         extract_elements_per_row_from_dataframe(
             file_name=file_name[:-4], # to remove '.csv'
