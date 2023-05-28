@@ -1,6 +1,6 @@
 from settings.q.pd_settings import *
 
-from operations.wx.bcknd import extract_elements_per_row_from_dataframe
+from operations.wx.bcknd.bcknd import extract_elements_per_row_from_dataframe
 
 from settings.q.default_folder_and_filename_settings import all_filtered_data_folder
 

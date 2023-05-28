@@ -1,5 +1,8 @@
 import math
 
+# Detect whether two colors are very similar
+
+
 # Method to determine whether the color is red, green, or blue
 def is_color_r_g_or_b(rgb_tuple):
     
@@ -47,19 +50,25 @@ def is_color_light_or_dark(rgb_tuple):
     if (hsp >= 100):
 
         print('hsp: ' + str(hsp))
-        return 'light'
+        return {
+            'hsp_value': hsp,
+            'brightness': 'light'
+        }
 
     else:
 
         print('hsp: ' + str(hsp))
-        return 'dark'
+        return {
+            'hsp_value': hsp,
+            'brightness': 'dark'
+        }
 
 
 # Method to detect whether color is a vibrant red, green or blue
 def is_color_vibrant_r_g_or_b(rgb_tuple):
     
     color_name = is_color_r_g_or_b(rgb_tuple)
-    color_brightness = is_color_light_or_dark(rgb_tuple)
+    color_brightness = is_color_light_or_dark(rgb_tuple)['brightness']
 
     color_description = f'{color_brightness} {color_name}'
     print(color_description)
@@ -75,7 +84,7 @@ def is_color_vibrant_r_g_or_b(rgb_tuple):
     else:
         return False
 
-rgb_tuple = (30, 70, 255)
-is_color_vibrant_red_green_or_blue = is_color_vibrant_r_g_or_b(rgb_tuple)
+# rgb_tuple = (30, 70, 255)
+# is_color_vibrant_red_green_or_blue = is_color_vibrant_r_g_or_b(rgb_tuple)
 
-print(is_color_vibrant_red_green_or_blue)
+# print(is_color_vibrant_red_green_or_blue)

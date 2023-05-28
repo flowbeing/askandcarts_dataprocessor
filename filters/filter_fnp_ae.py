@@ -1,4 +1,3 @@
-import json
 import random
 import urllib.parse
 
@@ -6,11 +5,10 @@ from operations.short.shorten_url import shorten_url_filters
 from settings.q.pd_settings import *
 
 
-from operations.wx.bcknd import extract_elements_per_row_from_dataframe
+from operations.wx.bcknd.bcknd import extract_elements_per_row_from_dataframe
 
 from settings.q.default_folder_and_filename_settings import \
-    all_filtered_data_folder, all_scraped_data_folder, all_log_files_folder, shorts_progress_log
-
+    all_filtered_data_folder, all_scraped_data_folder
 
 '''productLink, image, name, brandname, description, currentprice'''
 

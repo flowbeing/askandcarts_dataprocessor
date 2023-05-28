@@ -1,10 +1,8 @@
 from settings.q.pd_settings import *
 
-from operations.wx.bcknd import extract_elements_per_row_from_dataframe
+from operations.wx.bcknd.bcknd import extract_elements_per_row_from_dataframe
 
-from settings.q.default_folder_and_filename_settings import all_filtered_data_folder, all_scraped_data_folder #
-
-from settings.q.commissions import commission_per_site
+from settings.q.default_folder_and_filename_settings import all_filtered_data_folder  #
 
 '''productLink, image, name, brandname, description, currentprice'''
 

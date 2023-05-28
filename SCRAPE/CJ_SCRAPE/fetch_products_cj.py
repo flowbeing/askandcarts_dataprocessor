@@ -1,16 +1,10 @@
 import sys
-import requests
-import json
-import datetime
 import urllib.parse
 
-import pandas as pd
-
-from settings.q.other_settings import cj_pat1, cj_pat2
-from settings.q.pd_settings import *
+from settings.q.other_settings import cj_pat2
 
 from operations.other_operations.convert_minimum_profit import convert_minimum_profit
-from operations.wx.bcknd import *
+from operations.wx.bcknd.bcknd import *
 from settings.q.default_folder_and_filename_settings import all_filtered_data_folder_cj, all_log_files_folder, \
     shorts_progress_log
 from settings.productCategory import productCategories
