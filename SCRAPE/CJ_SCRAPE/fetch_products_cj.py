@@ -1133,6 +1133,8 @@ def add_products_to_table(
                 print()
                 if short_product_link.count('failed_to_shorten') < 1 and short_product_link != '':
 
+
+
                     if shorts_progress_log_json_as_dict[site_name].get(product_links_id, None) == None:
                         shorts_progress_log_json_as_dict[site_name][product_links_id] = {}
                         shorts_progress_log_json_as_dict[site_name][product_links_id]['current_links_updates_ids'] = []
