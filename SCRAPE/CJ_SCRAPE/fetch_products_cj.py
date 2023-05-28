@@ -3,12 +3,16 @@ import urllib.parse
 
 from settings.q.other_settings import cj_pat2
 
+from operations.wx.bcknd.color_detector.color_vision_api import detect_colors
+
 from operations.other_operations.convert_minimum_profit import convert_minimum_profit
 from operations.wx.bcknd.bcknd import *
 from settings.q.default_folder_and_filename_settings import all_filtered_data_folder_cj, all_log_files_folder, \
     shorts_progress_log
 from settings.productCategory import productCategories
 from operations.short.shorten_url import shorten_url
+
+
 
 def retrieve_cj_data(
         partner_company_name,
@@ -199,6 +203,10 @@ def add_products_to_table(
         'baseProductLinksId': [],
         'isImageSrcUpdated': [],
         'baseImageSrcsId': [],
+
+        'dominantColor': [],
+        'goldColor': [],
+        'stateID': [] # recommendations profile
     }
 
     list_of_luxury_brands = ["Samung", "Louis Vuitton", "Gucci", "Hermès", "Prada", "Chanel", "Burberry", "Fendi", "Givenchy",
@@ -1201,6 +1209,17 @@ def add_products_to_table(
 
                 #         shorts_progress_log_json_as_dict[site_name][image_src_id]['current_links_updates_ids'].append(image_src_id_updated)
 
+                # temp code to add product's dominant color and gold color (if any) to table
+                detected_colors = detect_colors(image_src_less_cj_trigger_unquoted)
+                most_dominant_color = detected_colors['most_dominant_color']
+                other_detected_colors = detected_colors['other_colors']
+                gold_color = detect_gold_color_in_product_image(
+                    list_of_non_dominant_colors = other_detected_colors
+                )
+
+                products_feed_dict['dominantColor'].append(most_dominant_color)
+                products_feed_dict['goldColor'].append(gold_color)
+
                 if image_src != '': # -> DELETE WHEN IMAGE LINK SHORTENING GETS RESUMED
 
                     # creating new instance of image src metadata
@@ -1220,6 +1239,13 @@ def add_products_to_table(
                         shorts_progress_log_json_as_dict[site_name][image_src_id]['domain_id'] = short_image_link_domain_id # sentimental value
                         shorts_progress_log_json_as_dict[site_name][image_src_id]['owner_id'] = short_image_link_owner_id # sentimental value
                         shorts_progress_log_json_as_dict[site_name][image_src_id]['short_link_creation_time'] = short_image_link_creation_time # sentimental value
+
+                        shorts_progress_log_json_as_dict[site_name][image_src_id]['dominant_color'] = most_dominant_color
+                        shorts_progress_log_json_as_dict[site_name][image_src_id]['other_colors'] = other_detected_colors
+                        shorts_progress_log_json_as_dict[site_name][image_src_id]['gold_color'] = gold_color
+
+
+
 
                     if image_src_updated == True:
 

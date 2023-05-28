@@ -1,7 +1,7 @@
 import math
 import numpy as np
 
-from operations.wx.bcknd.color_detector.color_vision_api import detect_colors
+'''from operations.wx.bcknd.color_detector.color_vision_api import detect_colors'''
 
 
 # DETECT WHETHER THE TWO COLORS ARE VERY SIMILAR
@@ -49,6 +49,7 @@ def rgba2rgb(
 def is_colors_similar(
         main_color,
         second_color,
+        is_main_color_gold = False,
         isTintsOnly = False,
         isShadesOnly = False,
 ):
@@ -110,11 +111,18 @@ def is_colors_similar(
 
             # calculating whether a shade of the main color are similar to the second color
             color_similarity_score = 1 - color_distance(current_shade_of_main_color_as_rgb, second_color)
-            # print(f'color_similarity_score: {color_similarity_score}')
+            print(f'color_similarity_score: {color_similarity_score}')
 
-            if color_similarity_score >= 0.85:
+            min_color_similarity_score = ''
+
+            if is_main_color_gold == True:
+                min_color_similarity_score = 0.999
+            else:
+                min_color_similarity_score = 0.9958606603780528
+
+            if color_similarity_score >= min_color_similarity_score:
                 is_colors_similar_boolean = True
-                # print(f'is_colors_similar_boolean: {is_colors_similar_boolean}')
+                print(f'is_colors_similar_boolean: {is_colors_similar_boolean}')
                 break
 
         tint_or_shade_counter += 1
@@ -122,24 +130,23 @@ def is_colors_similar(
     return is_colors_similar_boolean
 
 
-# Main color the second color will be compared against
-main_color = detect_colors('/Users/admin/Downloads/bag_deep_pink.jpeg')['most_dominant_color'] # (186, 245, 80)
-
-# Second color that will be compared against the main color
-second_color = detect_colors('/Users/admin/Downloads/rolext_pink.jpeg')['most_dominant_color'] # (186, 255, 80)
-
-result = is_colors_similar(
-    main_color,
-    second_color
-)
-
-print()
-if result == False:
-
-    print(f'Colors are not similar')
-
-else:
-
-    print(f'Colors are similar')
-
+# # Main color the second color will be compared against
+# main_color = detect_colors('/Users/admin/Downloads/bag_deep_pink.jpeg')['most_dominant_color'] # (186, 245, 80)
+#
+# # Second color that will be compared against the main color
+# second_color = detect_colors('/Users/admin/Downloads/rolext_pink.jpeg')['most_dominant_color'] # (186, 255, 80)
+#
+# result = is_colors_similar(
+#     main_color,
+#     second_color
+# )
+#
+# print()
+# if result == False:
+#
+#     print(f'Colors are not similar')
+#
+# else:
+#
+#     print(f'Colors are similar')
 
