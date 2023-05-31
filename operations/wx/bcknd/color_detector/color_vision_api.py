@@ -1,8 +1,6 @@
 import os
-import io
-from google.cloud import vision
 
-from operations.wx.bcknd.color_detector.color_similarity_detector import *
+from operations.wx.bcknd.color_detector.color_similarity_detection_tools import *
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/Users/admin/OneDrive/docs/affiliate/color_detector/ringed-cell-388001-24f0c04ada83.json"
 
@@ -74,26 +72,39 @@ def detect_colors(uri):
 
     return {
         'most_dominant_color': most_dominant_colors_rgb,
+        'most_dominant_color_confidence_score': most_dominant_colors_rgb_confidence,
         'other_colors': other_colors_in_image
     }
 
 
-image_path_one = 'https://cdn.theluxurycloset.com/uploads/products/full/luxury-women-hermes-new-handbags-p783538-002.jpg' # 'https://cdn.theluxurycloset.com/uploads/products/full/luxury-women-hermes-new-handbags-p791272-001.jpg' # # '/Users/admin/Downloads/luxury-women-hermes-new-handbags-p788458-001.jpeg' # luxury-women-hermes-new-handbags-p796525-001.jpeg'
-image_path_two = 'https://cdn.theluxurycloset.com/uploads/products/full/luxury-women-rolex-new-watches-p758273-006.jpeg' # 'https://cdn.theluxurycloset.com/uploads/products/full/luxury-women-rolex-new-watches-p777785-002.jpg' # 'https://cdn.theluxurycloset.com/uploads/products/full/luxury-women-rolex-new-watches-p760451-004.jpeg' # 'https://cdn.theluxurycloset.com/uploads/products/full/luxury-women-rolex-new-watches-p758277-002.jpeg' # 'https://cdn.theluxurycloset.com/uploads/products/full/luxury-women-rolex-new-watches-p757453-004.jpg' #
-detect_image_one_colors = detect_colors(image_path_one)
-detect_image_two_colors = detect_colors(image_path_two)
+if __name__ == '__main__':
+    image_path_one = 'https://cdn.theluxurycloset.com/uploads/products/full/luxury-women-hermes-new-handbags-p758494-001.jpeg'  # 'https://cdn.theluxurycloset.com/uploads/products/full/luxury-women-hermes-new-handbags-p791272-001.jpg' # # '/Users/admin/Downloads/luxury-women-hermes-new-handbags-p788458-001.jpeg' # luxury-women-hermes-new-handbags-p796525-001.jpeg'
+    image_path_two = 'https://cdn.theluxurycloset.com/uploads/products/full/luxury-women-rolex-new-watches-p760451-004.jpeg'  # 'https://cdn.theluxurycloset.com/uploads/products/full/luxury-women-rolex-new-watches-p777785-002.jpg' # 'https://cdn.theluxurycloset.com/uploads/products/full/luxury-women-rolex-new-watches-p760451-004.jpeg' # 'https://cdn.theluxurycloset.com/uploads/products/full/luxury-women-rolex-new-watches-p758277-002.jpeg' # 'https://cdn.theluxurycloset.com/uploads/products/full/luxury-women-rolex-new-watches-p757453-004.jpg' #
 
-print('BAGS DOMINANT COLOR -> WATCH DOMINANT COLOR')
-is_colors_similar(detect_image_one_colors['most_dominant_color'], detect_image_two_colors['most_dominant_color'])
+    detect_image_one_colors = detect_colors(image_path_one)
+    detect_image_two_colors = detect_colors(image_path_two)
 
-print()
-print('BAGS GOLD PIECE COLOR -> WATCH DOMINANT COLOR')
-is_colors_similar(
-    (225, 194, 132),
-    detect_image_two_colors['most_dominant_color'],
-    is_main_color_gold=True
-)
+    print('BAGS DOMINANT COLOR -> WATCH DOMINANT COLOR')
+    is_colors_similar(detect_image_one_colors['most_dominant_color'], detect_image_two_colors['most_dominant_color'])
 
+    print()
+    print('BAGS GOLD PIECE COLOR -> WATCH DOMINANT COLOR')
+    is_colors_similar(
+        (225, 194, 132),
+        detect_image_two_colors['most_dominant_color'],
+        is_main_color_gold=True
+    )
 
-# gold_colors_main = (214.0, 198.0, 167), (225, 194, 132)
-# if the color is gold, similarity score should be >= 0.9985
+    # COLORS TO MIND
+    # GOLD
+    # gold_colors_main = [(214.0, 198.0, 167), (225, 194, 132)]
+    # if the color is gold, similarity score should be >= 0.9985
+
+    # GREY & SILVER
+    # grey_colors_silver = [(198.0, 198.0, 198.0)]
+
+    # ISSUES
+    # 1.  silver or a light shade of grey matching with all products when after it's been detected as the dominant color while
+    # there's another evident dominant color. Matching silver or grey and gold
+
+    # 2. identifying whether the bag's color is a shade of black so as to match with gold dominant colored assesories
