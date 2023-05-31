@@ -21,6 +21,7 @@ def detect_colors(uri):
     # most dominant color
     most_dominant_colors_rgb = ''
     most_dominant_colors_rgb_confidence = ''
+    most_dominant_color_pixel_fraction = ''
     colors_dominance_score = []
 
     ''' {rgb_color_code: dominance score} '''
@@ -36,6 +37,7 @@ def detect_colors(uri):
         rgb_tuple = (r, g, b)
 
         current_colors_dominance_score = color.score
+        current_colors_pixel_fraction = color.pixel_fraction
         colors_dominance_score.append(current_colors_dominance_score)
 
         # print(max(colors_dominance_score), current_colors_dominance_score)
@@ -44,11 +46,17 @@ def detect_colors(uri):
         if max(colors_dominance_score) == current_colors_dominance_score:
             most_dominant_colors_rgb = rgb_tuple
             most_dominant_colors_rgb_confidence = current_colors_dominance_score
+            most_dominant_color_pixel_fraction = current_colors_pixel_fraction
             print(f'most dominant color: rgb{most_dominant_colors_rgb}')
             print(f'most dominant color confidence: {most_dominant_colors_rgb_confidence}')
+            print(f'most dominant color pixel fraction: {most_dominant_color_pixel_fraction}')
+
         else:
             # including all colors in other_colors_in_image
-            other_colors_in_image[rgb_tuple] = current_colors_dominance_score
+            other_colors_in_image[rgb_tuple] = {}
+            other_colors_in_image[rgb_tuple]['confidence_score'] = current_colors_dominance_score
+            other_colors_in_image[rgb_tuple]['pixel_fraction'] = current_colors_pixel_fraction
+
 
 
     # removing dominant color from list of non dominant colors
@@ -73,11 +81,12 @@ def detect_colors(uri):
     return {
         'most_dominant_color': most_dominant_colors_rgb,
         'most_dominant_color_confidence_score': most_dominant_colors_rgb_confidence,
+        'most_dominant_color_pixel_fraction': most_dominant_color_pixel_fraction,
         'other_colors': other_colors_in_image
     }
 
 
-if __name__ == '__main__':
+if __name__ == 'yay':
     image_path_one = 'https://cdn.theluxurycloset.com/uploads/products/full/luxury-women-hermes-new-handbags-p758494-001.jpeg'  # 'https://cdn.theluxurycloset.com/uploads/products/full/luxury-women-hermes-new-handbags-p791272-001.jpg' # # '/Users/admin/Downloads/luxury-women-hermes-new-handbags-p788458-001.jpeg' # luxury-women-hermes-new-handbags-p796525-001.jpeg'
     image_path_two = 'https://cdn.theluxurycloset.com/uploads/products/full/luxury-women-rolex-new-watches-p760451-004.jpeg'  # 'https://cdn.theluxurycloset.com/uploads/products/full/luxury-women-rolex-new-watches-p777785-002.jpg' # 'https://cdn.theluxurycloset.com/uploads/products/full/luxury-women-rolex-new-watches-p760451-004.jpeg' # 'https://cdn.theluxurycloset.com/uploads/products/full/luxury-women-rolex-new-watches-p758277-002.jpeg' # 'https://cdn.theluxurycloset.com/uploads/products/full/luxury-women-rolex-new-watches-p757453-004.jpg' #
 
