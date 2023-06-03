@@ -72,7 +72,8 @@ def rgba2rgb(
 def is_colors_similar(
         main_color,
         second_color,
-        is_main_color_gold = False,
+        is_specifically_close_colors_only = False,
+        is_very_close_color_match_only = False,
         isTintsOnly = False,
         isShadesOnly = False,
 ):
@@ -137,7 +138,7 @@ def is_colors_similar(
 
             shades_of_main_color.append(current_shade_of_main_color_as_rgb)
 
-            if is_main_color_gold == False:
+            if is_specifically_close_colors_only == False:
 
                 # calculating if a shade of the main color is similar to the second color (as per stated similarity score
                 # constraint)
@@ -155,46 +156,53 @@ def is_colors_similar(
                     is_break = True
                     break
 
-            elif is_main_color_gold:
+            elif is_specifically_close_colors_only or is_very_close_color_match_only:
 
-                # calculating if a shade of the gold color is similar to the second color (as per stated similarity score
+                # calculating if a shade of the main color is similar to the second color (as per stated similarity score
                 # constraint)
-                color_distance_gold_color = abs(color_distance_specific(current_shade_of_main_color_as_rgb, second_color))
-                print(f'color_distance_gold: {color_distance_gold_color}')
+                color_distance_main_color_shade = abs(color_distance_specific(current_shade_of_main_color_as_rgb, second_color))
+                print(f'color_distance_main_color_shade: {color_distance_main_color_shade}')
 
-                hsl_current_gold_shade = calculate_hue_luminousity_and_saturation(current_shade_of_main_color_as_rgb)
-                # print(f'hsl_current_gold_shade: {hsl_current_gold_shade}')
+                hsl_current_main_color_shade = calculate_hue_luminousity_and_saturation(current_shade_of_main_color_as_rgb)
+                # print(f'hsl_current_main_color_shade: {hsl_current_main_color_shade}')
 
-                hue_current_gold_shade = hsl_current_gold_shade['hue']
+                hue_current_main_color_shade = hsl_current_main_color_shade['hue']
 
                 hsl_second_color = calculate_hue_luminousity_and_saturation(second_color)
                 hue_second_color = hsl_second_color['hue']
 
                 diff_in_hue = ''
 
-                if (hue_current_gold_shade > 180 and hue_second_color > 180) or \
-                        (hue_current_gold_shade < 180 and hue_second_color < 180):
-                    diff_in_hue = abs(hue_current_gold_shade - hue_second_color)
+                if (hue_current_main_color_shade > 180 and hue_second_color > 180) or \
+                        (hue_current_main_color_shade < 180 and hue_second_color < 180):
+                    diff_in_hue = abs(hue_current_main_color_shade - hue_second_color)
 
-                elif (hue_current_gold_shade > 180 and hue_second_color < 180) or \
-                        (hue_current_gold_shade < 180 and hue_second_color > 180):
+                elif (hue_current_main_color_shade > 180 and hue_second_color < 180) or \
+                        (hue_current_main_color_shade < 180 and hue_second_color > 180):
 
-                    if hue_current_gold_shade > 180:
-                        hue_current_gold_shade = 360 - hue_current_gold_shade
+                    if hue_current_main_color_shade > 180:
+                        hue_current_main_color_shade = 360 - hue_current_main_color_shade
 
 
                     if hue_second_color > 180:
                         hue_second_color = 360 - hue_second_color
 
-                    diff_in_hue = abs(hue_current_gold_shade + hue_second_color)
+                    diff_in_hue = abs(hue_current_main_color_shade + hue_second_color)
 
-                print(f'color_distance_gold_color: {color_distance_gold_color}, diff_in_hue: {diff_in_hue}, ')
+                print(f'color_distance_main_color_shade: {color_distance_main_color_shade}, diff_in_hue: {diff_in_hue}, ')
 
 
-                if color_distance_gold_color <= 30 and diff_in_hue < 7:
+                # defining the maximum value of diff_in_hue
+                maximum_diff_in_hue = 7
+
+                if is_very_close_color_match_only: # To ensure that colors are very close to products most dominant colors..
+                    maximum_diff_in_hue = 4
+
+
+                if color_distance_main_color_shade <= 30 and diff_in_hue < maximum_diff_in_hue:
                     is_colors_similar_boolean = True
                     similar_color_shade = current_shade_of_main_color_as_rgb
-                    distance_of_valid_color_shade_from_second_color = color_distance_gold_color
+                    distance_of_valid_color_shade_from_second_color = color_distance_main_color_shade
                     diff_in_hue_valid_color_shade_from_second_color = diff_in_hue
                     print(f'is_colors_similar_boolean: {is_colors_similar_boolean}')
                     is_break = True
@@ -267,7 +275,7 @@ def calculate_hue_luminousity_and_saturation(rgb_tuple):
         hue = 0
 
     elif maximum == red:
-        hue = (green - blue) / (maximum - mininum)
+        hue = (green - blue) / (maximum - mininum) # 35*207
 
     elif (maximum == green):
         hue = 2 + (blue - red) / (maximum - mininum)
@@ -318,7 +326,7 @@ def calculate_hue_luminousity_and_saturation(rgb_tuple):
     return {
         'hue': hue,
         'saturation': abs(saturation) * 100,
-        'luminousity': lum,
+        'luminousity': lum * 100,
     }
 
 
@@ -352,6 +360,7 @@ def calc_all_posible_colors_saturation():
 
     print()
     print(f'max saturation value: {max(list_of_saturation_values)}')
+
 
 
 # sat = calculate_color_saturation((253.0, 254.0, 255.0))

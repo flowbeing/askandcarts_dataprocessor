@@ -3,28 +3,35 @@ import urllib.parse
 
 from settings.q.other_settings import cj_pat2
 
-# from operations.wx.bcknd.product_recommendation_system.color_detector.color_vision_api import detect_colors
-
 from operations.other_operations.convert_minimum_profit import convert_minimum_profit
+
 from operations.wx.bcknd.bcknd import *
+from operations.wx.bcknd.products_recommendation_system.color_detector.color_vision_api import detect_colors
+from operations.wx.bcknd.products_recommendation_system.color_detector.color_profiles import \
+    detect_dominant_gold_color_in_product_image, is_gold_color_in_color, is_color_silvergrey_or_white
+
+from operations.wx.bcknd.products_recommendation_system.color_detector.color_similarity_detection_tools import \
+    is_colors_similar
+
+from operations.wx.bcknd.products_recommendation_system.products_category_profile.products_category_profile \
+    import calc_products_state_id
+
 from settings.q.default_folder_and_filename_settings import all_filtered_data_folder_cj, all_log_files_folder, \
-    shorts_progress_log
+    shorts_progress_log, dominant_and_gold_colors_data_for_all_sites_log
 from settings.productCategory import productCategories
 from operations.short.shorten_url import shorten_url
 from settings.q.pd_settings import *
 
 
-
 def retrieve_cj_data(
         partner_company_name,
-        partner_company_id ='0',
-        ad_id = '0',
-        is_get_products_feed_details = False,
-        is_get_products_feed = False,
-        is_get_realtime_commissions = False,
-        is_get_company_terms = False
-        ):
-
+        partner_company_id='0',
+        ad_id='0',
+        is_get_products_feed_details=False,
+        is_get_products_feed=False,
+        is_get_realtime_commissions=False,
+        is_get_company_terms=False
+):
     if is_get_products_feed_details == False \
             and is_get_products_feed == False \
             and is_get_realtime_commissions == False \
@@ -46,23 +53,21 @@ def retrieve_cj_data(
                         '3. is_get_company_commission\n'
                         '4. is_get_company_terms')
 
-
     url = ''
 
     authorization = f'Bearer {cj_pat2}'
 
     # 6379318
-    
-    products_feed_details_query_string =  "{productFeeds(companyId: 6379318, partnerIds: [" + f"{partner_company_id}" + "]) {totalCount, count, resultList { adId, feedName, advertiserId, productCount, advertiserCountry, lastUpdated, advertiserName, language, currency, sourceFeedType}}}"
+
+    products_feed_details_query_string = "{productFeeds(companyId: 6379318, partnerIds: [" + f"{partner_company_id}" + "]) {totalCount, count, resultList { adId, feedName, advertiserId, productCount, advertiserCountry, lastUpdated, advertiserName, language, currency, sourceFeedType}}}"
 
     # product_feed_query_string = '{products(companyId: "6379318", partnerIds: [' + f"{partner_id}" + ']) {resultList {advertiserId, catalogId, id, title, description, price { amount, currency } linkCode(pid: "100782564") {clickUrl, imageUrl}}}}'
 
-    product_feed_query_string = 'subscription{ shoppingProductCatalog(companyId: 6379318, adId: ' + f'{ad_id}' + ') { id, adId, advertiserId, catalogId, title, description, availability, condition, targetCountry, gender, productType, price { amount, currency }, linkCode(pid: "100782564") {clickUrl, imageUrl}}}' # serviceableAreas
+    product_feed_query_string = 'subscription{ shoppingProductCatalog(companyId: 6379318, adId: ' + f'{ad_id}' + ') { id, adId, advertiserId, catalogId, title, description, availability, condition, targetCountry, gender, productType, price { amount, currency }, linkCode(pid: "100782564") {clickUrl, imageUrl}}}'  # serviceableAreas
 
     commission_query_string = '''{ publisherCommissions(forPublishers: ["6379318"], sincePostingDate:"2018-08-08T00:00:00Z",beforePostingDate:"2018-08-09T00:00:00Z"){count payloadComplete records {actionTrackerName websiteName advertiserName postingDate pubCommissionAmountUsd items { quantity perItemSaleAmountPubCurrency totalCommissionPubCurrency } } } }'''
 
     company_terms_query_string = '{ publisher { contracts(publisherId: "6379318", limit: 1, filters: {advertiserId: "' + f"{partner_company_id}" + '"}) { totalCount count resultList { startTime endTime status advertiserId programTerms { id name specialTerms { name body } isDefault actionTerms { id actionTracker { id name description type } referralPeriod referralOccurrences lockingMethod { type durationInDays } performanceIncentives { threshold { type value } reward { type commissionType value } currency } commissions { rank situation { id name } itemList { id name } promotionalProperties { id name } isViewThrough rate { type value currency } } } } } } } }'
-
 
     query_string = ''
 
@@ -99,7 +104,6 @@ def retrieve_cj_data(
 
         query_string = company_terms_query_string
 
-
     req = requests.post(
         url,
         headers={
@@ -135,9 +139,8 @@ def add_products_to_table(
         partners_id,
         ad_id,
         mininum_commission_target_detected_currency_value,
-        is_upload_to_wx = False
+        is_upload_to_wx=False
 ):
-
     # JUST IN CASE REMINDER
     # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     print()
@@ -166,14 +169,15 @@ def add_products_to_table(
     )
     program_terms = json.loads(program_terms)
     commission_rate = \
-    program_terms['data']['publisher']['contracts']['resultList'][0]['programTerms']['actionTerms'][0]['commissions'][
-        0]['rate']['value']
+        program_terms['data']['publisher']['contracts']['resultList'][0]['programTerms']['actionTerms'][0][
+            'commissions'][
+            0]['rate']['value']
 
     # RETRIEVING PRODUCT FEED
     products_feeds_result = retrieve_cj_data(
         partner_company_name=site_name,
         partner_company_id=partners_id,
-        ad_id= ad_id,
+        ad_id=ad_id,
         is_get_products_feed=True
     )
 
@@ -205,12 +209,16 @@ def add_products_to_table(
         'isImageSrcUpdated': [],
         'baseImageSrcsId': [],
 
-        # 'dominantColor': [],
-        # 'goldColor': [],
-        # 'stateID': [] # recommendations profile
+        'mostDominantColor': [],
+        'dominantColorGold': [],
+        'isMostDominantColorAGoldColor': [],
+        'productsThatMatchDominantColor': [],
+        'productsThatMatchDominantGoldColor': [],
+        'productsStateID': []
     }
 
-    list_of_luxury_brands = ["Samung", "Louis Vuitton", "Gucci", "Hermès", "Prada", "Chanel", "Burberry", "Fendi", "Givenchy",
+    list_of_luxury_brands = ["Samung", "Louis Vuitton", "Gucci", "Hermès", "Prada", "Chanel", "Burberry", "Fendi",
+                             "Givenchy",
                              "Dior", "Versace", "Armani", "Balenciaga", "Yves Saint Laurent", "Rolex", "Tiffany",
                              "Cartier", "Valentino", "Nina Ricci", "Dolce Gabbana", "Bulgari", "Tom Ford", "Hugo Boss",
                              "Jimmy Choo", "Moschino", "Kenzo", "Ralph Lauren", "Oscar de la Renta", "MCM", "OMEGA",
@@ -233,10 +241,11 @@ def add_products_to_table(
     # products table dataframe index tracker
     current_index = 0
 
-
-
     # list of links for the current site and their shortened form
     link_shortening_progress = {}
+
+    # hold the dominant and gold colors data of each product from each site
+    dominant_and_gold_colors_data_for_current_sites_products = {}
 
     # GET (LINK SHORTENING) PROGRESS
     with open(f'{all_log_files_folder}{shorts_progress_log}', 'r+') as shorts_progress_log_file:
@@ -249,9 +258,6 @@ def add_products_to_table(
             link_shortening_progress = last_link_shortening_progress_index_
 
         shorts_progress_log_file.close()
-
-
-
 
     for product in products_feed:
 
@@ -295,7 +301,7 @@ def add_products_to_table(
             current_word_count = 0
             for word in product_title_split:
 
-                if word.count('&') > 0 and word.count(';') > 0: # and word.count(',')
+                if word.count('&') > 0 and word.count(';') > 0:  # and word.count(',')
                     index_of_and = word.index('&')
                     chars_before_and = word[:index_of_and]
 
@@ -313,7 +319,8 @@ def add_products_to_table(
                     # otherwise, remove the current word and replace it with non-numeric characters
                     # that exist before '&'
                     else:
-                        word_replacement = ''.join(non_numeric_char for non_numeric_char in non_numeric_chars_before_and)
+                        word_replacement = ''.join(
+                            non_numeric_char for non_numeric_char in non_numeric_chars_before_and)
                         product_title_split.remove(word)
                         product_title_split.insert(current_word_count, word_replacement)
 
@@ -344,11 +351,9 @@ def add_products_to_table(
                     product_title_split.remove(word)
                     product_title_split.insert(current_word_count, word_replacement)
 
-
                 current_word_count += 1
 
                 product_title = ' '.join(word for word in product_title_split)
-
 
             # if '&sup2;' in product_title:
             #     index_of_and_quote = product_title.index('&sup2;') + 5
@@ -364,8 +369,6 @@ def add_products_to_table(
             #     product_title = product_title[index_of_semicolon:]
             # product_brandName x
 
-
-
             # BRAND NAME
             brand_name = ''
 
@@ -376,7 +379,7 @@ def add_products_to_table(
                 luxury_brand_name_split = brand_full_name.split(' ')
 
                 if brand_full_name in product['title'].lower() or \
-                    brand_full_name in product['description'].lower() or \
+                        brand_full_name in product['description'].lower() or \
                         brand_full_name in product['linkCode']['imageUrl'].lower() or \
                         brand_full_name in product['linkCode']['clickUrl'].lower():
 
@@ -397,16 +400,11 @@ def add_products_to_table(
                                 word != 'le' and \
                                 len(word) > 4 and \
                                 (word in product['title'].lower()
-                                            or word in product['description'].lower()
-                                            or word in product['linkCode']['imageUrl'].lower()
-                                            or word in product['linkCode']['clickUrl'].lower()
-                        ):
-
+                                 or word in product['description'].lower()
+                                 or word in product['linkCode']['imageUrl'].lower()
+                                 or word in product['linkCode']['clickUrl'].lower()
+                                ):
                             brand_name = brand_full_name.upper()
-
-
-
-
 
             # DETERMINING PRODUCT CATEGORY
             product_category = ''
@@ -475,7 +473,6 @@ def add_products_to_table(
                             if product_category_copy.count(predefined_product_category) > 0 or \
                                     product_description.count(predefined_product_category) > 0 or \
                                     (product_title.lower()).count(predefined_product_category) > 0:
-
                                 print(f'prod_category for loop: {prod_category}')
 
                                 product_category = prod_category
@@ -486,7 +483,6 @@ def add_products_to_table(
 
                         # if product_category was not found, make it equal to 'None'
                         if product_category == '':
-
                             product_category = product_category_copy.upper()
 
                 else:
@@ -501,7 +497,6 @@ def add_products_to_table(
 
                         if product_description.count(predefined_product_category) > 0 or \
                                 (product_title.lower()).count(predefined_product_category) > 0:
-
                             # print(f'prod_category for loop: {prod_category}')
 
                             product_category = prod_category
@@ -525,8 +520,9 @@ def add_products_to_table(
             # PRODUCT LINK SHORTENED
             # first - retrieving shortened links id, their relative shorts, and originals (short form)
             # print(f'link_shortening_progress: {link_shortening_progress}')
-            list_of_links_metadata_id = list(link_shortening_progress.keys()) # id of all links data (includes long and short links data)
-            links_metadata = link_shortening_progress.values() # a dictionary containing short and original links
+            list_of_links_metadata_id = list(
+                link_shortening_progress.keys())  # id of all links data (includes long and short links data)
+            links_metadata = link_shortening_progress.values()  # a dictionary containing short and original links
             list_of_short_links = [metadata['short_link'] for metadata in links_metadata]
             list_of_original_links = [metadata['original_link'] for metadata in links_metadata]
 
@@ -534,15 +530,15 @@ def add_products_to_table(
             product_id = product['id']
 
             product_links_id = product_id + '-pl'
-            product_links_id_updated = '' # to register changes in product link
+            product_links_id_updated = ''  # to register changes in product link
 
             image_src_id = product_id + '-is'
-            image_src_id_updated = '' # to register changes in image src
+            image_src_id_updated = ''  # to register changes in image src
 
-            alpha_path = '' # used to decide the product link and image src's final short form (final (pl or is) path)
+            alpha_path = ''  # used to decide the product link and image src's final short form (final (pl or is) path)
             link_base_count = 1
             short_product_link = ''
-            version_product_link_change_was_previously_implemented_in = '' # to track whether the current short_product_link has previously been implemented
+            version_product_link_change_was_previously_implemented_in = ''  # to track whether the current short_product_link has previously been implemented
 
             short_product_link_creation_time = ''
             short_product_link_id_string = ''
@@ -579,7 +575,6 @@ def add_products_to_table(
                 print(f'list_of_short_links: {list_of_short_links}')
 
                 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 
                 while list_of_short_links.count(code_generated_short_link) > 0:
                     link_base_count += 1
@@ -623,7 +618,6 @@ def add_products_to_table(
                         link_shortening_progress[product_links_id][
                             'original_link_less_cj_trigger'] != product_link_less_cj_trigger:
 
-
                     version_change_was_previously_implemented_in = ''
                     number_of_existing_versions_change_does_not_exist_in = 0
 
@@ -652,11 +646,10 @@ def add_products_to_table(
 
                         # if the detected change has been implemented in an existing version, extract short_link's value
                         # from there..
-                        if (len(current_products_link_versions) > 0 and version_change_was_previously_implemented_in != ""):
-
+                        if (
+                                len(current_products_link_versions) > 0 and version_change_was_previously_implemented_in != ""):
                             short_product_link = link_shortening_progress[
                                 version_change_was_previously_implemented_in]['short_link']
-
 
                     # if there's been no previous update to the current product link or detected change has not been
                     # implemented in any existing update or link version, implement an update
@@ -670,7 +663,6 @@ def add_products_to_table(
 
                         print(f'old original_link_less_cj_trigger: {old_original_link_less_cj_trigger}')
                         print(f'new original_link_less_cj_trigger: {product_link_less_cj_trigger}')
-
 
                         shorten_product_link_operation = shorten_url(
                             product_title=product_title,
@@ -698,7 +690,6 @@ def add_products_to_table(
                         product_links_id_updated = product_links_id
 
                         while list_of_links_metadata_id.count(product_links_id_updated) > 0:
-
                             link_id_incrementor += 1
                             product_links_id_updated = product_links_id + '-update-' + f'{link_id_incrementor}'
 
@@ -711,18 +702,18 @@ def add_products_to_table(
                     # code-generated short link..
                     short_product_link = link_shortening_progress[product_links_id]['short_link']
 
-
             # IMAGE SRC
             image_src = product['linkCode']['imageUrl']
             # index_of_product_link_less_trigger = product_link.index('imgurl=') + 7
             # image_src_less_cj_trigger = image_src[index_of_product_link_less_trigger:]
             image_src_less_cj_trigger = (image_src.split('imgurl='))[-1]
-            image_src_less_cj_trigger_unquoted = urllib.parse.unquote(image_src_less_cj_trigger).replace('http://', 'https://')
+            image_src_less_cj_trigger_unquoted = urllib.parse.unquote(image_src_less_cj_trigger).replace('http://',
+                                                                                                         'https://')
             image_src_updated = False
 
             # IMAGE SRC SHORTENED -> PAUSED (REPLACED WITH ORIGINAL IMAGE LINK REPRESENTATION AND CHANGE IDENTIFICATION)
             short_image_link = ''
-            version_short_image_link_change_was_previously_implemented_in = '' # to track whether the current short_image_link has previously been implemented
+            version_short_image_link_change_was_previously_implemented_in = ''  # to track whether the current short_image_link has previously been implemented
 
             short_image_link_creation_time = ''
             short_image_link_id_string = ''
@@ -736,14 +727,12 @@ def add_products_to_table(
 
                 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-
                 # if image (src) link's not in the list of already shortened links, api shorten it
                 # if final_is_path.count('failed_to_shorten') > 0: -> PAUSED IMAGE LINK SHORTENING
                 #     # skip if the product link shortening above 'failed_to_shorten' to avoid 'failed_to_shorten' dominos errors  -> PAUSED IMAGE LINK SHORTENING
                 #     pass -> PAUSED IMAGE LINK SHORTENING
 
                 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 
                 # elif list_of_short_links_id.count(image_src_id) < 1 and list_of_short_links.count(final_is_path_copy) < 1:  -> PAUSED IMAGE LINK SHORTENING
                 #
@@ -768,8 +757,6 @@ def add_products_to_table(
                 #         short_image_link_owner_id = shorten_image_link_operation
 
                 # ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
 
                 # else if the cj affiliate link has changed without considering the affiliate tracking link or trigger,
                 # create a short link for the updated product link..
@@ -854,7 +841,7 @@ def add_products_to_table(
                 #             print(f'while (image_src_id_updated)-> {image_src_id_updated}')
 
                 ## TO DETERMINE WHETHER OR NOT AN ORIGINAL CJ IMAGE LINK HAS CHANGED -> DELETE WHEN IMAGE LINK SHORTENING GETS RESUMED
-                #if list_of_links_metadata_id.count(image_src_id) > 0 and \
+                # if list_of_links_metadata_id.count(image_src_id) > 0 and \
                 #        link_shortening_progress[image_src_id]['original_link_less_cj_trigger'] != image_src_less_cj_trigger:
                 #
                 #    version_change_was_previously_implemented_in = ''
@@ -944,7 +931,9 @@ def add_products_to_table(
                 # check whether current image src's version already exists..
                 list_of_original_links_less_cj_trigger = [urllib.parse.unquote(original_link.split('imgurl=')[-1]) for
                                                           original_link in list_of_original_links]
-                all_image_link_version_lists = [metadata.get('list_of_image_src_versions', None) for metadata in links_metadata if metadata.get('list_of_image_src_versions', None) != None]
+                all_image_link_version_lists = [metadata.get('list_of_image_src_versions', None) for metadata in
+                                                links_metadata if
+                                                metadata.get('list_of_image_src_versions', None) != None]
 
                 if len(all_image_link_version_lists) != 0:
 
@@ -973,7 +962,6 @@ def add_products_to_table(
 
                 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-
             # DEFINING GENDER
             product_gender = product['gender']
 
@@ -995,7 +983,6 @@ def add_products_to_table(
 
                     predefined_gender = gender.lower()
                     product_description = product['description'].lower()
-
 
                     if product_description.count(predefined_gender) > 0 or \
                             (product_title.lower()).count(predefined_gender) > 0 or \
@@ -1030,11 +1017,9 @@ def add_products_to_table(
                         print(f'manually_defined_womens_category: {manually_defined_womens_category}')
 
                         if product_category.count(manually_defined_womens_category) > 0:
-
                             product_gender = 'WOMEN'
 
                             break
-
 
                 ## if product gender still could not be found, deduce women's product category
                 if product_gender == None:
@@ -1053,9 +1038,6 @@ def add_products_to_table(
 
                     else:
                         product_gender = None
-
-
-
 
             # SITE NAME
             site_name_edited = site_name.replace('_', ' ')
@@ -1086,7 +1068,7 @@ def add_products_to_table(
             # products_feed_dict['imageSrcShortened'].append(short_image_link)
 
             # products_feed_dict['country'].append(country)
-            products_feed_dict['siteName'].append(site_name_edited.replace('CJ',''))
+            products_feed_dict['siteName'].append(site_name_edited.replace('CJ', ''))
 
             # base metadata ids
             products_feed_dict['baseProductLinksId'].append(product_links_id)
@@ -1112,10 +1094,16 @@ def add_products_to_table(
             elif image_src_updated == False:
                 products_feed_dict['isImageSrcUpdated'].append('false')
 
-
+            ''''
+            'mostDominantColor': [],
+            'dominantColorGold': [],
+            'isDominantColorGoldMostDominantColor': [],
+            'productsThatMatchDominantColor': [],
+            'productsThatMatchDominantGoldColor': [],
+            'productsStateID': []
+            '''
 
             current_index += 1
-
 
             # SAVE (LINK SHORTENING) PROGRESS
             with open(f'{all_log_files_folder}{shorts_progress_log}', 'r+') as shorts_progress_log_file_one:
@@ -1142,38 +1130,51 @@ def add_products_to_table(
                 print()
                 if short_product_link.count('failed_to_shorten') < 1 and short_product_link != '':
 
-
-
                     if shorts_progress_log_json_as_dict[site_name].get(product_links_id, None) == None:
                         shorts_progress_log_json_as_dict[site_name][product_links_id] = {}
                         shorts_progress_log_json_as_dict[site_name][product_links_id]['current_links_updates_ids'] = []
 
                         shorts_progress_log_json_as_dict[site_name][product_links_id]['short_link'] = short_product_link
                         shorts_progress_log_json_as_dict[site_name][product_links_id]['original_link'] = product_link
-                        shorts_progress_log_json_as_dict[site_name][product_links_id]['original_link_less_cj_trigger'] = product_link_less_cj_trigger
+                        shorts_progress_log_json_as_dict[site_name][product_links_id][
+                            'original_link_less_cj_trigger'] = product_link_less_cj_trigger
 
                         shorts_progress_log_json_as_dict['total_number_of_links'] += 1
-                        shorts_progress_log_json_as_dict[site_name][product_links_id]['link_number'] = shorts_progress_log_json_as_dict['total_number_of_links']
-                        shorts_progress_log_json_as_dict[site_name][product_links_id]['id_string'] = short_product_link_id_string
-                        shorts_progress_log_json_as_dict[site_name][product_links_id]['domain_id'] = short_product_link_domain_id
-                        shorts_progress_log_json_as_dict[site_name][product_links_id]['owner_id'] = short_product_link_owner_id
-                        shorts_progress_log_json_as_dict[site_name][product_links_id]['short_link_creation_time'] = short_product_link_creation_time
+                        shorts_progress_log_json_as_dict[site_name][product_links_id]['link_number'] = \
+                        shorts_progress_log_json_as_dict['total_number_of_links']
+                        shorts_progress_log_json_as_dict[site_name][product_links_id][
+                            'id_string'] = short_product_link_id_string
+                        shorts_progress_log_json_as_dict[site_name][product_links_id][
+                            'domain_id'] = short_product_link_domain_id
+                        shorts_progress_log_json_as_dict[site_name][product_links_id][
+                            'owner_id'] = short_product_link_owner_id
+                        shorts_progress_log_json_as_dict[site_name][product_links_id][
+                            'short_link_creation_time'] = short_product_link_creation_time
 
-                    if shorts_progress_log_json_as_dict[site_name].get(product_links_id_updated, None) == None and product_links_id_updated != "":
+                    if shorts_progress_log_json_as_dict[site_name].get(product_links_id_updated,
+                                                                       None) == None and product_links_id_updated != "":
                         shorts_progress_log_json_as_dict[site_name][product_links_id_updated] = {}
 
-                        shorts_progress_log_json_as_dict[site_name][product_links_id_updated]['short_link'] = short_product_link
-                        shorts_progress_log_json_as_dict[site_name][product_links_id_updated]['original_link'] = product_link
-                        shorts_progress_log_json_as_dict[site_name][product_links_id_updated]['original_link_less_cj_trigger'] = product_link_less_cj_trigger
+                        shorts_progress_log_json_as_dict[site_name][product_links_id_updated][
+                            'short_link'] = short_product_link
+                        shorts_progress_log_json_as_dict[site_name][product_links_id_updated][
+                            'original_link'] = product_link
+                        shorts_progress_log_json_as_dict[site_name][product_links_id_updated][
+                            'original_link_less_cj_trigger'] = product_link_less_cj_trigger
                         shorts_progress_log_json_as_dict['total_number_of_links'] += 1
-                        shorts_progress_log_json_as_dict[site_name][product_links_id_updated]['link_number'] = shorts_progress_log_json_as_dict['total_number_of_links']
-                        shorts_progress_log_json_as_dict[site_name][product_links_id_updated]['id_string'] = short_product_link_id_string
-                        shorts_progress_log_json_as_dict[site_name][product_links_id_updated]['domain_id'] = short_product_link_domain_id
-                        shorts_progress_log_json_as_dict[site_name][product_links_id_updated]['owner_id'] = short_product_link_owner_id
-                        shorts_progress_log_json_as_dict[site_name][product_links_id_updated]['short_link_creation_time'] = short_product_link_creation_time
+                        shorts_progress_log_json_as_dict[site_name][product_links_id_updated]['link_number'] = \
+                        shorts_progress_log_json_as_dict['total_number_of_links']
+                        shorts_progress_log_json_as_dict[site_name][product_links_id_updated][
+                            'id_string'] = short_product_link_id_string
+                        shorts_progress_log_json_as_dict[site_name][product_links_id_updated][
+                            'domain_id'] = short_product_link_domain_id
+                        shorts_progress_log_json_as_dict[site_name][product_links_id_updated][
+                            'owner_id'] = short_product_link_owner_id
+                        shorts_progress_log_json_as_dict[site_name][product_links_id_updated][
+                            'short_link_creation_time'] = short_product_link_creation_time
 
-
-                        shorts_progress_log_json_as_dict[site_name][product_links_id]['current_links_updates_ids'].append(product_links_id_updated)
+                        shorts_progress_log_json_as_dict[site_name][product_links_id][
+                            'current_links_updates_ids'].append(product_links_id_updated)
 
                 # if short_image_link.count('failed_to_shorten') < 1 and short_image_link != '': -> IMAGE SHORTENING PAUSED
                 #
@@ -1221,44 +1222,44 @@ def add_products_to_table(
                 # products_feed_dict['dominantColor'].append(most_dominant_color)
                 # products_feed_dict['goldColor'].append(gold_color)
 
-                if image_src != '': # -> DELETE WHEN IMAGE LINK SHORTENING GETS RESUMED
+                if image_src != '':  # -> DELETE WHEN IMAGE LINK SHORTENING GETS RESUMED
 
                     # creating new instance of image src metadata
                     if shorts_progress_log_json_as_dict[site_name].get(image_src_id, None) == None:
                         shorts_progress_log_json_as_dict[site_name][image_src_id] = {}
                         shorts_progress_log_json_as_dict[site_name][image_src_id]['list_of_image_src_versions'] = []
 
-                        shorts_progress_log_json_as_dict[site_name][image_src_id]['short_link'] = short_image_link # necessary to have it for avoid error while trying to retreive list of short_product_links
+                        shorts_progress_log_json_as_dict[site_name][image_src_id][
+                            'short_link'] = short_image_link  # necessary to have it for avoid error while trying to retreive list of short_product_links
                         shorts_progress_log_json_as_dict[site_name][image_src_id]['original_link'] = image_src
-                        shorts_progress_log_json_as_dict[site_name][image_src_id]['original_link_less_cj_trigger'] = image_src_less_cj_trigger_unquoted
-
+                        shorts_progress_log_json_as_dict[site_name][image_src_id][
+                            'original_link_less_cj_trigger'] = image_src_less_cj_trigger_unquoted
 
                         shorts_progress_log_json_as_dict['total_number_of_links'] += 1
-                        shorts_progress_log_json_as_dict[site_name][image_src_id]['link_number'] = shorts_progress_log_json_as_dict['total_number_of_links']
+                        shorts_progress_log_json_as_dict[site_name][image_src_id]['link_number'] = \
+                        shorts_progress_log_json_as_dict['total_number_of_links']
 
-                        shorts_progress_log_json_as_dict[site_name][image_src_id]['id_string'] = short_image_link_id_string # sentimental value
-                        shorts_progress_log_json_as_dict[site_name][image_src_id]['domain_id'] = short_image_link_domain_id # sentimental value
-                        shorts_progress_log_json_as_dict[site_name][image_src_id]['owner_id'] = short_image_link_owner_id # sentimental value
-                        shorts_progress_log_json_as_dict[site_name][image_src_id]['short_link_creation_time'] = short_image_link_creation_time # sentimental value
+                        shorts_progress_log_json_as_dict[site_name][image_src_id][
+                            'id_string'] = short_image_link_id_string  # sentimental value
+                        shorts_progress_log_json_as_dict[site_name][image_src_id][
+                            'domain_id'] = short_image_link_domain_id  # sentimental value
+                        shorts_progress_log_json_as_dict[site_name][image_src_id][
+                            'owner_id'] = short_image_link_owner_id  # sentimental value
+                        shorts_progress_log_json_as_dict[site_name][image_src_id][
+                            'short_link_creation_time'] = short_image_link_creation_time  # sentimental value
 
                         # shorts_progress_log_json_as_dict[site_name][image_src_id]['dominant_color'] = most_dominant_color
                         # shorts_progress_log_json_as_dict[site_name][image_src_id]['other_colors'] = other_detected_colors
                         # shorts_progress_log_json_as_dict[site_name][image_src_id]['gold_color'] = gold_color
 
-
-
-
                     if image_src_updated == True:
 
                         image_src_update = image_src_less_cj_trigger_unquoted
-                        list_of_current_products_image_src_versions = shorts_progress_log_json_as_dict[site_name][image_src_id]['list_of_image_src_versions']
+                        list_of_current_products_image_src_versions = \
+                        shorts_progress_log_json_as_dict[site_name][image_src_id]['list_of_image_src_versions']
 
                         if list_of_current_products_image_src_versions.count(image_src_update) == 0:
-
                             list_of_current_products_image_src_versions.append(image_src_update)
-
-
-
 
                 # update 'link_shortening_progress' dict to reflect shortened links additions
                 link_shortening_progress = shorts_progress_log_json_as_dict[site_name]
@@ -1274,10 +1275,272 @@ def add_products_to_table(
 
                 shorts_progress_log_file_one.close()
 
+            # -------------------------------------------------------------------------------------------------------------------------------
 
+            # GET THE DOMINANT AND GOLD COLORS DATA FOR EACH SITE PRODUCT(S).
+            with open(f'{all_log_files_folder}{dominant_and_gold_colors_data_for_all_sites_log}',
+                      'r+') as dominant_and_gold_colors_data_for_all_sites_log_file_one:
+                prod_dominant_and_gold_colors_log_json = dominant_and_gold_colors_data_for_all_sites_log_file_one.read()
+                prod_dominant_and_gold_colors_log_json_as_dict = json.loads(prod_dominant_and_gold_colors_log_json)
 
+                prod_dominant_and_gold_colors_log_progress_for_current_site = prod_dominant_and_gold_colors_log_json_as_dict.get(
+                    site_name, None)
+
+                # get all dominant and gold colors for each products in current site from
+                # prod_dominant_and_gold_colors_log_progress_for_current_site file. If the data is  available,
+                # save it to 'products_dominant_and_gold_colors_for_current_sites_products' variable..
+                if prod_dominant_and_gold_colors_log_progress_for_current_site != None:
+
+                    dominant_and_gold_colors_data_for_current_sites_products = prod_dominant_and_gold_colors_log_progress_for_current_site
+
+                    # get the dominant and gold colors data for the current product
+                    dominant_and_gold_colors_data_for_current_product = \
+                        dominant_and_gold_colors_data_for_current_sites_products.get(product_links_id, None)
+                else:
+                    prod_dominant_and_gold_colors_log_json_as_dict[site_name] = {}
+
+                    # state that the dominant and gold colors data for the current product is None so that a new data
+                    # can be written for it..
+                    dominant_and_gold_colors_data_for_current_product = None
+
+                # if the dominant and gold colors data does not already exist or the product's link changes,
+                # retrieve the dominant and gold colors data and update the products feed data with it and then
+                # save it..
+                if dominant_and_gold_colors_data_for_current_product is None or product_links_id_updated != '' and \
+                        site_name.count('SAMSUNG_UAE') == 0:  ##
+
+                    prod_dominant_and_gold_colors_log_json_as_dict[site_name][product_links_id] = {}
+
+                    # wait for five seconds (to cater for Google's wait API limits) before searching for colors within
+                    # products image
+                    time.sleep(5)
+                    detected_colors_data = detect_colors(image_src_less_cj_trigger_unquoted)
+
+                    # colors within the product image and their configurations
+                    products_most_dominant_color = detected_colors_data['most_dominant_color']
+                    products_most_dominant_color_confidence_score = detected_colors_data[
+                        'most_dominant_color_confidence_score']
+                    products_most_dominant_color_pixel_fraction = detected_colors_data[
+                        'most_dominant_color_pixel_fraction']
+                    other_colors_in_products_image = detected_colors_data['other_colors']
+
+                    # detecting whether there's a dominant gold color in the products image
+                    product_gold_color_data = detect_dominant_gold_color_in_product_image(
+                        dominant_color_in_product_image=products_most_dominant_color,
+                        most_dominant_color_pixel_fraction=products_most_dominant_color_pixel_fraction,
+                        most_dominant_color_confidence_score=products_most_dominant_color_confidence_score,
+                        list_of_other_colors_in_image=other_colors_in_products_image
+                    )
+
+                    # detecting whether the most dominant color is gold color
+                    is_most_dominant_color_in_product_image_gold_color = is_gold_color_in_color(
+                        products_most_dominant_color
+                    )
+
+                    # calculating products state id
+                    products_state_id = calc_products_state_id(
+                        products_color=products_most_dominant_color,
+
+                        # based on minimum profit of 200 usd, mininum_commission_target_detected_currency_value is
+                        # adjusted to calculate a valid exchange rate. Expected values are 1 where USD is the base
+                        # currency and around 3.67 where the base currency is AED. (as at June 2, 2023)
+                        products_price_usd=float(product_price) /
+                                           ((mininum_commission_target_detected_currency_value) / 200)
+                    )
+
+                    # Updating products color and state id info in both file and table..
+                    is_most_dominant_color_in_product_image_gold_color = \
+                        is_most_dominant_color_in_product_image_gold_color['is_gold_color']
+
+                    prod_dominant_and_gold_colors_log_json_as_dict[site_name][product_links_id][
+                        'most_dominant_color'] = products_most_dominant_color
+
+                    prod_dominant_and_gold_colors_log_json_as_dict[site_name][product_links_id][
+                        'dominant_gold_color'] = \
+                        None if product_gold_color_data is None else product_gold_color_data.get('valid_gold_color')
+
+                    prod_dominant_and_gold_colors_log_json_as_dict[site_name][product_links_id][
+                        'dominant_gold_color_data'] = product_gold_color_data
+
+                    prod_dominant_and_gold_colors_log_json_as_dict[site_name][product_links_id][
+                        'is_most_dominant_color_a_gold_color'] = is_most_dominant_color_in_product_image_gold_color
+
+                    prod_dominant_and_gold_colors_log_json_as_dict[site_name][product_links_id][
+                        'pixel_fraction'] = products_most_dominant_color_pixel_fraction
+
+                    prod_dominant_and_gold_colors_log_json_as_dict[site_name][product_links_id][
+                        'other_colors'] = other_colors_in_products_image
+
+                    prod_dominant_and_gold_colors_log_json_as_dict[site_name][product_links_id][
+                        'product_state_id'] = products_state_id
+
+                    # adding products color data to products data table via products_feed_dict
+                    products_feed_dict['mostDominantColor'].append(products_most_dominant_color)
+
+                    product_gold_color = prod_dominant_and_gold_colors_log_json_as_dict[site_name][product_links_id]['dominant_gold_color']
+
+                    products_feed_dict['dominantColorGold'].append(product_gold_color)
+
+                    products_feed_dict['productsThatMatchDominantColor'].append('')
+                    products_feed_dict['productsThatMatchDominantGoldColor'].append('')
+
+                    products_feed_dict['isMostDominantColorAGoldColor'].append(
+                        is_most_dominant_color_in_product_image_gold_color)
+                    products_feed_dict['productsStateID'].append(products_state_id)
+
+                elif dominant_and_gold_colors_data_for_current_product is not None and \
+                        site_name.count('SAMSUNG_UAE') == 0:
+
+                    # retrieving dominant and gold color data from storage
+                    products_most_dominant_color = \
+                        dominant_and_gold_colors_data_for_current_sites_products[product_links_id][
+                            'most_dominant_color']
+
+                    product_gold_color = \
+                        dominant_and_gold_colors_data_for_current_sites_products[product_links_id][
+                            'dominant_gold_color']
+
+                    is_most_dominant_color_in_product_image_gold_color = \
+                        dominant_and_gold_colors_data_for_current_sites_products[product_links_id][
+                            'is_most_dominant_color_a_gold_color']
+
+                    products_state_id = dominant_and_gold_colors_data_for_current_sites_products[product_links_id][
+                        'product_state_id']
+
+                    products_feed_dict['mostDominantColor'].append(products_most_dominant_color)
+                    products_feed_dict['dominantColorGold'].append(product_gold_color)
+                    products_feed_dict['isMostDominantColorAGoldColor'].append(
+                        is_most_dominant_color_in_product_image_gold_color
+                    )
+
+                    products_feed_dict['productsThatMatchDominantColor'].append('')
+                    products_feed_dict['productsThatMatchDominantGoldColor'].append('')
+
+                    products_feed_dict['productsStateID'].append(products_state_id)
+
+                # Saving dominant and gold color data for current site to local storage
+                dominant_and_gold_colors_data_for_all_sites_log_dict_as_json = json.dumps(
+                    prod_dominant_and_gold_colors_log_json_as_dict)
+
+                with open(f'{all_log_files_folder}{dominant_and_gold_colors_data_for_all_sites_log}', 'w+') as \
+                        dominant_and_gold_colors_data_for_all_sites_log_file_two:
+
+                    dominant_and_gold_colors_data_for_all_sites_log_file_two.write(
+                        dominant_and_gold_colors_data_for_all_sites_log_dict_as_json
+                    )
+
+                    dominant_and_gold_colors_data_for_all_sites_log_file_two.close()
+
+                dominant_and_gold_colors_data_for_all_sites_log_file_one.close()
+
+            # ---------------------------------------------------------------------------------------------------------------------------
 
     product_feed_df = pd.DataFrame.from_dict(products_feed_dict)
+
+    # save file interim (insurance)
+    file_name = f'{site_name}'
+    product_feed_df.to_csv(f'{all_filtered_data_folder_cj}{file_name}.csv')
+
+    # GET PRODUCTS THAT MATCH EACH PRODUCT'S MOST DOMINANT COLORS (& GOLD COLORS WHERE RELEVANT), WHETHER THE PRODUCTS MOST DOMINANT COLORS
+    # CONTAINS GOLD COLOR..
+
+    # matching products dominant colors regardless of whether it is a gold color
+    list_of_current_sites_products_index = product_feed_df.index
+
+    list_of_products_that_match_the_current_products_most_dominant_color = []
+    list_of_products_that_match_the_current_products_most_dominant_gold_color = []
+
+
+    if site_name.count('SAMSUNG_UAE') == 0: # do not match electronic products with other products (categories)
+
+        for product_index in range(list_of_current_sites_products_index):
+
+            products_category = product_feed_df.loc[product_index, 'productCategory']
+            products_gender = product_feed_df.loc[product_index, 'gender']
+            products_most_dominant_color = product_feed_df.loc[product_index, 'productsThatMatchDominantColor']
+            products_product_link_id = product_feed_df.loc[product_index, 'baseProductLinksId']
+            is_current_products_most_dominant_color_a_gold_color = product_feed_df.loc[
+                product_index, 'isMostDominantColorAGoldColor']
+
+            current_products_gold_color = product_feed_df.loc[product_index, 'dominantColorGold']
+
+
+            for potentially_matching_product in list_of_current_sites_products_index:
+
+                potentially_matching_product_category = product_feed_df.loc[product_index, 'productCategory']
+                potentially_matching_product_gender = product_feed_df.loc[product_index, 'gender']
+                potentially_matching_product_most_dominant_color = product_feed_df.loc[product_index, 'productsThatMatchDominantColor']
+                potentially_matching_products_product_link_id = product_feed_df.loc[product_index, 'baseProductLinksId']
+
+                # if:
+                # a. the genders of the products to match are equal,
+                # b. the product are not of the same category or
+                # c. one of the products does not contain 'LUXURY TECH' i.e it's not an electronic product,
+                # proceed to the matching process..
+                if potentially_matching_product_gender.count(products_gender) > 0 and \
+                        potentially_matching_product_category.count(products_category) == 0 and \
+                        (potentially_matching_product_category.count('LUXURY TECH') == 0):
+
+                    products_colors_similarity_data =  is_colors_similar(
+                        main_color=potentially_matching_product_most_dominant_color,
+                        second_color=products_most_dominant_color,
+                        is_very_close_color_match_only= True
+                    )
+
+                    is_products_colors_similar = products_colors_similarity_data['is_colors_similar_boolean']
+
+
+                    if is_products_colors_similar:
+
+                        list_of_products_that_match_the_current_products_most_dominant_color.append(
+                            potentially_matching_products_product_link_id
+                        )
+
+
+                    # if the current products most dominant color is different from its most dominant gold color if any,
+                    # check if the potentially matching product's most dominant color (presumably gold color) matches
+
+                    if is_current_products_most_dominant_color_a_gold_color == False and \
+                            current_products_gold_color is not None:
+
+                        products_gold_colors_similarity_data = is_colors_similar(
+                            main_color=potentially_matching_product_most_dominant_color,
+                            second_color=current_products_gold_color,
+                            is_very_close_color_match_only=True
+                        )
+
+                        is_products_colors_similar_gold_colors = products_gold_colors_similarity_data['is_colors_similar_boolean']
+
+                        if is_products_colors_similar_gold_colors:
+                            list_of_products_that_match_the_current_products_most_dominant_gold_color.append(
+                                potentially_matching_products_product_link_id
+                            )
+
+                    # if there's no gold color on the current product, confirm whether the 'potentially_matching_product's
+                    # color is silver or light grey or white.. if yes add it to the list of products that match the current
+                    # product if it's not already been added..
+                    if current_products_gold_color is None and \
+                            list_of_products_that_match_the_current_products_most_dominant_color.count(
+                                potentially_matching_products_product_link_id
+                            ) == 0:
+
+                        is_potentially_matching_product_most_dominant_color_silvergrey_or_white = \
+                            is_color_silvergrey_or_white(potentially_matching_product_most_dominant_color)
+
+                        # adding
+                        if is_potentially_matching_product_most_dominant_color_silvergrey_or_white:
+
+                            list_of_products_that_match_the_current_products_most_dominant_color.append(
+                                potentially_matching_products_product_link_id
+                            )
+
+            # updating the list of match the current products colors (dominant and gold colors, if any)
+            product_feed_df.loc[product_index, 'productsThatMatchDominantColor'] = \
+                list_of_products_that_match_the_current_products_most_dominant_color
+
+            product_feed_df.loc[product_index, 'productsThatMatchDominantGoldColor'] = \
+                list_of_products_that_match_the_current_products_most_dominant_gold_color
+
 
 
     print(product_feed_df.head(100000))
@@ -1290,14 +1553,13 @@ def add_products_to_table(
     total_number_of_products = len(product_feed_df['commission'])
 
     print(f'list of available brands: {len(list_of_available_brands)}, {list_of_available_brands}')
-    print(f'average commissions: {total_commissions/total_number_of_products} -> total commissions: {total_commissions}, total number of products: {total_number_of_products}')
-
+    print(
+        f'average commissions: {total_commissions / total_number_of_products} -> total commissions: {total_commissions}, total number of products: {total_number_of_products}')
 
     # print(product_feed_df['country'].to_list().count('US'))
 
     # EXTRACT AND UPLOAD ROWS?
     # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 
     print()
     is_extract_and_upload_rows = input(
@@ -1335,7 +1597,7 @@ def add_products_to_table(
             print()
             print()
             confirm_start_from_first_row = input("Should operation continue from this dataframe's saved progress?\n"
-                                               'y/n? ')
+                                                 'y/n? ')
 
             if confirm_start_from_first_row == 'y':
                 is_clear_previous_progress = False
@@ -1343,9 +1605,6 @@ def add_products_to_table(
             elif confirm_start_from_first_row == 'n':
                 is_clear_previous_progress = True
                 is_selection_valid = True
-
-
-
 
         extract_elements_per_row_from_dataframe(
             file_name=site_name,  # to remove '.csv'
@@ -1365,11 +1624,7 @@ def add_products_to_table(
 
     product_feed_df.to_csv(f'{all_filtered_data_folder_cj}{file_name}.csv')
 
-
-
-
     if is_upload_to_wx == True:
-
         extract_elements_per_row_from_dataframe(
             file_name,
             product_feed_df,
@@ -1378,8 +1633,8 @@ def add_products_to_table(
 
 
 def mininimum_commission_as_per_detected_currency(
-    product_currency,
-    mininum_commission_target_usd
+        product_currency,
+        mininum_commission_target_usd
 ):
     mininum_commission_target_detected_currency = 0
 
@@ -1408,62 +1663,61 @@ def mininimum_commission_as_per_detected_currency(
                         'Could not detect CJ defined currency, \n'
                         'or CJ defined currency is not among current search currencies.')
 
-
     return mininum_commission_target_detected_currency
+
 
 # PARTNERS ID
 partners = {
 
-        0:{
-            'partners_company_name': 'SAMSUNG_UAE_CJ', # ✔ AED
-            'partners_company_id': '6123659',
-            'partners_company_ad_id': '15245400'
-            },
+    0: {
+        'partners_company_name': 'SAMSUNG_UAE_CJ',  # ✔ AED
+        'partners_company_id': '6123659',
+        'partners_company_ad_id': '15245400'
+    },
 
-        1: {
-            'partners_company_name': 'THE_LUXURY_CLOSET_CJ', # ✔ USD
-            'partners_company_id': '5312449',
-            'partners_company_ad_id': '15447452'
-            },
+    1: {
+        'partners_company_name': 'THE_LUXURY_CLOSET_CJ',  # ✔ USD
+        'partners_company_id': '5312449',
+        'partners_company_ad_id': '15447452'
+    },
 
-        2: {
-            'partners_company_name': 'SHOPWORN_CJ', # ✔ USD
-            'partners_company_id': '5597163',
-            'partners_company_ad_id': '14356060'
-        },
+    2: {
+        'partners_company_name': 'SHOPWORN_CJ',  # ✔ USD
+        'partners_company_id': '5597163',
+        'partners_company_ad_id': '14356060'
+    },
 
-        #3: {
-        #    'partners_company_name': 'FERNS_N_PETALS_CJ',
-        #    'partners_company_id': '5763053',
-        #    'partners_company_ad_id': ''
-        #    }, # no product feed, no deeplinking, erased clicks -> (potential error) issue
-        #
-        #
-        #
-        #4: {'partners_company_name': 'HOTELS MIDDLE-EAST_CJ',
-        #    'partners_company_id': '5275628',
-        #    'partners_company_ad_id': ''
-        #    } # no product feed, high deeplinking risk, high risk of having clicks erased!
-        #
-        #5: {
-        #    'partners_company_name': 'FARFETCH_CJ',
-        #    'partners_company_id': '5172007',
-        #    'partners_company_ad_id': ''
-        #},  # no product feed -> not worth it .. geographic scraping (potential error) issue
+    # 3: {
+    #    'partners_company_name': 'FERNS_N_PETALS_CJ',
+    #    'partners_company_id': '5763053',
+    #    'partners_company_ad_id': ''
+    #    }, # no product feed, no deeplinking, erased clicks -> (potential error) issue
+    #
+    #
+    #
+    # 4: {'partners_company_name': 'HOTELS MIDDLE-EAST_CJ',
+    #    'partners_company_id': '5275628',
+    #    'partners_company_ad_id': ''
+    #    } # no product feed, high deeplinking risk, high risk of having clicks erased!
+    #
+    # 5: {
+    #    'partners_company_name': 'FARFETCH_CJ',
+    #    'partners_company_id': '5172007',
+    #    'partners_company_ad_id': ''
+    # },  # no product feed -> not worth it .. geographic scraping (potential error) issue
 
 }
 
-partner_to_fetch_num = 1
+partner_to_fetch_num = 0
 
 add_products_to_table(
 
     site_name=partners[partner_to_fetch_num]['partners_company_name'],
     partners_id=partners[partner_to_fetch_num]['partners_company_id'],
     ad_id=partners[partner_to_fetch_num]['partners_company_ad_id'],
-    mininum_commission_target_detected_currency_value= 200, # USD200 TO AED = AED 734.41 => MAY 8
+    mininum_commission_target_detected_currency_value=200,  # USD200 TO AED = AED 734.41 => MAY 8
     is_upload_to_wx=False
 )
-
 
 # retrieve realtime commissions
 # retrieve_cj_data(
@@ -1472,7 +1726,6 @@ add_products_to_table(
 # )
 
 # print(f'commission: {commission}')
-
 
 
 # PROCESS, SHORTEN LINKS AND UPLOAD ROW FOR:

@@ -1,6 +1,6 @@
 import os
 
-from operations.wx.bcknd.color_detector.color_similarity_detection_tools import *
+from operations.wx.bcknd.products_recommendation_system.color_detector.color_similarity_detection_tools import *
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/Users/admin/OneDrive/docs/affiliate/color_detector/ringed-cell-388001-24f0c04ada83.json"
 
@@ -101,7 +101,7 @@ if __name__ == 'yay':
     is_colors_similar(
         (225, 194, 132),
         detect_image_two_colors['most_dominant_color'],
-        is_main_color_gold=True
+        is_specifically_close_colors_only=True
     )
 
     # COLORS TO MIND
