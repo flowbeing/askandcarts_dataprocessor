@@ -1046,6 +1046,7 @@ async function priceConverterFunction(price, fromCurrency, toCurrency) {
 
 }
 
+///////////
 function stripUrlInitials(urlString){
 
 

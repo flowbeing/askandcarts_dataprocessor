@@ -38,7 +38,9 @@ def is_product_category_vibrant_and_striking(
         products_color,
 ):
 
-    is_vibrant = is_color_vibrant_r_g_or_b(products_color)
+    is_vibrant = is_color_vibrant_r_g_or_b(
+        products_color
+    )
 
     if is_vibrant:
         return True
@@ -104,10 +106,16 @@ def calc_products_state_id(
     if is_on_a_budget:
         state += '6'
 
-    current_state_id = state_id[state]
+    if state != '':
+        current_state_id = state_id[state]
+    else:
+        current_state_id = None
 
     return current_state_id
 
 
 
+if __name__ == '__main__':
+    state_id = calc_products_state_id([157.0, 96.0, 50.0], 41479)
 
+    print(state_id)

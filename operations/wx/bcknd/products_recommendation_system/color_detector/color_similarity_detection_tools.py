@@ -6,7 +6,6 @@ import numpy as np
 
 # DETECT WHETHER THE TWO COLORS ARE VERY SIMILAR
 def lum(c):
-
     def factor(component):
         component = component / 255
         if (component <= 0.03928):
@@ -15,19 +14,21 @@ def lum(c):
             component = math.pow(((component + 0.055) / 1.055), 2.4)
 
         return component
+
     components = [factor(ci) for ci in c]
 
     return (components[0] * 0.2126 + components[1] * 0.7152 + components[2] * 0.0722) + 0.05
 
+
 # function to calculate color distance - effective for non gold colors
 def color_distance(c1, c2):
-
     l1 = lum(c1)
     l2 = lum(c2)
     higher = max(l1, l2)
     lower = min(l1, l2)
 
     return (higher - lower) / higher
+
 
 # function to calculate color distance - effective for gold colors
 # for accurate & specific (two colors) comparison
@@ -37,7 +38,7 @@ def color_distance_specific(col1, col2):
     names for things."""
     col1_red = col1[0]
     col1_green = col1[1]
-    col1_blue =col1[2]
+    col1_blue = col1[2]
 
     col2_red = col2[0]
     col2_green = col2[1]
@@ -45,25 +46,24 @@ def color_distance_specific(col1, col2):
 
     return abs(
         math.sqrt(
-            (col1_red - col2_red)**2 +
-            (col1_green - col2_green)**2 +
-            (col1_blue - col2_blue)**2
+            (col1_red - col2_red) ** 2 +
+            (col1_green - col2_green) ** 2 +
+            (col1_blue - col2_blue) ** 2
         )
     )
 
 
-
 # function to convert rgba to rgb - useful when finding shades of main color
 def rgba2rgb(
-        rgba, # type -> tuple(int, int, int, float)
-        background = (255, 255, 255)
+        rgba,  # type -> tuple(int, int, int, float)
+        background=(255, 255, 255)
 ):
-
     return (
         round(((1 - rgba[3]) * background[0]) + (rgba[3] * rgba[0])),
         round(((1 - rgba[3]) * background[1]) + (rgba[3] * rgba[1])),
         round(((1 - rgba[3]) * background[2]) + (rgba[3] * rgba[2])),
     )
+
 
 # function to add colors (rgb)
 
@@ -72,12 +72,11 @@ def rgba2rgb(
 def is_colors_similar(
         main_color,
         second_color,
-        is_specifically_close_colors_only = False,
-        is_very_close_color_match_only = False,
-        isTintsOnly = False,
-        isShadesOnly = False,
+        is_specifically_close_colors_only=False,
+        is_very_close_color_match_only=False,
+        isTintsOnly=False,
+        isShadesOnly=False,
 ):
-
     if isTintsOnly == True and isShadesOnly == True:
         raise Exception(f'Set only one of the following values as True:\n'
                         f'1. {isTintsOnly}\n'
@@ -124,7 +123,7 @@ def is_colors_similar(
             min_color_codes_position_within_main_color = main_color.index(min(main_color))
 
             if current_shade_of_main_color_as_rgb[max_color_codes_position_within_main_color] > 255 or \
-                current_shade_of_main_color_as_rgb[min_color_codes_position_within_main_color] < 0:
+                    current_shade_of_main_color_as_rgb[min_color_codes_position_within_main_color] < 0:
                 break
 
             if isTintsOnly == True:
@@ -138,7 +137,7 @@ def is_colors_similar(
 
             shades_of_main_color.append(current_shade_of_main_color_as_rgb)
 
-            if is_specifically_close_colors_only == False:
+            if is_specifically_close_colors_only and is_very_close_color_match_only == False:
 
                 # calculating if a shade of the main color is similar to the second color (as per stated similarity score
                 # constraint)
@@ -160,10 +159,15 @@ def is_colors_similar(
 
                 # calculating if a shade of the main color is similar to the second color (as per stated similarity score
                 # constraint)
-                color_distance_main_color_shade = abs(color_distance_specific(current_shade_of_main_color_as_rgb, second_color))
+
+                color_similarity_score = 1 - color_distance(current_shade_of_main_color_as_rgb, second_color)
+
+                color_distance_main_color_shade = abs(
+                    color_distance_specific(current_shade_of_main_color_as_rgb, second_color))
                 print(f'color_distance_main_color_shade: {color_distance_main_color_shade}')
 
-                hsl_current_main_color_shade = calculate_hue_luminousity_and_saturation(current_shade_of_main_color_as_rgb)
+                hsl_current_main_color_shade = calculate_hue_luminousity_and_saturation(
+                    current_shade_of_main_color_as_rgb)
                 # print(f'hsl_current_main_color_shade: {hsl_current_main_color_shade}')
 
                 hue_current_main_color_shade = hsl_current_main_color_shade['hue']
@@ -171,10 +175,13 @@ def is_colors_similar(
                 hsl_second_color = calculate_hue_luminousity_and_saturation(second_color)
                 hue_second_color = hsl_second_color['hue']
 
+                print()
+                print(f'hsl_current_main_color_shade: {hsl_current_main_color_shade}, hue_second_color: {hue_second_color}')
+
                 diff_in_hue = ''
 
-                if (hue_current_main_color_shade > 180 and hue_second_color > 180) or \
-                        (hue_current_main_color_shade < 180 and hue_second_color < 180):
+                if (hue_current_main_color_shade >= 180 and hue_second_color >= 180) or \
+                        (hue_current_main_color_shade <= 180 and hue_second_color <= 180):
                     diff_in_hue = abs(hue_current_main_color_shade - hue_second_color)
 
                 elif (hue_current_main_color_shade > 180 and hue_second_color < 180) or \
@@ -183,23 +190,23 @@ def is_colors_similar(
                     if hue_current_main_color_shade > 180:
                         hue_current_main_color_shade = 360 - hue_current_main_color_shade
 
-
                     if hue_second_color > 180:
                         hue_second_color = 360 - hue_second_color
 
                     diff_in_hue = abs(hue_current_main_color_shade + hue_second_color)
 
-                print(f'color_distance_main_color_shade: {color_distance_main_color_shade}, diff_in_hue: {diff_in_hue}, ')
 
+                print(
+                    f'color_distance_main_color_shade: {color_distance_main_color_shade}, diff_in_hue: {diff_in_hue}, ')
 
                 # defining the maximum value of diff_in_hue
                 maximum_diff_in_hue = 7
 
-                if is_very_close_color_match_only: # To ensure that colors are very close to products most dominant colors..
-                    maximum_diff_in_hue = 4
+                if is_very_close_color_match_only:  # To ensure that colors are very close to products most dominant colors..
+                    maximum_diff_in_hue = 2
 
-
-                if color_distance_main_color_shade <= 30 and diff_in_hue < maximum_diff_in_hue:
+                if color_distance_main_color_shade <= 30 and (diff_in_hue < maximum_diff_in_hue) and \
+                        color_similarity_score >= 0.9958:
                     is_colors_similar_boolean = True
                     similar_color_shade = current_shade_of_main_color_as_rgb
                     distance_of_valid_color_shade_from_second_color = color_distance_main_color_shade
@@ -207,8 +214,6 @@ def is_colors_similar(
                     print(f'is_colors_similar_boolean: {is_colors_similar_boolean}')
                     is_break = True
                     break
-
-
 
         tint_or_shade_counter += 1
         # stop searching if a tint or shade of the main color that matches the second color has been found
@@ -244,17 +249,15 @@ def is_colors_similar(
 #     print(f'Colors are similar')
 
 
-
-
-
 # function to determine the saturation of a color (rgb) -> TIP: Saturation around or lesser than 4 is a greyscale
 '''
     SOURCE: 
     https://donatbalipapp.medium.com/colours-maths-90346fb5abda#:~:text=The%20formula%20for%20Saturation%20uses,
     (RGB)%20values%20and%20Luminosity.&text=We%20have%20calculated%20the%20Luminosity,Min(RGB)%20%3D%200%2C212.
 '''
-def calculate_hue_luminousity_and_saturation(rgb_tuple):
 
+
+def calculate_hue_luminousity_and_saturation(rgb_tuple):
     '''
         Calculating Hue
         formula source: https://stackoverflow.com/questions/23090019/fastest-formula-to-get-hue-from-rgb
@@ -275,7 +278,7 @@ def calculate_hue_luminousity_and_saturation(rgb_tuple):
         hue = 0
 
     elif maximum == red:
-        hue = (green - blue) / (maximum - mininum) # 35*207
+        hue = (green - blue) / (maximum - mininum)  # 35*207
 
     elif (maximum == green):
         hue = 2 + (blue - red) / (maximum - mininum)
@@ -287,14 +290,13 @@ def calculate_hue_luminousity_and_saturation(rgb_tuple):
     if (hue < 0):
         hue = hue + 360
 
-
     '''Calculating lumousity'''
     rgb_tuple_ = []
 
     for color_code in rgb_tuple:
 
         if color_code != 0:
-            rgb_tuple_.append(color_code/255)
+            rgb_tuple_.append(color_code / 255)
         else:
             rgb_tuple_.append(0)
 
@@ -307,10 +309,8 @@ def calculate_hue_luminousity_and_saturation(rgb_tuple):
 
     lum = (1 / 2) * (maximum + minimum)
 
-
     '''Calculating Saturation'''
     saturation = 0
-
 
     # If L < 1  |  S = (Max(RGB) — Min(RGB)) / (1 — |2L - 1|)
     # (B) If L = 1  |  S = 0
@@ -318,17 +318,15 @@ def calculate_hue_luminousity_and_saturation(rgb_tuple):
     if rgb_tuple.count(0) == 2 or len(set(rgb_tuple)) == 1:
         saturation = 0
     elif lum < 1:
-        saturation = ((maximum - minimum) / (1 - abs((2*lum) - 1)))
+        saturation = ((maximum - minimum) / (1 - abs((2 * lum) - 1)))
     elif lum == 1:
         saturation = 0
-
 
     return {
         'hue': hue,
         'saturation': abs(saturation) * 100,
         'luminousity': lum * 100,
     }
-
 
 
 # function to calculate all possible color's saturation
@@ -344,7 +342,7 @@ def calc_all_posible_colors_saturation():
 
                 minimum = min((r, g, b))
                 maximum = max((r, g, b))
-                #print(f'rgb: {(r, g, b)}')
+                # print(f'rgb: {(r, g, b)}')
 
                 if True:
                     print(f'current count: {count}')
@@ -361,11 +359,8 @@ def calc_all_posible_colors_saturation():
     print()
     print(f'max saturation value: {max(list_of_saturation_values)}')
 
-
-
 # sat = calculate_color_saturation((253.0, 254.0, 255.0))
 
 # print(sat)
 
 # calc_all_posible_colors_saturation()
-

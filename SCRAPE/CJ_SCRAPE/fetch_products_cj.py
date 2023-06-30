@@ -1,5 +1,7 @@
+import json
 import sys
 import urllib.parse
+import urllib.request
 
 from settings.q.other_settings import cj_pat2
 
@@ -8,7 +10,8 @@ from operations.other_operations.convert_minimum_profit import convert_minimum_p
 from operations.wx.bcknd.bcknd import *
 from operations.wx.bcknd.products_recommendation_system.color_detector.color_vision_api import detect_colors
 from operations.wx.bcknd.products_recommendation_system.color_detector.color_profiles import \
-    detect_dominant_gold_color_in_product_image, is_gold_color_in_color, is_color_silvergrey_or_white
+    detect_dominant_gold_color_in_product_image, is_gold_color_in_color, is_color_silvergrey_or_white, \
+    is_color_darkgrey, is_color_dark
 
 from operations.wx.bcknd.products_recommendation_system.color_detector.color_similarity_detection_tools import \
     is_colors_similar
@@ -214,6 +217,9 @@ def add_products_to_table(
         'isMostDominantColorAGoldColor': [],
         'productsThatMatchDominantColor': [],
         'productsThatMatchDominantGoldColor': [],
+        'silverAndDiamondProductsThatMatchDominantColor': [],
+        'otherProductsThatMatchProductsColor': [],
+        'allProductsThatMatchCurrentProductColor': [],
         'productsStateID': []
     }
 
@@ -258,6 +264,9 @@ def add_products_to_table(
             link_shortening_progress = last_link_shortening_progress_index_
 
         shorts_progress_log_file.close()
+
+    # CJ link with affiliate (click) numbers hidden
+    encrypted_cj_trigger = ''
 
     for product in products_feed:
 
@@ -514,7 +523,72 @@ def add_products_to_table(
             product_link = product['linkCode']['clickUrl']
             # index_of_product_link_less_trigger = product_link.index('url=') + 4
             # product_link_less_cj_trigger = product_link[index_of_product_link_less_trigger:]
+
+            product_link_cj_trigger = (product_link.split('url='))[0]
             product_link_less_cj_trigger = (product_link.split('url='))[-1]
+
+
+
+            # ensuring that product links have an encrypted trigger
+            tlc_product_link_click_identifier = 'click-100782564-15447452'
+            samsung_product_link_click_identifier = 'click-100782564-15245400'
+            shopworn_product_link_click_identifier = 'click-100782564-14356060'
+
+            tlc_encrypted_trigger = 'https://www.jdoqocy.com/n498zw41w3JLKKRSMPQOJLPOOROPM?url='
+            samsung_encrypted_trigger = 'https://www.jdoqocy.com/tj82ft1zt0GIHHOPJMNLGIMJLMLHH?url='
+            shopworn_encrypted_trigger = 'https://www.jdoqocy.com/cr122biroiq5766DE8BCA57A9BC6C6?url='
+
+            if 'luxury' in site_name.lower():
+
+                if product_link.count(tlc_product_link_click_identifier) > 0 and encrypted_cj_trigger == "":
+
+                    encrypted_cj_trigger = tlc_encrypted_trigger
+
+                elif product_link.count(tlc_product_link_click_identifier) == 0 and encrypted_cj_trigger == "":
+
+                    encrypted_cj_trigger = \
+                        input('It appears that the click trigger for the current site to has changed. \n'
+                              "Please set the 'www.askandcarts.com' encrypted product link trigger for THE LUXURY CLOSET: "
+                              )
+
+                product_link = \
+                    encrypted_cj_trigger + product_link_less_cj_trigger
+
+
+            elif 'samsung' in site_name.lower():
+
+                if product_link.count(samsung_product_link_click_identifier) > 0 and encrypted_cj_trigger == "":
+
+                    encrypted_cj_trigger = samsung_encrypted_trigger
+
+                elif product_link.count(samsung_product_link_click_identifier) == 0 and encrypted_cj_trigger == "":
+
+                    encrypted_cj_trigger = \
+                        input('It appears that the click trigger for the current site to has changed. \n'
+                              "Please set the 'www.askandcarts.com' encrypted product link trigger for SAMSUNG UAE: "
+                              )
+
+                product_link = \
+                    encrypted_cj_trigger + product_link_less_cj_trigger
+
+
+            elif 'shopworn' in site_name.lower():
+
+                if product_link.count(shopworn_product_link_click_identifier) > 0 and encrypted_cj_trigger == "":
+
+                    encrypted_cj_trigger = shopworn_encrypted_trigger
+
+                elif product_link.count(shopworn_product_link_click_identifier) == 0 and encrypted_cj_trigger == "":
+
+                    encrypted_cj_trigger = \
+                        input('It appears that the click trigger for the current site to has changed. \n'
+                              "Please set the 'www.askandcarts.com' encrypted product link trigger for SHOPWORN: "
+                              )
+
+                product_link = \
+                    encrypted_cj_trigger + product_link_less_cj_trigger
+
+
 
             # calculating product link's clean link
             # PRODUCT LINK SHORTENED
@@ -1094,14 +1168,20 @@ def add_products_to_table(
             elif image_src_updated == False:
                 products_feed_dict['isImageSrcUpdated'].append('false')
 
-            ''''
-            'mostDominantColor': [],
-            'dominantColorGold': [],
-            'isDominantColorGoldMostDominantColor': [],
-            'productsThatMatchDominantColor': [],
-            'productsThatMatchDominantGoldColor': [],
-            'productsStateID': []
-            '''
+
+            # update other table varaibles this way, if the current site's name is SAMSUNG_UAE..
+            # reason: It is not necessary to match SAMSUNG UAE's Electronics colors with fashion items or wearables
+            if site_name.count('SAMSUNG') > 0:
+                products_feed_dict['mostDominantColor'].append('')
+                products_feed_dict['dominantColorGold'].append('')
+                products_feed_dict['isMostDominantColorAGoldColor'].append(False)
+                products_feed_dict['productsThatMatchDominantColor'].append('')
+                products_feed_dict['productsThatMatchDominantGoldColor'].append('')
+                products_feed_dict['silverAndDiamondProductsThatMatchDominantColor'].append('')
+                products_feed_dict['otherProductsThatMatchProductsColor'].append('[]')
+                products_feed_dict['allProductsThatMatchCurrentProductColor'].append('')
+                products_feed_dict['productsStateID'].append('')
+
 
             current_index += 1
 
@@ -1278,164 +1358,224 @@ def add_products_to_table(
             # -------------------------------------------------------------------------------------------------------------------------------
 
             # GET THE DOMINANT AND GOLD COLORS DATA FOR EACH SITE PRODUCT(S).
-            with open(f'{all_log_files_folder}{dominant_and_gold_colors_data_for_all_sites_log}',
-                      'r+') as dominant_and_gold_colors_data_for_all_sites_log_file_one:
-                prod_dominant_and_gold_colors_log_json = dominant_and_gold_colors_data_for_all_sites_log_file_one.read()
-                prod_dominant_and_gold_colors_log_json_as_dict = json.loads(prod_dominant_and_gold_colors_log_json)
 
-                prod_dominant_and_gold_colors_log_progress_for_current_site = prod_dominant_and_gold_colors_log_json_as_dict.get(
-                    site_name, None)
+            if site_name.count('SAMSUNG') == 0:
 
-                # get all dominant and gold colors for each products in current site from
-                # prod_dominant_and_gold_colors_log_progress_for_current_site file. If the data is  available,
-                # save it to 'products_dominant_and_gold_colors_for_current_sites_products' variable..
-                if prod_dominant_and_gold_colors_log_progress_for_current_site != None:
+                with open(f'{all_log_files_folder}{dominant_and_gold_colors_data_for_all_sites_log}',
+                          'r+') as dominant_and_gold_colors_data_for_all_sites_log_file_one:
+                    prod_dominant_and_gold_colors_log_json = dominant_and_gold_colors_data_for_all_sites_log_file_one.read()
+                    prod_dominant_and_gold_colors_log_json_as_dict = json.loads(prod_dominant_and_gold_colors_log_json)
 
-                    dominant_and_gold_colors_data_for_current_sites_products = prod_dominant_and_gold_colors_log_progress_for_current_site
+                    prod_dominant_and_gold_colors_log_progress_for_current_site = prod_dominant_and_gold_colors_log_json_as_dict.get(
+                        site_name, None)
 
-                    # get the dominant and gold colors data for the current product
-                    dominant_and_gold_colors_data_for_current_product = \
-                        dominant_and_gold_colors_data_for_current_sites_products.get(product_links_id, None)
-                else:
-                    prod_dominant_and_gold_colors_log_json_as_dict[site_name] = {}
+                    # get all dominant and gold colors for each products in current site from
+                    # prod_dominant_and_gold_colors_log_progress_for_current_site file. If the data is  available,
+                    # save it to 'products_dominant_and_gold_colors_for_current_sites_products' variable..
+                    if prod_dominant_and_gold_colors_log_progress_for_current_site != None:
 
-                    # state that the dominant and gold colors data for the current product is None so that a new data
-                    # can be written for it..
-                    dominant_and_gold_colors_data_for_current_product = None
+                        dominant_and_gold_colors_data_for_current_sites_products = prod_dominant_and_gold_colors_log_progress_for_current_site
 
-                # if the dominant and gold colors data does not already exist or the product's link changes,
-                # retrieve the dominant and gold colors data and update the products feed data with it and then
-                # save it..
-                if dominant_and_gold_colors_data_for_current_product is None or product_links_id_updated != '' and \
-                        site_name.count('SAMSUNG_UAE') == 0:  ##
+                        # get the dominant and gold colors data for the current product
+                        dominant_and_gold_colors_data_for_current_product = \
+                            dominant_and_gold_colors_data_for_current_sites_products.get(product_links_id, None)
+                    else:
+                        prod_dominant_and_gold_colors_log_json_as_dict[site_name] = {}
 
-                    prod_dominant_and_gold_colors_log_json_as_dict[site_name][product_links_id] = {}
+                        # state that the dominant and gold colors data for the current product is None so that a new data
+                        # can be written for it..
+                        dominant_and_gold_colors_data_for_current_product = None
 
-                    # wait for five seconds (to cater for Google's wait API limits) before searching for colors within
-                    # products image
-                    time.sleep(5)
-                    detected_colors_data = detect_colors(image_src_less_cj_trigger_unquoted)
+                    # if the dominant and gold colors data does not already exist or the product's link changes,
+                    # retrieve the dominant and gold colors data and update the products feed data with it and then
+                    # save it..
+                    if dominant_and_gold_colors_data_for_current_product is None or product_links_id_updated != '':  ##
 
-                    # colors within the product image and their configurations
-                    products_most_dominant_color = detected_colors_data['most_dominant_color']
-                    products_most_dominant_color_confidence_score = detected_colors_data[
-                        'most_dominant_color_confidence_score']
-                    products_most_dominant_color_pixel_fraction = detected_colors_data[
-                        'most_dominant_color_pixel_fraction']
-                    other_colors_in_products_image = detected_colors_data['other_colors']
+                        prod_dominant_and_gold_colors_log_json_as_dict[site_name][product_links_id] = {}
 
-                    # detecting whether there's a dominant gold color in the products image
-                    product_gold_color_data = detect_dominant_gold_color_in_product_image(
-                        dominant_color_in_product_image=products_most_dominant_color,
-                        most_dominant_color_pixel_fraction=products_most_dominant_color_pixel_fraction,
-                        most_dominant_color_confidence_score=products_most_dominant_color_confidence_score,
-                        list_of_other_colors_in_image=other_colors_in_products_image
+                        # ------------------------------------------------------------------------------------------------------------------------
+                        # wait for five seconds (to cater for Google's wait API limits) before downloading and
+                        # searching for colors within products image
+                        time.sleep(5)
+                        print(f'image_src_less_cj_trigger_unquoted: {image_src_less_cj_trigger_unquoted}')
+                        image_file_name = image_src_less_cj_trigger_unquoted.replace(':', '').replace('/', '')
+                        image_file_path = '/Users/admin/OneDrive/docs/affiliate/product_images/'
+                        print(f'image_file_name saved as: {image_file_name}')
+
+                        opener = urllib.request.build_opener()
+                        opener.addheaders = [('User-Agent',
+                                              'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36'),
+                                             ('Accept',
+                                              'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8'),
+                                             ('Accept-Encoding', 'gzip, deflate, br'),
+                                             ('Accept-Language', 'en-US,en;q=0.5'), ("Connection", "keep-alive"),
+                                             ("Upgrade-Insecure-Requests", '1')]
+
+                        urllib.request.install_opener(opener)
+                        urllib.request.urlretrieve(image_src_less_cj_trigger_unquoted,
+                                                   f"/Users/admin/OneDrive/docs/affiliate/product_images/"
+                                                   f"{image_src_less_cj_trigger_unquoted.replace(':', '').replace('/', '')}")
+
+                        time.sleep(5)
+                        print(f'image_file_name retrieved as: {image_file_name}')
+                        detected_colors_data = detect_colors(f"{image_file_path}{image_file_name}")
+                        # ------------------------------------------------------------------------------------------------------------------------
+
+
+                        # colors within the product image and their configurations
+                        products_most_dominant_color = detected_colors_data['most_dominant_color']
+                        products_most_dominant_color_confidence_score = detected_colors_data[
+                            'most_dominant_color_confidence_score']
+                        products_most_dominant_color_pixel_fraction = detected_colors_data[
+                            'most_dominant_color_pixel_fraction']
+                        other_colors_in_products_image = detected_colors_data['other_colors']
+
+                        # detecting whether there's a dominant gold color in the products image
+                        product_gold_color_data = detect_dominant_gold_color_in_product_image(
+                            dominant_color_in_product_image=products_most_dominant_color,
+                            most_dominant_color_pixel_fraction=products_most_dominant_color_pixel_fraction,
+                            most_dominant_color_confidence_score=products_most_dominant_color_confidence_score,
+                            list_of_other_colors_in_image=other_colors_in_products_image
+                        )
+
+                        # detecting whether the most dominant color is gold color
+                        is_most_dominant_color_in_product_image_gold_color = is_gold_color_in_color(
+                            products_most_dominant_color
+                        )
+
+                        # calculating products state id
+                        products_state_id = calc_products_state_id(
+                            products_color=products_most_dominant_color,
+
+                            # based on minimum profit of 200 usd, mininum_commission_target_detected_currency_value is
+                            # adjusted to calculate a valid exchange rate. Expected values are 1 where USD is the base
+                            # currency and around 3.67 where the base currency is AED. (as at June 2, 2023)
+                            products_price_usd=float(''.join(i for i in product_price if i in '0123456789.')) /
+                                               ((mininum_commission_target_detected_currency_value) / 200)
+                        )
+
+                        # Updating products color and state id info in both file and table..
+                        is_most_dominant_color_in_product_image_gold_color = \
+                            is_most_dominant_color_in_product_image_gold_color['is_gold_color']
+
+                        prod_dominant_and_gold_colors_log_json_as_dict[site_name][product_links_id][
+                            'most_dominant_color'] = products_most_dominant_color
+
+                        prod_dominant_and_gold_colors_log_json_as_dict[site_name][product_links_id][
+                            'dominant_gold_color'] = \
+                            None if product_gold_color_data is None else product_gold_color_data.get('valid_gold_color')
+
+                        prod_dominant_and_gold_colors_log_json_as_dict[site_name][product_links_id][
+                            'dominant_gold_color_data'] = product_gold_color_data
+
+                        prod_dominant_and_gold_colors_log_json_as_dict[site_name][product_links_id][
+                            'is_most_dominant_color_a_gold_color'] = is_most_dominant_color_in_product_image_gold_color
+
+                        prod_dominant_and_gold_colors_log_json_as_dict[site_name][product_links_id][
+                            'pixel_fraction'] = products_most_dominant_color_pixel_fraction
+
+                        prod_dominant_and_gold_colors_log_json_as_dict[site_name][product_links_id][
+                            'other_colors'] = other_colors_in_products_image
+
+                        prod_dominant_and_gold_colors_log_json_as_dict[site_name][product_links_id][
+                            'product_state_id'] = products_state_id
+
+                        # adding products color data to products data table via products_feed_dict
+                        products_feed_dict['mostDominantColor'].append(products_most_dominant_color)
+
+                        product_gold_color = prod_dominant_and_gold_colors_log_json_as_dict[site_name][product_links_id]['dominant_gold_color']
+
+                        products_feed_dict['dominantColorGold'].append(product_gold_color)
+
+                        products_feed_dict['productsThatMatchDominantColor'].append('')
+                        products_feed_dict['productsThatMatchDominantGoldColor'].append('')
+                        products_feed_dict['silverAndDiamondProductsThatMatchDominantColor'].append('')
+                        products_feed_dict['otherProductsThatMatchProductsColor'].append('[]')
+                        products_feed_dict['allProductsThatMatchCurrentProductColor'].append('')
+
+                        products_feed_dict['isMostDominantColorAGoldColor'].append(
+                            is_most_dominant_color_in_product_image_gold_color)
+                        products_feed_dict['productsStateID'].append(products_state_id)
+
+                    elif dominant_and_gold_colors_data_for_current_product is not None:
+
+                        # CODES TO UPDATE PROUDCTS STATE ID AFTER COLOR OR CATEGORY DETECTION CODES HAVE BEEN ALTERED.. 
+
+                        # products_most_dominant_color = prod_dominant_and_gold_colors_log_json_as_dict[site_name][product_links_id][
+                        #     'most_dominant_color']
+
+                        # products_state_id = calc_products_state_id(
+                        #     products_color=products_most_dominant_color,
+
+                        #     # based on minimum profit of 200 usd, mininum_commission_target_detected_currency_value is
+                        #     # adjusted to calculate a valid exchange rate. Expected values are 1 where USD is the base
+                        #     # currency and around 3.67 where the base currency is AED. (as at June 2, 2023)
+                        #     products_price_usd=float(''.join(i for i in product_price if i in '0123456789.')) /
+                        #                        ((mininum_commission_target_detected_currency_value) / 200)
+                        # )
+
+                        # prod_dominant_and_gold_colors_log_json_as_dict[site_name][product_links_id][
+                        #     'product_state_id'] = products_state_id
+
+                        # ------------------------
+
+                        # retrieving dominant and gold color data from storage
+                        products_most_dominant_color = \
+                            dominant_and_gold_colors_data_for_current_sites_products[product_links_id][
+                                'most_dominant_color']
+
+                        product_gold_color = \
+                            dominant_and_gold_colors_data_for_current_sites_products[product_links_id][
+                                'dominant_gold_color']
+
+                        is_most_dominant_color_in_product_image_gold_color = \
+                            dominant_and_gold_colors_data_for_current_sites_products[product_links_id][
+                                'is_most_dominant_color_a_gold_color']
+
+                        products_state_id = dominant_and_gold_colors_data_for_current_sites_products[product_links_id][
+                            'product_state_id']
+
+                        products_feed_dict['mostDominantColor'].append(products_most_dominant_color)
+                        products_feed_dict['dominantColorGold'].append(product_gold_color)
+                        products_feed_dict['isMostDominantColorAGoldColor'].append(
+                            is_most_dominant_color_in_product_image_gold_color
+                        )
+
+                        products_feed_dict['productsThatMatchDominantColor'].append('')
+                        products_feed_dict['productsThatMatchDominantGoldColor'].append('')
+                        products_feed_dict['silverAndDiamondProductsThatMatchDominantColor'].append('')
+                        products_feed_dict['otherProductsThatMatchProductsColor'].append('[]')
+                        products_feed_dict['allProductsThatMatchCurrentProductColor'].append('')
+
+                        products_feed_dict['productsStateID'].append(products_state_id)
+
+
+
+
+                    # Saving dominant and gold color data for current site to local storage
+                    print(f'type(prod_dominant_and_gold_colors_log_json_as_dict)'
+                          f'{type(prod_dominant_and_gold_colors_log_json_as_dict)}, {prod_dominant_and_gold_colors_log_json_as_dict}')
+
+                    dominant_and_gold_colors_data_for_all_sites_log_dict_as_json = json.dumps(
+                        prod_dominant_and_gold_colors_log_json_as_dict
                     )
 
-                    # detecting whether the most dominant color is gold color
-                    is_most_dominant_color_in_product_image_gold_color = is_gold_color_in_color(
-                        products_most_dominant_color
-                    )
+                    with open(f'{all_log_files_folder}{dominant_and_gold_colors_data_for_all_sites_log}', 'w+') as \
+                            dominant_and_gold_colors_data_for_all_sites_log_file_two:
 
-                    # calculating products state id
-                    products_state_id = calc_products_state_id(
-                        products_color=products_most_dominant_color,
+                        dominant_and_gold_colors_data_for_all_sites_log_file_two.write(
+                            dominant_and_gold_colors_data_for_all_sites_log_dict_as_json
+                        )
 
-                        # based on minimum profit of 200 usd, mininum_commission_target_detected_currency_value is
-                        # adjusted to calculate a valid exchange rate. Expected values are 1 where USD is the base
-                        # currency and around 3.67 where the base currency is AED. (as at June 2, 2023)
-                        products_price_usd=float(product_price) /
-                                           ((mininum_commission_target_detected_currency_value) / 200)
-                    )
+                        dominant_and_gold_colors_data_for_all_sites_log_file_two.close()
 
-                    # Updating products color and state id info in both file and table..
-                    is_most_dominant_color_in_product_image_gold_color = \
-                        is_most_dominant_color_in_product_image_gold_color['is_gold_color']
-
-                    prod_dominant_and_gold_colors_log_json_as_dict[site_name][product_links_id][
-                        'most_dominant_color'] = products_most_dominant_color
-
-                    prod_dominant_and_gold_colors_log_json_as_dict[site_name][product_links_id][
-                        'dominant_gold_color'] = \
-                        None if product_gold_color_data is None else product_gold_color_data.get('valid_gold_color')
-
-                    prod_dominant_and_gold_colors_log_json_as_dict[site_name][product_links_id][
-                        'dominant_gold_color_data'] = product_gold_color_data
-
-                    prod_dominant_and_gold_colors_log_json_as_dict[site_name][product_links_id][
-                        'is_most_dominant_color_a_gold_color'] = is_most_dominant_color_in_product_image_gold_color
-
-                    prod_dominant_and_gold_colors_log_json_as_dict[site_name][product_links_id][
-                        'pixel_fraction'] = products_most_dominant_color_pixel_fraction
-
-                    prod_dominant_and_gold_colors_log_json_as_dict[site_name][product_links_id][
-                        'other_colors'] = other_colors_in_products_image
-
-                    prod_dominant_and_gold_colors_log_json_as_dict[site_name][product_links_id][
-                        'product_state_id'] = products_state_id
-
-                    # adding products color data to products data table via products_feed_dict
-                    products_feed_dict['mostDominantColor'].append(products_most_dominant_color)
-
-                    product_gold_color = prod_dominant_and_gold_colors_log_json_as_dict[site_name][product_links_id]['dominant_gold_color']
-
-                    products_feed_dict['dominantColorGold'].append(product_gold_color)
-
-                    products_feed_dict['productsThatMatchDominantColor'].append('')
-                    products_feed_dict['productsThatMatchDominantGoldColor'].append('')
-
-                    products_feed_dict['isMostDominantColorAGoldColor'].append(
-                        is_most_dominant_color_in_product_image_gold_color)
-                    products_feed_dict['productsStateID'].append(products_state_id)
-
-                elif dominant_and_gold_colors_data_for_current_product is not None and \
-                        site_name.count('SAMSUNG_UAE') == 0:
-
-                    # retrieving dominant and gold color data from storage
-                    products_most_dominant_color = \
-                        dominant_and_gold_colors_data_for_current_sites_products[product_links_id][
-                            'most_dominant_color']
-
-                    product_gold_color = \
-                        dominant_and_gold_colors_data_for_current_sites_products[product_links_id][
-                            'dominant_gold_color']
-
-                    is_most_dominant_color_in_product_image_gold_color = \
-                        dominant_and_gold_colors_data_for_current_sites_products[product_links_id][
-                            'is_most_dominant_color_a_gold_color']
-
-                    products_state_id = dominant_and_gold_colors_data_for_current_sites_products[product_links_id][
-                        'product_state_id']
-
-                    products_feed_dict['mostDominantColor'].append(products_most_dominant_color)
-                    products_feed_dict['dominantColorGold'].append(product_gold_color)
-                    products_feed_dict['isMostDominantColorAGoldColor'].append(
-                        is_most_dominant_color_in_product_image_gold_color
-                    )
-
-                    products_feed_dict['productsThatMatchDominantColor'].append('')
-                    products_feed_dict['productsThatMatchDominantGoldColor'].append('')
-
-                    products_feed_dict['productsStateID'].append(products_state_id)
-
-                # Saving dominant and gold color data for current site to local storage
-                dominant_and_gold_colors_data_for_all_sites_log_dict_as_json = json.dumps(
-                    prod_dominant_and_gold_colors_log_json_as_dict)
-
-                with open(f'{all_log_files_folder}{dominant_and_gold_colors_data_for_all_sites_log}', 'w+') as \
-                        dominant_and_gold_colors_data_for_all_sites_log_file_two:
-
-                    dominant_and_gold_colors_data_for_all_sites_log_file_two.write(
-                        dominant_and_gold_colors_data_for_all_sites_log_dict_as_json
-                    )
-
-                    dominant_and_gold_colors_data_for_all_sites_log_file_two.close()
-
-                dominant_and_gold_colors_data_for_all_sites_log_file_one.close()
+                    dominant_and_gold_colors_data_for_all_sites_log_file_one.close()
 
             # ---------------------------------------------------------------------------------------------------------------------------
 
     product_feed_df = pd.DataFrame.from_dict(products_feed_dict)
+
+    # function to add products to list of products that match a particular product
 
     # save file interim (insurance)
     file_name = f'{site_name}'
@@ -1445,41 +1585,278 @@ def add_products_to_table(
     # CONTAINS GOLD COLOR..
 
     # matching products dominant colors regardless of whether it is a gold color
-    list_of_current_sites_products_index = product_feed_df.index
+    total_number_of_products_for_current_site = len(product_feed_df['title'])
 
     list_of_products_that_match_the_current_products_most_dominant_color = []
     list_of_products_that_match_the_current_products_most_dominant_gold_color = []
+    list_of_silver_or_diamond_products_that_match_current_products_most_dominant_color = []
+    list_of_other_products_that_match_matching_products_most_dominant_color_copy = []
 
 
-    if site_name.count('SAMSUNG_UAE') == 0: # do not match electronic products with other products (categories)
+    def add_product_to_list_of_products_that_match_current_product_appropriately(
+            matching_products_row_data,
+            products_that_match_the_current_products_most_dominant_color,
+            products_that_match_the_current_products_most_dominant_gold_color,
+            silver_and_diamond_products_that_match_the_current_products_most_dominant_color,
+            list_of_other_products_that_match_current_products_most_dominant_color,
+            list_to_add_product_to
+    ):
 
-        for product_index in range(list_of_current_sites_products_index):
+        # matching_products_row_data = \
+        #     product_feed_df.loc[
+        #         product_feed_df['baseProductLinksId'] == potentially_matching_products_product_link_id
+        #         ]
+
+        matching_products_row_index = matching_products_row_data.index[0]
+
+        # list of products that match 'matching product's' most dominant color..
+        list_of_products_that_match_matching_products_most_dominant_color = \
+            list(matching_products_row_data['productsThatMatchDominantColor'])[0]
+
+        # list of products that match 'matching product's' most dominant gold color..
+        list_of_products_that_match_matching_products_most_dominant_gold_color = \
+            list(matching_products_row_data['productsThatMatchDominantGoldColor'])[0]
+
+        # silver and gold products that match 'matching product's' most dominant color..
+        list_of_silver_diamond_products_that_match_matching_products_most_dominant_color = \
+            list(matching_products_row_data['silverAndDiamondProductsThatMatchDominantColor'])[0]
+
+        # list of other products that match 'matching product's' most dominant color..
+        list_of_other_products_that_match_matching_products_most_dominant_color = \
+            list(matching_products_row_data['otherProductsThatMatchProductsColor'])[0]
+
+        print()
+        print(
+            f'list_of_products_that_match_matching_products_most_dominant_color: {list_of_products_that_match_matching_products_most_dominant_color}')
+        print(
+            f'list_of_products_that_match_matching_products_most_dominant_gold_color: {list_of_products_that_match_matching_products_most_dominant_gold_color}')
+        print(
+            f'list_of_sliver_diamond_products_that_match_matching_products_most_dominant_color: {list_of_silver_diamond_products_that_match_matching_products_most_dominant_color}')
+        print(
+            f'list_of_other_products_that_match_matching_products_most_dominant_color: {list_of_other_products_that_match_matching_products_most_dominant_color}')
+        print()
+
+        # checking whether the current product is in the list of products that match the "matching
+        # product's" color
+
+        # in case lists that contain products that match the "matching product's" color are not empty
+        # strings or string of empty lists, convert them to lists
+        if list_of_products_that_match_matching_products_most_dominant_color != "":
+            list_of_products_that_match_matching_products_most_dominant_color = \
+                json.loads(list_of_products_that_match_matching_products_most_dominant_color)
+
+        if list_of_products_that_match_matching_products_most_dominant_gold_color != "":
+            list_of_products_that_match_matching_products_most_dominant_gold_color = \
+                json.loads(list_of_products_that_match_matching_products_most_dominant_gold_color)
+
+        if list_of_silver_diamond_products_that_match_matching_products_most_dominant_color != "":
+            list_of_silver_diamond_products_that_match_matching_products_most_dominant_color = \
+                json.loads(
+                    list_of_silver_diamond_products_that_match_matching_products_most_dominant_color
+                )
+
+        if type(list_of_other_products_that_match_matching_products_most_dominant_color) == str:
+            list_of_other_products_that_match_matching_products_most_dominant_color = \
+                json.loads(list_of_other_products_that_match_matching_products_most_dominant_color)
+
+        # adding current product to list of other products that match matching product's most dominant
+        # color
+        if list_of_products_that_match_matching_products_most_dominant_color.count(
+                current_products_product_link_id) == 0 \
+                and list_of_products_that_match_matching_products_most_dominant_gold_color.count(
+            current_products_product_link_id) == 0 \
+                and list_of_silver_diamond_products_that_match_matching_products_most_dominant_color.count(
+            current_products_product_link_id) == 0 \
+                and list_of_other_products_that_match_matching_products_most_dominant_color.count(
+            current_products_product_link_id) == 0:
+            # adding current product in the list of other products that match the 'matching
+            # products' most dominant color
+            list_of_other_products_that_match_matching_products_most_dominant_color.append(
+                current_products_product_link_id
+            )
+
+            product_feed_df.loc[matching_products_row_index, 'otherProductsThatMatchProductsColor'] = \
+                json.dumps(list_of_other_products_that_match_matching_products_most_dominant_color)
+
+            print("matching product's list of list of other products that match has been updated")
+
+        # adding matching products to list of products that match current product's most dominant color
+
+        if products_that_match_the_current_products_most_dominant_color != "" and type(
+                products_that_match_the_current_products_most_dominant_color) == str:
+            products_that_match_the_current_products_most_dominant_color = \
+                json.loads(products_that_match_the_current_products_most_dominant_color)
+
+        if products_that_match_the_current_products_most_dominant_gold_color != "" and type(
+                products_that_match_the_current_products_most_dominant_gold_color) == str:
+            products_that_match_the_current_products_most_dominant_gold_color = \
+                json.loads(products_that_match_the_current_products_most_dominant_gold_color)
+
+        if silver_and_diamond_products_that_match_the_current_products_most_dominant_color != "" and type(
+                silver_and_diamond_products_that_match_the_current_products_most_dominant_color) == str:
+            silver_and_diamond_products_that_match_the_current_products_most_dominant_color = \
+                json.loads(
+                    silver_and_diamond_products_that_match_the_current_products_most_dominant_color
+                )
+
+        if list_of_other_products_that_match_current_products_most_dominant_color != "" and type(
+                list_of_other_products_that_match_current_products_most_dominant_color) == str:
+            list_of_other_products_that_match_current_products_most_dominant_color = \
+                json.loads(
+                    list_of_other_products_that_match_current_products_most_dominant_color
+                )
+
+        if products_that_match_the_current_products_most_dominant_color.count(
+            potentially_matching_products_product_link_id
+        ) == 0 and products_that_match_the_current_products_most_dominant_gold_color.count(
+            potentially_matching_products_product_link_id
+        ) == 0 and silver_and_diamond_products_that_match_the_current_products_most_dominant_color.count(
+            potentially_matching_products_product_link_id
+        ) == 0 and list_of_other_products_that_match_current_products_most_dominant_color.count(
+                potentially_matching_products_product_link_id
+        ) == 0:
+            list_to_add_product_to.append(
+                potentially_matching_products_product_link_id
+            )
+
+
+    if site_name.count('SAMSUNG') == 0: # do not match electronic products with other products (categories)
+
+        for product_index in range(total_number_of_products_for_current_site):
 
             products_category = product_feed_df.loc[product_index, 'productCategory']
             products_gender = product_feed_df.loc[product_index, 'gender']
-            products_most_dominant_color = product_feed_df.loc[product_index, 'productsThatMatchDominantColor']
-            products_product_link_id = product_feed_df.loc[product_index, 'baseProductLinksId']
+            products_most_dominant_color = product_feed_df.loc[product_index, 'mostDominantColor']
+            current_products_product_link_id = product_feed_df.loc[product_index, 'baseProductLinksId']
             is_current_products_most_dominant_color_a_gold_color = product_feed_df.loc[
-                product_index, 'isMostDominantColorAGoldColor']
+                product_index, 'isMostDominantColorAGoldColor'
+            ]
 
-            current_products_gold_color = product_feed_df.loc[product_index, 'dominantColorGold']
+            current_products_most_dominant_gold_color = product_feed_df.loc[product_index, 'dominantColorGold']
 
 
-            for potentially_matching_product in list_of_current_sites_products_index:
+            for potentially_matching_product_index in range(total_number_of_products_for_current_site):
 
-                potentially_matching_product_category = product_feed_df.loc[product_index, 'productCategory']
-                potentially_matching_product_gender = product_feed_df.loc[product_index, 'gender']
-                potentially_matching_product_most_dominant_color = product_feed_df.loc[product_index, 'productsThatMatchDominantColor']
-                potentially_matching_products_product_link_id = product_feed_df.loc[product_index, 'baseProductLinksId']
+                # potentially matching product's variables
+                potentially_matching_product_category = product_feed_df.loc[potentially_matching_product_index, 'productCategory']
+                potentially_matching_product_gender = product_feed_df.loc[potentially_matching_product_index, 'gender']
+                potentially_matching_product_most_dominant_color = product_feed_df.loc[potentially_matching_product_index, 'mostDominantColor']
+                potentially_matching_products_product_link_id = product_feed_df.loc[potentially_matching_product_index, 'baseProductLinksId']
+                is_potentially_matching_products_most_dominant_color_a_gold_color = product_feed_df.loc[
+                    product_index, 'isMostDominantColorAGoldColor']
+                is_potentially_matching_product_most_dominant_color_silvergrey_or_white = \
+                    is_color_silvergrey_or_white(potentially_matching_product_most_dominant_color)
+
+                is_potentially_matching_product_most_dominant_color_darkgrey = \
+                    is_color_darkgrey(potentially_matching_product_most_dominant_color)
+
+                is_potentially_matching_product_most_dominant_color_dark = \
+                    is_color_dark(potentially_matching_product_most_dominant_color)
+
+                is_current_product_and_potentially_matching_product_bag = \
+                    True if potentially_matching_product_category.count('BAG') > 0 and \
+                            products_category.count('BAG') > 0 else False
+
+                # current products variables
+                products_that_match_the_current_products_most_dominant_color = \
+                    list(product_feed_df['productsThatMatchDominantColor'])[0]
+
+                products_that_match_the_current_products_most_dominant_gold_color = \
+                    list(product_feed_df['productsThatMatchDominantGoldColor'])[0]
+
+                silver_and_diamond_products_that_match_the_current_products_most_dominant_color = \
+                    list(product_feed_df['silverAndDiamondProductsThatMatchDominantColor'])[0]
+
+                print(
+                    f"list(product_feed_df['otherProductsThatMatchProductsColor'])[0]: {list(product_feed_df['otherProductsThatMatchProductsColor'])[0]}")
+
+                list_of_other_products_that_match_current_products_most_dominant_color = \
+                    list(product_feed_df['otherProductsThatMatchProductsColor'])[0]
+
+
+
+
+                # ------------------------
+
+                # MATCHING PROCESS ONE -> PRODUCTS (DOMINANT NON GOLD) COLOR VS MATCHING PRODUCTS NON GOLD COLOR
+
 
                 # if:
-                # a. the genders of the products to match are equal,
-                # b. the product are not of the same category or
-                # c. one of the products does not contain 'LUXURY TECH' i.e it's not an electronic product,
-                # proceed to the matching process..
-                if potentially_matching_product_gender.count(products_gender) > 0 and \
-                        potentially_matching_product_category.count(products_category) == 0 and \
+                # a. the most dominant color of the current product is not gold
+                # b. the most dominant color of the potentially matching product is not silver or gold
+                # b. the genders of the products to match are equal,
+                # c. the product are not of the same category and
+                # d. one of the products does not contain 'LUXURY TECH' i.e it's not an electronic product,
+                # proceed with the matching process and append matching products to
+                # 'list_of_products_that_match_the_current_products_most_dominant_color'..
+
+                # removed - is_current_product_and_potentially_matching_product_bag == False and
+
+                if is_current_products_most_dominant_color_a_gold_color == False and \
+                        is_potentially_matching_product_most_dominant_color_silvergrey_or_white == False and \
+                        is_potentially_matching_product_most_dominant_color_darkgrey == False and \
+                        is_potentially_matching_product_most_dominant_color_dark == False and \
+                        is_potentially_matching_products_most_dominant_color_a_gold_color == False and \
+                        len(potentially_matching_product_gender) == len(products_gender) and \
                         (potentially_matching_product_category.count('LUXURY TECH') == 0):
+
+                    print()
+                    print('MATCHING PROCESS ONE -> PRODUCTS (DOMINANT NON GOLD) COLOR VS MATCHING PRODUCTS NON GOLD COLOR')
+                    print(f'is_colors_similar color_one: {potentially_matching_product_most_dominant_color}, type: {type(potentially_matching_product_most_dominant_color)}')
+                    print(f'is_colors_similar color_two: {products_most_dominant_color}, type: {type(products_most_dominant_color)}')
+
+
+                    products_colors_similarity_data =  is_colors_similar(
+                        main_color=potentially_matching_product_most_dominant_color,
+                        second_color=products_most_dominant_color,
+                        is_very_close_color_match_only=True
+                    )
+
+                    is_products_colors_similar = products_colors_similarity_data['is_colors_similar_boolean']
+
+
+                    if is_products_colors_similar:
+
+                        add_product_to_list_of_products_that_match_current_product_appropriately(
+                            matching_products_row_data= product_feed_df.loc[
+                                product_feed_df['baseProductLinksId'] == potentially_matching_products_product_link_id
+                            ],
+                            products_that_match_the_current_products_most_dominant_color= products_that_match_the_current_products_most_dominant_color,
+                            products_that_match_the_current_products_most_dominant_gold_color= products_that_match_the_current_products_most_dominant_gold_color,
+                            silver_and_diamond_products_that_match_the_current_products_most_dominant_color= silver_and_diamond_products_that_match_the_current_products_most_dominant_color,
+                            list_of_other_products_that_match_current_products_most_dominant_color= list_of_other_products_that_match_current_products_most_dominant_color,
+                            list_to_add_product_to= list_of_products_that_match_the_current_products_most_dominant_color
+                        )
+
+
+
+                # ------------------------
+
+                # MATCHING PROCESS TWO -> PRODUCTS (DOMINANT COLOR IS GOLD) COLOR VS MATCHING PRODUCTS GOLD COLOR
+
+
+                # if:
+                # a. the most dominant color of the current product is gold
+                # b. the most dominant color of the potentially matching product is not silver but is gold
+                # b. the genders of the products to match are equal,
+                # c. the product are not of the same category and
+                # d. one of the products does not contain 'LUXURY TECH' i.e it's not an electronic product,
+                # proceed with the matching process as specified and append matching products to
+                # 'list_of_products_that_match_the_current_products_most_dominant_color'..
+
+                if is_current_products_most_dominant_color_a_gold_color == True and \
+                        is_potentially_matching_product_most_dominant_color_silvergrey_or_white == False and \
+                        is_potentially_matching_product_most_dominant_color_darkgrey == False and \
+                        is_potentially_matching_product_most_dominant_color_dark == False and \
+                        is_potentially_matching_products_most_dominant_color_a_gold_color == True and \
+                        len(potentially_matching_product_gender) == len(products_gender) and \
+                        (potentially_matching_product_category.count('LUXURY TECH') == 0):
+
+                    print()
+                    print('MATCHING PROCESS TWO -> PRODUCTS (DOMINANT COLOR IS GOLD) COLOR VS MATCHING PRODUCTS GOLD COLOR')
+                    print(f'is_colors_similar color_one: {potentially_matching_product_most_dominant_color}, type: {type(potentially_matching_product_most_dominant_color)}')
+                    print(f'is_colors_similar color_two: {products_most_dominant_color}, type: {type(products_most_dominant_color)}')
+
 
                     products_colors_similarity_data =  is_colors_similar(
                         main_color=potentially_matching_product_most_dominant_color,
@@ -1489,58 +1866,150 @@ def add_products_to_table(
 
                     is_products_colors_similar = products_colors_similarity_data['is_colors_similar_boolean']
 
+                    # add the matching products link id to the list of products that match the current product's most
+                    # dominant color if it's not already been added
+                    if is_products_colors_similar:
+                        add_product_to_list_of_products_that_match_current_product_appropriately(
+                            matching_products_row_data=product_feed_df.loc[
+                                product_feed_df['baseProductLinksId'] == potentially_matching_products_product_link_id
+                                ],
+                            products_that_match_the_current_products_most_dominant_color=products_that_match_the_current_products_most_dominant_color,
+                            products_that_match_the_current_products_most_dominant_gold_color=products_that_match_the_current_products_most_dominant_gold_color,
+                            silver_and_diamond_products_that_match_the_current_products_most_dominant_color=silver_and_diamond_products_that_match_the_current_products_most_dominant_color,
+                            list_of_other_products_that_match_current_products_most_dominant_color=list_of_other_products_that_match_current_products_most_dominant_color,
+                            list_to_add_product_to=list_of_products_that_match_the_current_products_most_dominant_gold_color
+                        )
 
+
+                # ------------------------
+
+                # MATCHING PROCESS THREE -> PRODUCTS (DOMINANT GOLD) COLOR VS MATCHING PRODUCTS GOLD COLOR
+
+
+                # if:
+                # a. the most dominant color of the current product is not gold
+                # b. the current product has a dominant gold color that is not the most dominant color
+                # c. the most dominant color of the potentially matching product is not silver but is gold
+                # d. the genders of the products to match are equal,
+                # e. the product are not of the same category and
+                # f. one of the products does not contain 'LUXURY TECH' i.e it's not an electronic product,
+                # proceed with the matching process as specified and append matching products to
+                # 'list_of_products_that_match_the_current_products_most_dominant_color'..
+
+                if is_current_products_most_dominant_color_a_gold_color == False and \
+                        is_potentially_matching_product_most_dominant_color_silvergrey_or_white == False and \
+                        is_potentially_matching_product_most_dominant_color_darkgrey == False and \
+                        is_potentially_matching_product_most_dominant_color_dark == False and \
+                        current_products_most_dominant_gold_color is not None and \
+                        is_potentially_matching_products_most_dominant_color_a_gold_color == True and \
+                        len(potentially_matching_product_gender) == len(products_gender) and \
+                        (potentially_matching_product_category.count('LUXURY TECH') == 0):
+
+                    print()
+                    print('MATCHING PROCESS TWO -> PRODUCTS (DOMINANT COLOR IS GOLD) COLOR VS MATCHING PRODUCTS GOLD COLOR')
+                    print(f'is_colors_similar color_one: {potentially_matching_product_most_dominant_color}, type: {type(potentially_matching_product_most_dominant_color)}')
+                    print(f'is_colors_similar color_two: {products_most_dominant_color}, type: {type(products_most_dominant_color)}')
+
+
+                    products_colors_similarity_data =  is_colors_similar(
+                        main_color=potentially_matching_product_most_dominant_color,
+                        second_color=products_most_dominant_color,
+                        is_very_close_color_match_only= True
+                    )
+
+                    is_products_colors_similar = products_colors_similarity_data['is_colors_similar_boolean']
+
+                    # add the matching products link id to the list of matching gold products if it's not already been
+                    # added
                     if is_products_colors_similar:
 
-                        list_of_products_that_match_the_current_products_most_dominant_color.append(
-                            potentially_matching_products_product_link_id
+                        add_product_to_list_of_products_that_match_current_product_appropriately(
+                            matching_products_row_data=product_feed_df.loc[
+                                product_feed_df['baseProductLinksId'] == potentially_matching_products_product_link_id
+                                ],
+                            products_that_match_the_current_products_most_dominant_color=products_that_match_the_current_products_most_dominant_color,
+                            products_that_match_the_current_products_most_dominant_gold_color=products_that_match_the_current_products_most_dominant_gold_color,
+                            silver_and_diamond_products_that_match_the_current_products_most_dominant_color=silver_and_diamond_products_that_match_the_current_products_most_dominant_color,
+                            list_of_other_products_that_match_current_products_most_dominant_color=list_of_other_products_that_match_current_products_most_dominant_color,
+                            list_to_add_product_to=list_of_products_that_match_the_current_products_most_dominant_gold_color
+                        )
+
+                # ------------------------
+
+
+
+                # MATCHING PROCESS FOUR -> PRODUCTS (NON GOLD) COLOR VS MATCHING PRODUCTS SILVER COLOR
+
+                # if:
+                # a. the most dominant color of the current product is not gold
+                # b. the current product has no dominant gold color
+                # b. the genders of the products to match are equal,
+                # c. the product are not of the same category and
+                # d. one of the products does not contain 'LUXURY TECH' i.e it's not an electronic product,
+                # proceed to the matching process..
+                if is_current_products_most_dominant_color_a_gold_color == False and \
+                        current_products_most_dominant_gold_color is None and \
+                        is_potentially_matching_products_most_dominant_color_a_gold_color == False and \
+                        len(potentially_matching_product_gender) == len(products_gender) and \
+                        (potentially_matching_product_category.count('LUXURY TECH') == 0) and \
+                        (
+                            is_potentially_matching_product_most_dominant_color_silvergrey_or_white or
+                            is_potentially_matching_product_most_dominant_color_darkgrey or
+                            is_potentially_matching_product_most_dominant_color_silvergrey_or_white or
+                            is_potentially_matching_product_most_dominant_color_dark
+                        ):
+
+                    print()
+                    print('MATCHING PROCESS FOUR -> PRODUCTS (NON GOLD) COLOR VS MATCHING PRODUCTS SILVER COLOR')
+                    print(f'is_colors_similar color_one: {potentially_matching_product_most_dominant_color}, type: {type(potentially_matching_product_most_dominant_color)}')
+                    print(f'is_colors_similar color_two: {products_most_dominant_color}, type: {type(products_most_dominant_color)}')
+
+
+                    products_colors_similarity_data =  is_colors_similar(
+                        main_color=potentially_matching_product_most_dominant_color,
+                        second_color=products_most_dominant_color,
+                        is_very_close_color_match_only= True
+                    )
+
+                    is_products_colors_similar = products_colors_similarity_data['is_colors_similar_boolean']
+
+                    # add the matching products link id to the list of matching silver products if it's not already been
+                    # added to any of the pre-defined lists of matching products
+                    if is_products_colors_similar:
+
+                        add_product_to_list_of_products_that_match_current_product_appropriately(
+                            matching_products_row_data=product_feed_df.loc[
+                                product_feed_df['baseProductLinksId'] == potentially_matching_products_product_link_id
+                                ],
+                            products_that_match_the_current_products_most_dominant_color=products_that_match_the_current_products_most_dominant_color,
+                            products_that_match_the_current_products_most_dominant_gold_color=products_that_match_the_current_products_most_dominant_gold_color,
+                            silver_and_diamond_products_that_match_the_current_products_most_dominant_color=silver_and_diamond_products_that_match_the_current_products_most_dominant_color,
+                            list_of_other_products_that_match_current_products_most_dominant_color=list_of_other_products_that_match_current_products_most_dominant_color,
+                            list_to_add_product_to=list_of_silver_or_diamond_products_that_match_current_products_most_dominant_color
                         )
 
 
-                    # if the current products most dominant color is different from its most dominant gold color if any,
-                    # check if the potentially matching product's most dominant color (presumably gold color) matches
-
-                    if is_current_products_most_dominant_color_a_gold_color == False and \
-                            current_products_gold_color is not None:
-
-                        products_gold_colors_similarity_data = is_colors_similar(
-                            main_color=potentially_matching_product_most_dominant_color,
-                            second_color=current_products_gold_color,
-                            is_very_close_color_match_only=True
-                        )
-
-                        is_products_colors_similar_gold_colors = products_gold_colors_similarity_data['is_colors_similar_boolean']
-
-                        if is_products_colors_similar_gold_colors:
-                            list_of_products_that_match_the_current_products_most_dominant_gold_color.append(
-                                potentially_matching_products_product_link_id
-                            )
-
-                    # if there's no gold color on the current product, confirm whether the 'potentially_matching_product's
-                    # color is silver or light grey or white.. if yes add it to the list of products that match the current
-                    # product if it's not already been added..
-                    if current_products_gold_color is None and \
-                            list_of_products_that_match_the_current_products_most_dominant_color.count(
-                                potentially_matching_products_product_link_id
-                            ) == 0:
-
-                        is_potentially_matching_product_most_dominant_color_silvergrey_or_white = \
-                            is_color_silvergrey_or_white(potentially_matching_product_most_dominant_color)
-
-                        # adding
-                        if is_potentially_matching_product_most_dominant_color_silvergrey_or_white:
-
-                            list_of_products_that_match_the_current_products_most_dominant_color.append(
-                                potentially_matching_products_product_link_id
-                            )
+                # ------------------------
 
             # updating the list of match the current products colors (dominant and gold colors, if any)
             product_feed_df.loc[product_index, 'productsThatMatchDominantColor'] = \
-                list_of_products_that_match_the_current_products_most_dominant_color
+                json.dumps(list_of_products_that_match_the_current_products_most_dominant_color)
 
             product_feed_df.loc[product_index, 'productsThatMatchDominantGoldColor'] = \
-                list_of_products_that_match_the_current_products_most_dominant_gold_color
+                json.dumps(list_of_products_that_match_the_current_products_most_dominant_gold_color)
 
+            product_feed_df.loc[product_index, 'silverAndDiamondProductsThatMatchDominantColor'] = \
+                json.dumps(list_of_silver_or_diamond_products_that_match_current_products_most_dominant_color)
+
+
+            # clear products match lists for next operation
+            list_of_products_that_match_the_current_products_most_dominant_color.clear()
+            list_of_products_that_match_the_current_products_most_dominant_gold_color.clear()
+            list_of_silver_or_diamond_products_that_match_current_products_most_dominant_color.clear()
+
+
+    file_name = f'{site_name}'
+    product_feed_df.to_csv(f'{all_filtered_data_folder_cj}{file_name}.csv')
 
 
     print(product_feed_df.head(100000))
@@ -1619,10 +2088,6 @@ def add_products_to_table(
         print(f"UPLOAD OPERATION FOR '{site_name}' WAS NOT ATTEMPTED FROM YOUR CHOICE!")
 
     # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    file_name = f'{site_name}'
-
-    product_feed_df.to_csv(f'{all_filtered_data_folder_cj}{file_name}.csv')
 
     if is_upload_to_wx == True:
         extract_elements_per_row_from_dataframe(
@@ -1715,8 +2180,9 @@ add_products_to_table(
     site_name=partners[partner_to_fetch_num]['partners_company_name'],
     partners_id=partners[partner_to_fetch_num]['partners_company_id'],
     ad_id=partners[partner_to_fetch_num]['partners_company_ad_id'],
-    mininum_commission_target_detected_currency_value=200,  # USD200 TO AED = AED 734.41 => MAY 8
+    mininum_commission_target_detected_currency_value=734.62,  # USD200 TO AED = AED 734.60 => MAY 8
     is_upload_to_wx=False
+
 )
 
 # retrieve realtime commissions

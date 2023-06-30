@@ -111,7 +111,9 @@ for index in range(len(detected_numbers)):
     current_number_unproccessed = detected_numbers[index]
     detected_numbers[index] = f'{(float(detected_numbers[index]) / 1235) / 2378:.7f}'
     current_number_proccessed = detected_numbers[index]
-    print(f"'{current_number_unproccessed}': '{current_number_proccessed}',")
+    print(f"'{current_number_proccessed}': '{current_number_unproccessed}',")
+
+
     print()
 
 print(len(set(detected_numbers)))

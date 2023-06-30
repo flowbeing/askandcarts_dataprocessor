@@ -4,18 +4,34 @@ from operations.wx.bcknd.products_recommendation_system.color_detector.color_sim
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/Users/admin/OneDrive/docs/affiliate/color_detector/ringed-cell-388001-24f0c04ada83.json"
 
-def detect_colors(uri):
+def detect_colors(
+        path
+):
+    """Detects image properties in the file."""
+    # from google.cloud import vision
+    # client = vision.ImageAnnotatorClient()
+    # image = vision.Image()
+    # image.source.image_uri = uri
+    #
+    # response = client.image_properties(image=image)
+    # props = response.image_properties_annotation
+    # print('Properties:')
+    #
+    # # all dominant colors detected by cloud vision
+    # cloud_vision_detected_dominant_colors = props.dominant_colors.colors
+
     """Detects image properties in the file."""
     from google.cloud import vision
     client = vision.ImageAnnotatorClient()
-    image = vision.Image()
-    image.source.image_uri = uri
+
+    with open(path, 'rb') as image_file:
+        content = image_file.read()
+
+    image = vision.Image(content=content)
 
     response = client.image_properties(image=image)
     props = response.image_properties_annotation
-    print('Properties:')
 
-    # all dominant colors detected by cloud vision
     cloud_vision_detected_dominant_colors = props.dominant_colors.colors
 
     # most dominant color
@@ -53,9 +69,9 @@ def detect_colors(uri):
 
         else:
             # including all colors in other_colors_in_image
-            other_colors_in_image[rgb_tuple] = {}
-            other_colors_in_image[rgb_tuple]['confidence_score'] = current_colors_dominance_score
-            other_colors_in_image[rgb_tuple]['pixel_fraction'] = current_colors_pixel_fraction
+            other_colors_in_image[str(rgb_tuple)] = {}
+            other_colors_in_image[str(rgb_tuple)]['confidence_score'] = current_colors_dominance_score
+            other_colors_in_image[str(rgb_tuple)]['pixel_fraction'] = current_colors_pixel_fraction
 
 
 
@@ -73,6 +89,9 @@ def detect_colors(uri):
     #     print(f'\ta: {color.color.alpha}')
 
     if response.error.message:
+
+        print(response.error)
+
         raise Exception(
             '{}\nFor more info on error messages, check: '
             'https://cloud.google.com/apis/design/errors'.format(

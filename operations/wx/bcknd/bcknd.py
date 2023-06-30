@@ -31,7 +31,9 @@ def extract_elements_per_row_from_dataframe(
     is_p_values_reset = {
         'Uaeproducts': False,
         'Usaproducts': False,
-        'Singaporeproducts': False
+        'Singaporeproducts': False,
+        'Ukproducts': False,
+        'Euproducts': False
     }
     
     print()
@@ -117,7 +119,7 @@ def extract_elements_per_row_from_dataframe(
         current_row_product_category = ''
 
         if '_CJ' in file_name:
-            current_row_product_category = current_row_data['productCategory']
+            current_row_product_category = current_row_data['productCategory'].replace('_', ' ')
         else:
             current_row_product_category_list = [
                 productCategory for productCategory in productCategories if productCategory in file_name
@@ -153,7 +155,10 @@ def extract_elements_per_row_from_dataframe(
             current_row_price = current_row_data['Price']
 
         # current row's product link
-        current_row_product_link = current_row_data['productLink'] # works for CJ product feed data as well
+        if '_CJ' in file_name:
+            current_row_product_link = current_row_data['productLink_CJ']
+        else:
+            current_row_product_link = current_row_data['productLink']
 
         # current row's image link
         current_row_image_link = ''
@@ -207,6 +212,50 @@ def extract_elements_per_row_from_dataframe(
             current_rows_baseImageSrcsId = current_row_data['baseImageSrcsId']
 
 
+        # update product recommendation variables ->
+        productsThatMatchDominantColor = ''
+        productsThatMatchDominantGoldColor = ''
+        silverAndDiamondProductsThatMatchDominantColor = ''
+        otherProductsThatMatchProductsColor = ''
+        allProductsThatMatchCurrentProductColor = ''
+
+        if file_name.count('SAMSUNG') == 0:
+
+            if 'productsThatMatchDominantColor' in list_of_columns:
+                productsThatMatchDominantColor = current_row_data['productsThatMatchDominantColor']
+
+            if 'productsThatMatchDominantGoldColor' in list_of_columns:
+                productsThatMatchDominantGoldColor = current_row_data['productsThatMatchDominantGoldColor']
+
+            if 'silverAndDiamondProductsThatMatchDominantColor' in list_of_columns:
+                silverAndDiamondProductsThatMatchDominantColor = current_row_data[
+                    'silverAndDiamondProductsThatMatchDominantColor']
+
+            if 'otherProductsThatMatchProductsColor' in list_of_columns:
+                otherProductsThatMatchProductsColor = current_row_data['otherProductsThatMatchProductsColor']
+
+            if 'allProductsThatMatchCurrentProductColor' in list_of_columns:
+                allProductsThatMatchCurrentProductColor = \
+                    json.dumps(
+                        list(
+                            set(
+                                json.loads(current_row_data['productsThatMatchDominantColor']) + \
+                                json.loads(current_row_data['productsThatMatchDominantGoldColor']) + \
+                                json.loads(current_row_data['silverAndDiamondProductsThatMatchDominantColor']) + \
+                                json.loads(current_row_data['otherProductsThatMatchProductsColor']
+                                           )
+                            )
+                        )
+                    )
+
+                current_row_data['allProductsThatMatchCurrentProductColor'] = allProductsThatMatchCurrentProductColor
+
+
+        # productsStateID
+        productsStateID = current_row_data['productsStateID'] if 'productsStateID' in list_of_columns else ''
+
+
+
 
 
         print(f'current_row_title: {current_row_title}, {type(current_row_title)}')
@@ -224,6 +273,13 @@ def extract_elements_per_row_from_dataframe(
         print(f'current_rows_baseProductLinksId: {current_rows_baseProductLinksId}, {type(current_rows_baseProductLinksId)}')
         print(f'current_rows_isImageSrcUpdated: {current_rows_isImageSrcUpdated}, {type(current_rows_isImageSrcUpdated)}')
         print(f'current_rows_baseImageSrcsId: {current_rows_baseImageSrcsId}, {type(current_rows_baseImageSrcsId)}')
+
+        print(f'current_rows_productsThatMatchDominantColor: {productsThatMatchDominantColor}, {type(productsThatMatchDominantColor)}')
+        print(f'current_rows_productsThatMatchDominantGoldColor: {productsThatMatchDominantGoldColor}, {type(productsThatMatchDominantGoldColor)}')
+        print(f'current_rows_silverAndDiamondProductsThatMatchDominantColor: {silverAndDiamondProductsThatMatchDominantColor}, {type(silverAndDiamondProductsThatMatchDominantColor)}')
+        print(f'current_rows_otherProductsThatMatchProductsColor: {otherProductsThatMatchProductsColor}, {type(otherProductsThatMatchProductsColor)}')
+        print(f'current_rows_allProductsThatMatchCurrentProductColor: {allProductsThatMatchCurrentProductColor}, {type(allProductsThatMatchCurrentProductColor)}')
+        print(f'current_rows_productsStateID: {productsStateID}, {type(productsStateID)}')
 
 
 
@@ -272,7 +328,7 @@ def extract_elements_per_row_from_dataframe(
                             # if the p values of the current relevant collection name has not been reset, reset it and
                             # update that it has been reset
                             if is_p_values_reset[collection_name_reset_p_all] == False:
-                                reset_p_all(collectionName=current_rows_relevant_collection)
+                                reset_p_all(collectionName=collection_name_reset_p_all)
                                 is_p_values_reset[collection_name_reset_p_all] = True
 
                         upload_data_operation_status_code = populate_site_db(
@@ -297,6 +353,14 @@ def extract_elements_per_row_from_dataframe(
                             baseProductLinksId= current_rows_baseProductLinksId,
                             isImageSrcUpdated= current_rows_isImageSrcUpdated,
                             baseImageSrcsId= current_rows_baseImageSrcsId,
+
+                            productsThatMatchDominantColor= productsThatMatchDominantColor,
+                            productsThatMatchDominantGoldColor = productsThatMatchDominantGoldColor,
+                            silverAndDiamondProductsThatMatchDominantColor = silverAndDiamondProductsThatMatchDominantColor,
+                            otherProductsThatMatchProductsColor = otherProductsThatMatchProductsColor,
+                            allProductsThatMatchCurrentProductColor = allProductsThatMatchCurrentProductColor,
+
+                            productsStateID = productsStateID,
 
                             is_continue_from_previous_stop_csv = is_continue_daily_upload_if_any
                         )
@@ -373,7 +437,7 @@ def extract_elements_per_row_from_dataframe(
                         # if the p values of the current relevant collection name has not been reset, reset it and
                         # update that it has been reset
                         if is_p_values_reset[collection_name_reset_p_all] == False:
-                            reset_p_all(collectionName=current_rows_relevant_collection)
+                            reset_p_all(collectionName=collection_name_reset_p_all)
                             is_p_values_reset[collection_name_reset_p_all] = True
 
                     upload_data_operation_status_code = populate_site_db(
@@ -398,6 +462,14 @@ def extract_elements_per_row_from_dataframe(
                         baseProductLinksId=current_rows_baseProductLinksId,
                         isImageSrcUpdated=current_rows_isImageSrcUpdated,
                         baseImageSrcsId=current_rows_baseImageSrcsId,
+
+                        productsThatMatchDominantColor=productsThatMatchDominantColor,
+                        productsThatMatchDominantGoldColor=productsThatMatchDominantGoldColor,
+                        silverAndDiamondProductsThatMatchDominantColor=silverAndDiamondProductsThatMatchDominantColor,
+                        otherProductsThatMatchProductsColor=otherProductsThatMatchProductsColor,
+                        allProductsThatMatchCurrentProductColor=allProductsThatMatchCurrentProductColor,
+
+                        productsStateID=productsStateID,
 
                         is_continue_from_previous_stop_csv=is_continue_daily_upload_if_any
                     )
@@ -665,6 +737,39 @@ def upload_skipped_csv_rows(
                 current_rows_baseImageSrcsId = current_row_data['baseImageSrcsId']
 
 
+            # update product recommendation variables ->
+            productsThatMatchDominantColor = ''
+            productsThatMatchDominantGoldColor = ''
+            silverAndDiamondProductsThatMatchDominantColor = ''
+            otherProductsThatMatchProductsColor = ''
+            allProductsThatMatchCurrentProductColor = ''
+
+            if 'productsThatMatchDominantColor' in list_of_columns:
+                productsThatMatchDominantColor = current_row_data['productsThatMatchDominantColor']
+
+            if 'productsThatMatchDominantGoldColor' in list_of_columns:
+                productsThatMatchDominantGoldColor = current_row_data['productsThatMatchDominantGoldColor']
+
+            if 'silverAndDiamondProductsThatMatchDominantColor' in list_of_columns:
+                silverAndDiamondProductsThatMatchDominantColor = current_row_data[
+                    'silverAndDiamondProductsThatMatchDominantColor']
+
+            if 'otherProductsThatMatchProductsColor' in list_of_columns:
+                otherProductsThatMatchProductsColor = current_row_data['otherProductsThatMatchProductsColor']
+
+            if 'allProductsThatMatchCurrentProductColor' in list_of_columns:
+                allProductsThatMatchCurrentProductColor = \
+                    json.loads(current_row_data['productsThatMatchDominantColor']) + \
+                    json.loads(current_row_data['productsThatMatchDominantGoldColor']) + \
+                    json.loads(current_row_data['silverAndDiamondProductsThatMatchDominantColor']) + \
+                    json.loads(current_row_data['otherProductsThatMatchProductsColor'])
+
+
+            # productsStateID
+            productsStateID = current_row_data['productsStateID'] if 'productsStateID' in list_of_columns else ''
+
+
+
             print(f'current_row_title: {current_row_title}, {type(current_row_title)}')
             print(f'current_row_brandname: {current_row_brandname}, {type(current_row_brandname)}')
             print(f'current_row_product_category: {current_row_product_category}, {type(current_row_product_category)}')
@@ -680,6 +785,14 @@ def upload_skipped_csv_rows(
             print(f'current_rows_baseProductLinksId: {current_rows_baseProductLinksId}, {type(current_rows_baseProductLinksId)}')
             print(f'current_rows_isImageSrcUpdated: {current_rows_isImageSrcUpdated}, {type(current_rows_isImageSrcUpdated)}')
             print(f'current_rows_baseImageSrcsId: {current_rows_baseImageSrcsId}, {type(current_rows_baseImageSrcsId)}')
+
+            print(f'current_rows_productsThatMatchDominantColor: {productsThatMatchDominantColor}, {type(productsThatMatchDominantColor)}')
+            print(f'current_rows_productsThatMatchDominantGoldColor: {productsThatMatchDominantGoldColor}, {type(productsThatMatchDominantGoldColor)}')
+            print(f'current_rows_silverAndDiamondProductsThatMatchDominantColor: {silverAndDiamondProductsThatMatchDominantColor}, {type(silverAndDiamondProductsThatMatchDominantColor)}')
+            print(f'current_rows_otherProductsThatMatchProductsColor: {otherProductsThatMatchProductsColor}, {type(otherProductsThatMatchProductsColor)}')
+            print(f'current_rows_allProductsThatMatchCurrentProductColor: {allProductsThatMatchCurrentProductColor}, {type(allProductsThatMatchCurrentProductColor)}')
+            print(f'current_rows_productsStateID: {productsStateID}, {type(productsStateID)}')
+
 
 
 
@@ -745,6 +858,14 @@ def upload_skipped_csv_rows(
                                 isImageSrcUpdated=current_rows_isImageSrcUpdated,
                                 baseImageSrcsId=current_rows_baseImageSrcsId,
 
+                                productsThatMatchDominantColor=productsThatMatchDominantColor,
+                                productsThatMatchDominantGoldColor=productsThatMatchDominantGoldColor,
+                                silverAndDiamondProductsThatMatchDominantColor=silverAndDiamondProductsThatMatchDominantColor,
+                                otherProductsThatMatchProductsColor=otherProductsThatMatchProductsColor,
+                                allProductsThatMatchCurrentProductColor=allProductsThatMatchCurrentProductColor,
+
+                                productsStateID = productsStateID,
+
                                 is_continue_from_previous_stop_csv=True
                             )
 
@@ -776,6 +897,14 @@ def upload_skipped_csv_rows(
                             isImageSrcUpdated=current_rows_isImageSrcUpdated,
                             baseImageSrcsId=current_rows_baseImageSrcsId,
 
+                            productsThatMatchDominantColor=productsThatMatchDominantColor,
+                            productsThatMatchDominantGoldColor=productsThatMatchDominantGoldColor,
+                            silverAndDiamondProductsThatMatchDominantColor=silverAndDiamondProductsThatMatchDominantColor,
+                            otherProductsThatMatchProductsColor=otherProductsThatMatchProductsColor,
+                            allProductsThatMatchCurrentProductColor=allProductsThatMatchCurrentProductColor,
+
+                            productsStateID=productsStateID,
+
                             is_continue_from_previous_stop_csv=True
                         )
 
@@ -797,7 +926,7 @@ def upload_skipped_csv_rows(
         # if all previous unsuccessfully uploaded rows within the current file have now been successfully uploaded,
         # delete the current file from skipped csv rows list, otherwise update it..
         if len(current_CSVs_ignored_rows_during_wx_upload_list) == 0:
-            skipped_csv_rows_dict.remove(file_name)
+            skipped_csv_rows_dict.pop(file_name)
         else:
             skipped_csv_rows_dict[file_name] = current_CSVs_ignored_rows_during_wx_upload_list
 
@@ -827,6 +956,14 @@ def populate_site_db(
         isImageSrcUpdated,
         baseImageSrcsId,
 
+        productsThatMatchDominantColor,
+        productsThatMatchDominantGoldColor,
+        silverAndDiamondProductsThatMatchDominantColor,
+        otherProductsThatMatchProductsColor,
+        allProductsThatMatchCurrentProductColor,
+
+        productsStateID,
+
         is_continue_from_previous_stop_csv
 ):
     print('---------------------------------------------------------------------------------')
@@ -834,6 +971,24 @@ def populate_site_db(
     site_url = 'https://flowbeing.wixsite.com/my-site-1/_functions-dev/addRowToCollection'
 
     # title, brandname, productcategory, gender, price, productlink, imagesrc, sitename, country, baseproductlinksid, baseimagesrcsid
+
+    # productsThatMatchDominantColor = list(json.loads(productsThatMatchDominantColor))
+    # productsThatMatchDominantGoldColor = list(json.loads(productsThatMatchDominantGoldColor)),
+    # silverAndDiamondProductsThatMatchDominantColor = list(json.loads(silverAndDiamondProductsThatMatchDominantColor)),
+    # otherProductsThatMatchProductsColor = list(json.loads(otherProductsThatMatchProductsColor)),
+
+
+    # allProductsThatMatchCurrentProductColor = \
+    #     json.dumps(
+    #         list(set(
+    #             json.loads(productsThatMatchDominantColor) + \
+    #             json.loads(productsThatMatchDominantGoldColor) + \
+    #             json.loads(silverAndDiamondProductsThatMatchDominantColor) + \
+    #             json.loads(otherProductsThatMatchProductsColor)
+    #         ))
+    #     )
+
+    # print(f'List of all products that match current product: {allProductsThatMatchCurrentProductColor}')
 
     body = {
         'collectionName': collection_name,
@@ -850,6 +1005,15 @@ def populate_site_db(
 
             'baseproductlinksid': baseProductLinksId,
             'baseimagesrcsid': baseImageSrcsId,
+
+            'productsthatmatchdominantcolor':  productsThatMatchDominantColor,
+            'productsthatmatchdominantgoldcolor': productsThatMatchDominantGoldColor,
+            'silveranddiamondproductsthatmatchdominantcolor': silverAndDiamondProductsThatMatchDominantColor,
+            'otherproductsthatmatchproductscolor': otherProductsThatMatchProductsColor,
+            'allproductsthatmatchproductscolor': allProductsThatMatchCurrentProductColor,
+
+            'productsstateid': productsStateID
+
         }
     }
 

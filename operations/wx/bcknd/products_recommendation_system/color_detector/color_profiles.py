@@ -142,6 +142,19 @@ def detect_dominant_gold_color_in_product_image(
         detected_gold_color_count = 0
         for other_color in other_colors_in_product_image:
 
+            # a copy of the string version of 'other_color'
+            other_color_copy = other_color
+
+            # 'other_color' is a stringified rgb tuple -> e.g (255, 215, 0)
+            # converting 'other_color' to tuple of floats
+
+            other_color = other_color.replace(' ', '').replace('(', '').replace(')', '')
+            other_color = other_color.split(',')
+            other_color = [float(color_code) for color_code in other_color]
+            other_color = tuple(other_color)
+            print(f'type(other_color): {type(other_color)}, other_color: {other_color}')
+
+
             if other_color[0] > 150: # limiting the number of colors to search for gold colors within 'list_of_other_colors_in_image'
 
                 calc_gold_color = is_gold_color_in_color(
@@ -151,8 +164,8 @@ def detect_dominant_gold_color_in_product_image(
                 # update gold color as detected within other_colors_in_product_image
                 if calc_gold_color['is_gold_color']:
                     print()
-                    other_gold_colors_confidence_score = other_colors_in_product_image[other_color]['confidence_score']
-                    other_gold_colors_pixel_fraction = other_colors_in_product_image[other_color]['pixel_fraction']
+                    other_gold_colors_confidence_score = other_colors_in_product_image[other_color_copy]['confidence_score']
+                    other_gold_colors_pixel_fraction = other_colors_in_product_image[other_color_copy]['pixel_fraction']
                     print(f'pixel fraction other gold color: {other_gold_colors_pixel_fraction}')
                     print(f'confidence level other gold color: {other_gold_colors_confidence_score}')
                     print(f"confidence level dominant color: {most_dominant_color_confidence_score}")
@@ -309,8 +322,7 @@ def get_max_and_min_hue_in_list_of_all_gold_colors():
 
     print(f'max_hue_value: {max(hue_list)}, min_hue_value: {min(hue_list)}')
 
-get_max_and_min_hue_in_list_of_all_gold_colors()
-print()
+
 
 
 # function to obtain a minimized version of list of all gold colors that has been defined within the
@@ -517,7 +529,9 @@ def is_color_light_or_dark(rgb_tuple):
 
 
 # Method to detect whether color is a vibrant red, green or blue
-def is_color_vibrant_r_g_or_b(rgb_tuple):
+def is_color_vibrant_r_g_or_b(
+        rgb_tuple
+):
 
     '''Properties:
 most dominant color: rgb(228.0, 168.0, 74.0)
@@ -538,9 +552,13 @@ False'''
 
     hsl_color = calculate_hue_luminousity_and_saturation(rgb_tuple)
 
+    hue = hsl_color['hue']
     saturation = hsl_color['saturation']
     luminousity = hsl_color['luminousity']
 
+    print()
+    print(f'color hsp: {color_hsp}')
+    print(f'hue: {hue}')
     print(f'saturation: {saturation}')
     print(f'luminousity: {luminousity}')
 
@@ -555,18 +573,26 @@ False'''
 
     return_value = False
 
-    if color_hsp > 100 and color_hsp < 130 and color_description.count('red') > 0:
+    if hue < 20 and saturation > 26 and color_hsp > 100 and color_hsp < 145: #  and saturation > 26  and 100 < color_hsp < 130 and color_description.count('red') > 0
         return_value = True
 
-    elif color_hsp > 100 and color_description.count('green') > 0:
+    elif hue > 300 and saturation > 26 and color_hsp > 100 and color_hsp < 145:
         return_value = True
 
-    elif color_hsp > 95 and color_hsp < 130 and color_description.count('blue') > 0:
+    elif hue < 155 and hue > 83 and saturation > 26 and color_hsp > 100: # and color_description.count('green') > 0:
         return_value = True
-    elif color_dist_yellow_and_current_color < 92 and saturation > 70 and luminousity > 50 and color_hsp > 175:
-        print(hsl_color)
 
+    elif hue > 169 and hue < 265 and saturation > 26 and color_hsp > 86 and color_hsp < 130: #  95 < color_hsp < 130 and color_description.count('blue') > 0:
         return_value = True
+
+    elif hue > 34 and hue < 60 and saturation > 32 and color_hsp > 178 and color_hsp < 201.5: # yellow
+        return_value = True
+
+    # elif include_last_option and color_dist_yellow_and_current_color < 92 and saturation > 70 and \
+    #         luminousity > 50 and color_hsp > 175:
+    #     print(hsl_color)
+
+    #    return_value = True
 
     return return_value
 
@@ -847,4 +873,15 @@ def temp():
         print('No gold colors was found in image!')
 
 
-temp()
+if __name__ == '__main__':
+    # get_max_and_min_hue_in_list_of_all_gold_colors()
+    # print()
+    #
+    # temp()
+
+    is_vibrant = is_color_vibrant_r_g_or_b(
+        rgb_tuple=(218.0, 86.0, 23.0)
+    )
+
+    print()
+    print(f'is_vibrant_red_green_blue: {is_vibrant}')
